@@ -1,0 +1,7 @@
+*.iml
+.idea
+target
+.mvn/wrapper/maven-wrapper.jar
+*.log
+jcstress-results-*
+results
