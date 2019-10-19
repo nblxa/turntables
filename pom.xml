@@ -36,7 +36,7 @@
         <maven.enforcer.plugin.version>3.0.0-M2</maven.enforcer.plugin.version>
         <pitest.maven.version>1.4.10</pitest.maven.version>
         <maven.checkstyle.plugin.version>3.1.0</maven.checkstyle.plugin.version>
-        <checkstyle.version>8.25</checkstyle.version>
+        <checkstyle.version>8.23</checkstyle.version>
         <maven.jar.plugin.version>3.1.2</maven.jar.plugin.version>
         <maven.shade.plugin.version>3.2.1</maven.shade.plugin.version>
         <maven.failsafe.plugin.version>3.0.0-M3</maven.failsafe.plugin.version>
@@ -377,26 +377,10 @@
                             <version>${jacoco.maven.plugin.version}</version>
                             <executions>
                                 <execution>
-                                    <id>pre-unit-test</id>
+                                    <id>prepare-agent</id>
                                     <goals>
                                         <goal>prepare-agent</goal>
                                     </goals>
-                                    <configuration>
-                                        <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
-                                        <propertyName>surefireArgLine</propertyName>
-                                    </configuration>
-                                </execution>
-                                <execution>
-                                    <id>post-unit-test</id>
-                                    <phase>test</phase>
-                                    <goals>
-                                        <goal>report</goal>
-                                    </goals>
-                                    <configuration>
-                                        <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
-                                        <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut
-                                        </outputDirectory>
-                                    </configuration>
                                 </execution>
                             </executions>
                         </plugin>
