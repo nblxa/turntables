@@ -21,7 +21,7 @@
         <javac.version>9+181-r4173-1</javac.version>
         <junit.version>4.12</junit.version>
         <hamcrest.version>2.1</hamcrest.version>
-        <equalsverifier.version>3.1.9</equalsverifier.version>
+        <equalsverifier.version>3.1.10</equalsverifier.version>
         <assertj.version>3.13.2</assertj.version>
         <derby.version>10.14.2.0</derby.version>
 
