@@ -127,9 +127,9 @@
                             <configuration>
                                 <rules>
                                     <requireMavenVersion>
-                                        <version>[3.6.1,)</version>
+                                        <version>[3.6.2,)</version>
                                         <message>
-                                            *** Please use the Maven version 3.6.1 provided by the ./mvnw wrapper, or
+                                            *** Please use the Maven version 3.6.2 provided by the ./mvnw wrapper, or
                                             above.
                                         </message>
                                     </requireMavenVersion>
