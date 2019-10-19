@@ -21,20 +21,22 @@
         <javac.version>9+181-r4173-1</javac.version>
         <junit.version>4.12</junit.version>
         <hamcrest.version>2.1</hamcrest.version>
-        <equalsverifier.version>3.1.9</equalsverifier.version>
+        <equalsverifier.version>3.1.10</equalsverifier.version>
         <assertj.version>3.13.2</assertj.version>
         <derby.version>10.14.2.0</derby.version>
+        <mysql.connector.java.version>8.0.18</mysql.connector.java.version>
+        <testcontainers.version>1.12.2</testcontainers.version>
 
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
         <error.prone.core.version>2.3.3</error.prone.core.version>
         <spotbugs.maven.plugin.version>3.1.12.2</spotbugs.maven.plugin.version>
         <spotbugs.version>3.1.12</spotbugs.version>
-        <jacoco.maven.plugin.version>0.8.4</jacoco.maven.plugin.version>
+        <jacoco.maven.plugin.version>0.8.5</jacoco.maven.plugin.version>
         <maven.surefire.plugin.version>3.0.0-M3</maven.surefire.plugin.version>
         <maven.enforcer.plugin.version>3.0.0-M2</maven.enforcer.plugin.version>
         <pitest.maven.version>1.4.10</pitest.maven.version>
         <maven.checkstyle.plugin.version>3.1.0</maven.checkstyle.plugin.version>
-        <checkstyle.version>8.23</checkstyle.version>
+        <checkstyle.version>8.25</checkstyle.version>
         <maven.jar.plugin.version>3.1.2</maven.jar.plugin.version>
         <maven.shade.plugin.version>3.2.1</maven.shade.plugin.version>
         <maven.failsafe.plugin.version>3.0.0-M3</maven.failsafe.plugin.version>
@@ -85,6 +87,24 @@
                 <groupId>org.apache.derby</groupId>
                 <artifactId>derby</artifactId>
                 <version>${derby.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>mysql</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.connector.java.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
