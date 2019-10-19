@@ -393,13 +393,11 @@ public class TestRowsMatchingInAnyOrder {
     AssertionProxy.Expected expectedProxy = proxyBuilder.buildOrGetExpectedProxy();
 
     String expectedStringRepresentation = new StringBuilder()
-        .append("Table:\n")
-        .append("  -\n")
-        .append("    - 1\n")
-        .append("    - 2\n")
-        .append("  -\n")
-        .append("    - 3\n")
-        .append("    - java.util.function.IntPredicate")
+        .append("Table:").append(LS)
+        .append("    - col1 : 1").append(LS)
+        .append("      col2 : 2").append(LS)
+        .append("    - col1 : 3").append(LS)
+        .append("      col2 : java.util.function.IntPredicate")
         .toString();
 
     assertThat(expectedProxy.representation())
