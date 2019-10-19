@@ -23,7 +23,7 @@
         <hamcrest.version>2.1</hamcrest.version>
         <equalsverifier.version>3.1.9</equalsverifier.version>
         <assertj.version>3.13.2</assertj.version>
-        <derby.version>10.14.2.0</derby.version>
+        <derby.version>10.15.1.3</derby.version>
 
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
         <error.prone.core.version>2.3.3</error.prone.core.version>
