@@ -2,6 +2,7 @@ package io.github.nblxa.fluenttab.io;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -198,9 +199,10 @@ final class ClassTree<V> {
   Set<V> findValueForClass(@NonNull Class<?> klass) {
     Objects.requireNonNull(klass);
     Set<V> values = new HashSet<>();
-    for (Class<?> branchClass : branches.keySet()) {
+    for (Map.Entry<Class<?>, ClassTree<V>> branchEntry : branches.entrySet()) {
+      Class<?> branchClass = branchEntry.getKey();
       if (branchClass.isAssignableFrom(klass)) {
-        ClassTree<V> branch = branches.get(branchClass);
+        ClassTree<V> branch = branchEntry.getValue();
         values.addAll(branch.findValueForClass(klass));
       }
     }

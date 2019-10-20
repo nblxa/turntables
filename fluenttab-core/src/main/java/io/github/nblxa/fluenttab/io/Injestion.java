@@ -1,10 +1,11 @@
 package io.github.nblxa.fluenttab.io;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.fluenttab.io.injestion.DefaultProtocol;
 import io.github.nblxa.fluenttab.io.injestion.InjestionProtocol;
 import io.github.nblxa.fluenttab.io.injestion.ResultSetProtocol;
 import io.github.nblxa.fluenttab.io.injestion.TwoDimensionalArrayProtocol;
-import edu.umd.cs.findbugs.annotations.NonNull;
+
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -90,11 +91,11 @@ public class Injestion {
   private static ClassTree<InjestionProtocol<?>> externalProtocols(
       @NonNull ClassTree<InjestionProtocol<?>> tree) {
     ClassTree<InjestionProtocol<?>> updatedTree = tree;
-    for (IoProtocolProvider provider: ServiceLoader.load(IoProtocolProvider.class)) {
+    for (IoProtocolProvider provider : ServiceLoader.load(IoProtocolProvider.class)) {
       Map<Class<?>, InjestionProtocol<?>> protocolMap = provider.injestionProtocols();
       protocolMap = new HashMap<>(Objects.requireNonNull(protocolMap));
-      for (Class<?> klass: protocolMap.keySet()) {
-        updatedTree = updatedTree.add(klass, protocolMap.get(klass));
+      for (Map.Entry<Class<?>, InjestionProtocol<?>> entry : protocolMap.entrySet()) {
+        updatedTree = updatedTree.add(entry.getKey(), entry.getValue());
       }
     }
     return updatedTree;

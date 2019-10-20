@@ -1,20 +1,20 @@
 package io.github.nblxa.fluenttab.assertion;
 
-import io.github.nblxa.fluenttab.AbstractTab;
-import io.github.nblxa.fluenttab.Tab;
-import io.github.nblxa.fluenttab.FluentTab;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.github.nblxa.fluenttab.AbstractTab;
+import io.github.nblxa.fluenttab.FluentTab;
+import io.github.nblxa.fluenttab.Tab;
+
 import java.util.Objects;
 
 public abstract class AssertionProxy extends AbstractTab {
 
   final Tab tab;
-  final Conf conf;
 
   private AssertionProxy(Tab tab, Conf conf) {
     super(tab.cols());
     this.tab = Objects.requireNonNull(tab, "tab");
-    this.conf = Objects.requireNonNull(conf, "conf");
   }
 
   public static Builder builder() {
@@ -34,6 +34,7 @@ public abstract class AssertionProxy extends AbstractTab {
   }
 
   @Override
+  @SuppressFBWarnings("EQ_UNUSUAL")
   public boolean equals(Object other) {
     throw new UnsupportedOperationException();
   }
@@ -113,6 +114,7 @@ public abstract class AssertionProxy extends AbstractTab {
     }
 
     @Override
+    @SuppressFBWarnings("EQ_UNUSUAL")
     public boolean equals(Object other) {
       throw new UnsupportedOperationException();
     }
@@ -186,7 +188,6 @@ public abstract class AssertionProxy extends AbstractTab {
   }
 
   public static class Expected extends AssertionProxy {
-    @NonNull
     private Actual actual;
 
     private Expected(Tab tab, Conf conf) {
@@ -199,6 +200,7 @@ public abstract class AssertionProxy extends AbstractTab {
 
     @NonNull
     public String representation() {
+      Objects.requireNonNull(actual);
       Tab rowOrderExp = RowOrderPrism.ofExpected(actual.asserter);
       Tab rowOrderAct = RowOrderPrism.ofActual(actual.asserter);
       return new ExpectedAssertionValPrism(rowOrderExp, rowOrderAct).toString();

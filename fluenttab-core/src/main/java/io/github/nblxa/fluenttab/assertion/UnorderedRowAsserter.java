@@ -1,10 +1,11 @@
 package io.github.nblxa.fluenttab.assertion;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.fluenttab.AbstractTab;
 import io.github.nblxa.fluenttab.Tab;
 import io.github.nblxa.fluenttab.Utils;
 import io.github.nblxa.fluenttab.exception.TooManyPermutationsException;
-import edu.umd.cs.findbugs.annotations.NonNull;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Comparator;
@@ -22,9 +23,6 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
   private final long rowPermutationLimit;
   private long permutationCount = 0L;
 
-  private Iterable<Tab.Row> expected;
-  private Iterable<Tab.Row> actual;
-
   private List<Tab.Row> expectedRowList;
   private List<Tab.Row> actualRowList;
 
@@ -34,9 +32,14 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
   UnorderedRowAsserter(@NonNull Iterable<Tab.Row> expected, @NonNull Iterable<Tab.Row> actual,
                        long rowPermutationLimit, @NonNull ValAsserter valAsserter) {
     super(valAsserter);
-    this.expected = expected;
-    this.actual = actual;
     this.rowPermutationLimit = rowPermutationLimit;
+
+    expectedRowList = Utils.toArrayList(expected);
+    actualRowList = Utils.toArrayList(actual);
+
+    ImmutableMatchList matchList = createMatchList();
+    expOrdered = orderExpected(expectedRowList, matchList, actualRowList.size());
+    actOrdered = orderActual(actualRowList, matchList, expectedRowList.size());
   }
 
   @NonNull
@@ -82,8 +85,9 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
       @NonNull final Map<Integer, ImmutableBitSet> expectedToMatchingActuals
   ) {
     BitSet bitSet = new BitSet(expectedToMatchingActuals.size());
-    for (int i : expectedToMatchingActuals.keySet()) {
-      ImmutableBitSet matchSet = expectedToMatchingActuals.get(i);
+    for (Map.Entry<Integer, ImmutableBitSet> e : expectedToMatchingActuals.entrySet()) {
+      int i = e.getKey();
+      ImmutableBitSet matchSet = e.getValue();
       if (matchSet.get(actualIndex)) {
         bitSet.set(i);
       }
@@ -148,13 +152,6 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
 
   @Override
   public boolean match() {
-    expectedRowList = Utils.toArrayList(expected);
-    actualRowList = Utils.toArrayList(actual);
-
-    ImmutableMatchList matchList = createMatchList();
-    expOrdered = orderExpected(expectedRowList, matchList, actualRowList.size());
-    actOrdered = orderActual(actualRowList, matchList, expectedRowList.size());
-
     for (boolean matched : Utils.paired(expOrdered, actOrdered, Utils::areBothPresent)) {
       if (!matched) {
         return false;
@@ -233,8 +230,7 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
     }
 
     Map<Integer, ImmutableBitSet> expectedToMatchingActuals = new LinkedHashMap<>(numExpected);
-    for (int i = 0; i < numExpected; i++) {
-      Map.Entry<Integer, Tab.Row> expected = expectedAssertionRows.get(i);
+    for (Map.Entry<Integer, Tab.Row> expected : expectedAssertionRows) {
       Tab.Row expectedRow = expected.getValue();
       ImmutableBitSet bitSet = actualsMatchingExpected(
           expectedRow, unmatchedActualRows);
@@ -243,8 +239,8 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
     expectedToMatchingActuals = sortByCardinality(expectedToMatchingActuals);
 
     Map<Integer, ImmutableBitSet> actualToMatchingExpecteds = new LinkedHashMap<>(numActual);
-    for (int i = 0; i < numActual; i++) {
-      int actual = unmatchedActualRows.get(i).getKey();
+    for (Map.Entry<Integer, Tab.Row> unmatchedActualRow : unmatchedActualRows) {
+      int actual = unmatchedActualRow.getKey();
       ImmutableBitSet bitSet = expectedsMatchingActual(actual, expectedToMatchingActuals);
       actualToMatchingExpecteds.put(actual, bitSet);
     }
@@ -273,9 +269,9 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
       @NonNull final List<Map.Entry<Integer, Tab.Row>> actualRows
   ) {
     BitSet bitSet = new BitSet(actualRows.size());
-    for (int i = 0; i < actualRows.size(); i++) {
-      if (matchRows(expectedRow, actualRows.get(i).getValue())) {
-        bitSet.set(actualRows.get(i).getKey());
+    for (Map.Entry<Integer, Tab.Row> actualRow : actualRows) {
+      if (matchRows(expectedRow, actualRow.getValue())) {
+        bitSet.set(actualRow.getKey());
       }
     }
     return new ImmutableBitSet(bitSet);

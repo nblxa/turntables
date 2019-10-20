@@ -1,8 +1,9 @@
 package io.github.nblxa.fluenttab;
 
-import io.github.nblxa.fluenttab.exception.StructureException;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import io.github.nblxa.fluenttab.exception.StructureException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -470,7 +471,7 @@ public final class TableUtils {
     }
   }
 
-  public static final class FixedTable extends AbstractTab implements Tab {
+  public static final class FixedTable extends AbstractTab {
     @NonNull
     private final Iterable<Row> rows;
 
