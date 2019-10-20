@@ -43,8 +43,8 @@ import org.openjdk.jcstress.infra.results.II_Result;
  * Concurrency test for the SuppVal.eval() method.
  * <p>
  * To run the test:
- * $ ./mvnw clean install -pl tables-test-concurrency -am
- * $ java -jar tables-test-concurrency/target/jcstress.jar
+ * $ ./mvnw clean install -pl fluenttab-test-concurrency -am
+ * $ java -jar fluenttab-test-concurrency/target/jcstress.jar
  */
 @JCStressTest
 @Outcome(id = "0, 0", expect = Expect.ACCEPTABLE, desc = "Default outcome.")
