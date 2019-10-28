@@ -25,7 +25,7 @@
         <assertj.version>3.14.0</assertj.version>
         <derby.version>10.14.2.0</derby.version>
         <mysql.connector.java.version>8.0.18</mysql.connector.java.version>
-        <testcontainers.version>1.12.2</testcontainers.version>
+        <testcontainers.version>1.12.3</testcontainers.version>
 
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
         <error.prone.core.version>2.3.3</error.prone.core.version>
