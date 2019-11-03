@@ -1,7 +1,7 @@
 package io.github.nblxa.fluenttab.test;
 
 import static io.github.nblxa.fluenttab.FluentTab.testInt;
-import static io.github.nblxa.fluenttab.assertj.TablesAssertj.*;
+import static io.github.nblxa.fluenttab.assertj.FtAssertj.*;
 import static org.assertj.core.api.Assertions.*;
 
 import io.github.nblxa.fluenttab.Tab;
