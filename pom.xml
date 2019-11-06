@@ -4,16 +4,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.nblxa</groupId>
-    <artifactId>fluenttab</artifactId>
+    <artifactId>turntables</artifactId>
     <packaging>pom</packaging>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
 
     <modules>
-        <module>fluenttab-core</module>
-        <module>fluenttab-hamcrest</module>
-        <module>fluenttab-test-concurrency</module>
-        <module>fluenttab-test-mysql</module>
-        <module>fluenttab-assertj</module>
+        <module>turntables-core</module>
+        <module>turntables-hamcrest</module>
+        <module>turntables-test-concurrency</module>
+        <module>turntables-test-mysql</module>
+        <module>turntables-assertj</module>
     </modules>
 
     <properties>
@@ -49,7 +49,7 @@
         <dependencies>
             <dependency>
                 <groupId>io.github.nblxa</groupId>
-                <artifactId>fluenttab-core</artifactId>
+                <artifactId>turntables-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
