@@ -17,13 +17,20 @@ public class TabAssert<T extends Tab> extends AbstractObjectAssert<TabAssert<T>,
   private final AssertionInfo info;
   private final Failures failures = Failures.instance();
 
-  TabAssert(T tab) {
+  public TabAssert(T tab) {
     super(tab, TabAssert.class);
     this.proxyBuilder = AssertionProxy.builder()
         .actual(tab);
     this.info = new WritableAssertionInfo(null);
   }
 
+  /**
+   * TODO
+   *
+   * @param expectedTab
+   * @param <U>
+   * @return
+   */
   @NonNull
   public <U extends Tab> TabAssert<T> matches(@NonNull U expectedTab) {
     AssertionProxy.Builder builder = proxyBuilder.copy();

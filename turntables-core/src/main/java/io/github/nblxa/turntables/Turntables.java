@@ -1,10 +1,13 @@
 package io.github.nblxa.turntables;
 
 import io.github.nblxa.turntables.assertj.TabAssert;
-import io.github.nblxa.turntables.assertj.FtAssertj;
 import io.github.nblxa.turntables.io.Injestion;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import io.github.nblxa.turntables.io.rowstore.RowStore;
+import io.github.nblxa.turntables.junit.TestData;
+import io.github.nblxa.turntables.junit.TestDataFactory;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.function.DoublePredicate;
 import java.util.function.IntPredicate;
 import java.util.function.LongPredicate;
@@ -38,7 +41,7 @@ public final class Turntables {
 
   @NonNull
   public static <T extends Tab> TabAssert<T> assertThat(T actualTab) {
-    return FtAssertj.assertThat(actualTab);
+    return new TabAssert<>(actualTab);
   }
 
   @NonNull
@@ -56,11 +59,15 @@ public final class Turntables {
     return shouldBeTrue;
   }
 
-  // Data ingestion
-
   @NonNull
   public static DoublePredicate testDouble(@NonNull DoublePredicate shouldBeTrue) {
     return shouldBeTrue;
+  }
+
+  // JUnit
+
+  private static TestData jdbc(String url, Properties jdbcProperties) {
+    return new TestDataFactory().jdbc(url, jdbcProperties);
   }
 
   public enum RowMode {

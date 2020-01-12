@@ -13,19 +13,19 @@
         <module>turntables-hamcrest</module>
         <module>turntables-test-concurrency</module>
         <module>turntables-test-mysql</module>
-        <module>turntables-assertj</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javac.version>9+181-r4173-1</javac.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13</junit.version>
         <hamcrest.version>2.1</hamcrest.version>
         <equalsverifier.version>3.1.10</equalsverifier.version>
         <assertj.version>3.14.0</assertj.version>
         <derby.version>10.14.2.0</derby.version>
         <mysql.connector.java.version>8.0.18</mysql.connector.java.version>
         <testcontainers.version>1.12.3</testcontainers.version>
+        <slf4j.log4j12.version>1.7.29</slf4j.log4j12.version>
 
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
         <error.prone.core.version>2.3.3</error.prone.core.version>
@@ -70,7 +70,6 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>nl.jqno.equalsverifier</groupId>
@@ -106,6 +105,12 @@
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql.connector.java.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.log4j12.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

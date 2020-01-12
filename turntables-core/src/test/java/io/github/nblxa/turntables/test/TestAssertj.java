@@ -1,7 +1,6 @@
 package io.github.nblxa.turntables.test;
 
-import static io.github.nblxa.turntables.Turntables.testInt;
-import static io.github.nblxa.turntables.assertj.FtAssertj.*;
+import static io.github.nblxa.turntables.Turntables.*;
 import static org.assertj.core.api.Assertions.*;
 
 import io.github.nblxa.turntables.Tab;

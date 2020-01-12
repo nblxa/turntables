@@ -38,4 +38,3 @@ on it. Meanwhile, feel free to build the library from source.
     <scope>test</scope>
 </dependency>
 ```
-
