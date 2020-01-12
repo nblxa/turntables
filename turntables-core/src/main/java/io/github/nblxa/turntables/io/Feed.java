@@ -17,8 +17,9 @@ public class Feed extends ClassTreeHolder<FeedProtocol<?>> {
     return INSTANCE;
   }
 
-  @SuppressWarnings({"unchecked", "unused"})
-  public <T> FeedProtocol<T> protocolFor(Class<? extends T> protocolClass, Class<T> consumerClass) {
+  @SuppressWarnings("unchecked")
+  public <T> FeedProtocol<T> protocolFor(Class<? extends T> protocolClass,
+                                         @SuppressWarnings("unused") Class<T> consumerClass) {
     return (FeedProtocol<T>) getProtocolFor(protocolClass);
   }
 

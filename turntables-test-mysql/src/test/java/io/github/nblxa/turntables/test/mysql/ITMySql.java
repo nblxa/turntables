@@ -9,6 +9,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import io.github.nblxa.turntables.Typ;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,13 +47,21 @@ public class ITMySql {
 
   @Test
   public void test() throws SQLException {
+    Tab expected = Turntables.tab()
+        .col("a", Typ.INTEGER).col("b", Typ.STRING)
+        .row(1, "abc")
+        .row(2, "def");
+
+    try (Connection conn = mysql.createConnection("");
+         PreparedStatement s = conn.prepareStatement("UPDATE testtab SET a = a / 10")) {
+      s.execute();
+    }
+
     try (PreparedStatement ps = conn.prepareStatement("select * from testtab");
          ResultSet rs = ps.executeQuery()) {
-      Tab expected = Turntables.tab()
-          .row(10, "abc")
-          .row(20, "def");
       Tab actual = Turntables.from(rs);
-      assertThat(actual).isEqualTo(expected);
+      assertThat(actual)
+          .isEqualTo(expected);
     }
   }
 }

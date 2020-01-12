@@ -21,7 +21,7 @@ public class ResultSetProtocol implements InjestionProtocol<ResultSet> {
         String columnName = md.getColumnName(i);
         builder.col(columnName, Typ.ANY);
       }
-      TableUtils.RowBuilder rowBuilder = builder.rowBuilder();
+      TableUtils.RowBuilder rowBuilder = builder.rowAdder();
       while (rs.next()) {
         Object[] objects = new Object[columnCount];
         for (int i = 1; i <= columnCount; i++) {
@@ -29,7 +29,7 @@ public class ResultSetProtocol implements InjestionProtocol<ResultSet> {
         }
         rowBuilder.row(objects);
       }
-      return rowBuilder.build();
+      return rowBuilder.tab();
     } catch (SQLException se) {
       throw new InjestionException(se);
     }

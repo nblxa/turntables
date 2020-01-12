@@ -8,23 +8,18 @@ import org.junit.runner.Description;
 import org.junit.runners.model.MultipleFailureException;
 import org.junit.runners.model.Statement;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class TestData implements TestRule {
+public class TestDataSource implements TestRule {
   @NonNull
   private RowStore rowStore;
   @NonNull
-  private Map<String, Tab> feeds;
-  @NonNull
   private AtomicBoolean initialized;
 
-  public TestData(@NonNull RowStore rowStore) {
+  public TestDataSource(@NonNull RowStore rowStore) {
     this.rowStore = Objects.requireNonNull(rowStore, "rowStore is null");
-    this.feeds = new LinkedHashMap<>();
     this.initialized = new AtomicBoolean(false);
   }
 
@@ -47,14 +42,12 @@ public class TestData implements TestRule {
   }
 
   @NonNull
-  public TestData table(@NonNull String tableName, @NonNull Tab data) {
+  public TestTable table(@NonNull String tableName) {
     Objects.requireNonNull(tableName, "tableName is null");
-    Objects.requireNonNull(data, "data is null");
     if (initialized.get()) {
       throw new IllegalStateException("Already initialized.");
     }
-    feeds.put(tableName, data);
-    return this;
+    return new TestTable(this, tableName);
   }
 
   public void feed(@NonNull String tableName, @NonNull Tab data) {
@@ -76,11 +69,6 @@ public class TestData implements TestRule {
   }
 
   public void init() {
-    if (!initialized.compareAndSet(false, true)) {
-      return;
-    }
-    for (Map.Entry<String, Tab> feedEntry : feeds.entrySet()) {
-      feed(feedEntry.getKey(), feedEntry.getValue());
-    }
+    initialized.compareAndSet(false, true);
   }
 }

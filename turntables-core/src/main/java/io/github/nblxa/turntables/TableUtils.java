@@ -17,54 +17,18 @@ import java.util.function.Supplier;
 
 public final class TableUtils {
   static class SimpleCol extends AbstractTab.AbstractCol {
-    public SimpleCol(Typ typ, boolean isKey) {
-      super(typ, isKey);
+    public SimpleCol(Typ typ, boolean isKey, int index) {
+      super(typ, isKey, "col" + (index + 1));
+    }
+
+    public SimpleCol(Typ typ, boolean isKey, String name) {
+      super(typ, isKey, name);
     }
   }
 
-  static final class NamedCol extends SimpleCol implements Tab.Named {
-    @NonNull
-    private final String name;
-
+  static final class NamedCol extends SimpleCol {
     private NamedCol(String name, Typ typ, boolean isKey) {
-      super(typ, isKey);
-      this.name = Objects.requireNonNull(name);
-    }
-
-    @Override
-    @NonNull
-    public String name() {
-      return name;
-    }
-
-    @Override
-    public boolean canEqual(Object o) {
-      return (o instanceof NamedCol);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (!(o instanceof NamedCol)) {
-        return false;
-      }
-      if (!super.equals(o)) {
-        return false;
-      }
-      NamedCol namedCol = (NamedCol) o;
-      return namedCol.canEqual(this) && name.equals(namedCol.name);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(super.hashCode(), name);
-    }
-
-    @Override
-    public String toString() {
-      return name + ": " + typ();
+      super(typ, isKey, name);
     }
   }
 
@@ -292,7 +256,7 @@ public final class TableUtils {
   }
 
   public static final class ColAdder extends AbstractTab
-      implements Tab.ColAdder, Tab.RowAdder<RowAdderTable> {
+      implements Tab.ColAdder<ColAdder, RowAdderTable>, Tab.RowAdder<RowAdderTable> {
 
     public ColAdder() {
       super();
@@ -311,7 +275,7 @@ public final class TableUtils {
     @NonNull
     public TableUtils.ColAdder col(@NonNull Typ typ) {
       Objects.requireNonNull(typ, "typ");
-      colsList().add(new SimpleCol(typ, false));
+      colsList().add(new SimpleCol(typ, false, colsList().size()));
       return this;
     }
 
@@ -328,7 +292,7 @@ public final class TableUtils {
     @NonNull
     public TableUtils.ColAdder key(@NonNull Typ typ) {
       Objects.requireNonNull(typ, "typ");
-      colsList().add(new SimpleCol(typ, true));
+      colsList().add(new SimpleCol(typ, true, colsList().size()));
       return this;
     }
 
@@ -350,6 +314,18 @@ public final class TableUtils {
     @NonNull
     public Iterable<Row> rows() {
       return Collections.emptyList();
+    }
+
+    @NonNull
+    @Override
+    public RowAdderTable rowAdder() {
+      return new RowAdderTable(cols());
+    }
+
+    @NonNull
+    @Override
+    public Tab tab() {
+      return this;
     }
   }
 
@@ -380,6 +356,12 @@ public final class TableUtils {
       return unmodifiableRows;
     }
 
+    @Override
+    @NonNull
+    public Tab tab() {
+      return this;
+    }
+
     private List<Tab.Val> getVals(Object[] objects) {
       return inferCols(colsList(), objects);
     }
@@ -391,7 +373,7 @@ public final class TableUtils {
     }
   }
 
-  public static final class Builder implements Tab.ColAdder {
+  public static final class Builder implements Tab.ColAdder<Builder, RowBuilder> {
     private final List<Tab.Col> cols;
 
     public Builder() {
@@ -402,7 +384,7 @@ public final class TableUtils {
     @Override
     public Builder col(@NonNull Typ typ) {
       Objects.requireNonNull(typ);
-      cols.add(new SimpleCol(typ, false));
+      cols.add(new SimpleCol(typ, false, cols.size()));
       return this;
     }
 
@@ -428,12 +410,13 @@ public final class TableUtils {
     @Override
     public Builder key(@NonNull Typ typ) {
       Objects.requireNonNull(typ);
-      cols.add(new SimpleCol(typ, true));
+      cols.add(new SimpleCol(typ, true, cols.size()));
       return this;
     }
 
     @NonNull
-    public RowBuilder rowBuilder() {
+    @Override
+    public RowBuilder rowAdder() {
       return new RowBuilder(cols);
     }
   }
@@ -466,7 +449,8 @@ public final class TableUtils {
     }
 
     @NonNull
-    public Tab build() {
+    @Override
+    public Tab tab() {
       return new FixedTable(cols, rows);
     }
   }
@@ -490,9 +474,10 @@ public final class TableUtils {
   @NonNull
   private static List<Tab.Col> makeCols(@NonNull Object[] objects) {
     List<Tab.Col> cols = new ArrayList<>();
-    for (Object o : objects) {
+    for (int i = 0; i < objects.length; i++) {
+      Object o = objects[i];
       Typ typ = Utils.getTyp(o);
-      cols.add(new SimpleCol(typ, false));
+      cols.add(new SimpleCol(typ, false, i));
     }
     return cols;
   }

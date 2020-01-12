@@ -340,11 +340,11 @@ public final class Utils {
     return StreamSupport.stream(spliterator, false);
   }
 
-  private static class InferredTypDecoratorCol extends AbstractTab.AbstractCol {
-    private final Tab.Col decoratedCol;
+  static class InferredTypDecoratorCol extends AbstractTab.AbstractCol {
+    private final transient Tab.Col decoratedCol;
 
     private InferredTypDecoratorCol(@NonNull Tab.Col decoratedColTypAny, Typ typ) {
-      super(typ, decoratedColTypAny.isKey());
+      super(typ, decoratedColTypAny.isKey(), decoratedColTypAny.name());
       if (decoratedColTypAny.typ() != Typ.ANY) {
         throw new IllegalArgumentException("Expected " + Typ.ANY
             + " but got " + decoratedColTypAny.typ());

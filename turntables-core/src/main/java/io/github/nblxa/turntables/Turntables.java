@@ -3,8 +3,7 @@ package io.github.nblxa.turntables;
 import io.github.nblxa.turntables.assertj.TabAssert;
 import io.github.nblxa.turntables.io.Injestion;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import io.github.nblxa.turntables.io.rowstore.RowStore;
-import io.github.nblxa.turntables.junit.TestData;
+import io.github.nblxa.turntables.junit.TestDataSource;
 import io.github.nblxa.turntables.junit.TestDataFactory;
 import java.util.Objects;
 import java.util.Properties;
@@ -66,7 +65,7 @@ public final class Turntables {
 
   // JUnit
 
-  private static TestData jdbc(String url, Properties jdbcProperties) {
+  private static TestDataSource jdbc(String url, Properties jdbcProperties) {
     return new TestDataFactory().jdbc(url, jdbcProperties);
   }
 

@@ -14,12 +14,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestHamcrestCol {
-  private static List<Typ> allTypesButTestOrAny;
+  private static List<Typ> allTypesButAny;
   private static Map<Typ, Object> typeValues;
 
   @BeforeClass
   public static void setUpClass() {
-    allTypesButTestOrAny = Arrays.stream(Typ.values())
+    allTypesButAny = Arrays.stream(Typ.values())
         .filter(t -> t != Typ.ANY)
         .collect(Collectors.toList());
     typeValues = new HashMap<>();
@@ -34,8 +34,9 @@ public class TestHamcrestCol {
 
   @Test
   public void test_allTypesButTestOrAny_acceptsMatcher() {
-    for (Typ colTyp : allTypesButTestOrAny) {
-      Tab.Col col = new TableUtils.SimpleCol(colTyp, false);
+    int i = 0;
+    for (Typ colTyp : allTypesButAny) {
+      Tab.Col col = new TableUtils.SimpleCol(colTyp, false, i++);
       Tab.Val val = new MatcherVal(Matchers.anything());
       assertTrue(col.accepts(val));
     }

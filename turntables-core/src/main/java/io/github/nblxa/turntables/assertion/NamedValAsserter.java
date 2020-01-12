@@ -25,7 +25,7 @@ class NamedValAsserter extends AbstractMatchingValAsserter {
 
   private static List<String> names(Iterable<Tab.Col> cols) {
     return Utils.stream(cols)
-        .map(c -> ((Tab.Named) c).name())
+        .map(Tab.Col::name)
         .collect(Collectors.toList());
   }
 

@@ -9,16 +9,24 @@ public class TestEquals {
   @Test
   public void testAbstractCol_equalsContract() {
     EqualsVerifier.forClass(AbstractTab.AbstractCol.class)
-        .withRedefinedSubclass(TableUtils.NamedCol.class)
-        .suppress(Warning.NONFINAL_FIELDS)
+        .verify();
+  }
+
+  @Test
+  public void testSimpleCol_equalsContract() {
+    EqualsVerifier.forClass(TableUtils.SimpleCol.class)
         .verify();
   }
 
   @Test
   public void testNamedCol_equalsContract() {
     EqualsVerifier.forClass(TableUtils.NamedCol.class)
-        .withRedefinedSuperclass()
-        .suppress(Warning.NONFINAL_FIELDS)
+        .verify();
+  }
+
+  @Test
+  public void testInferredTypDecoratorCol_equalsContract() {
+    EqualsVerifier.forClass(Utils.InferredTypDecoratorCol.class)
         .verify();
   }
 

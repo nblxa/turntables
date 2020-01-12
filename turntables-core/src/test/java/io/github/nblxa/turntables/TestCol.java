@@ -15,12 +15,12 @@ import org.junit.Test;
 
 public class TestCol {
 
-  private static List<Typ> allTypesButTestOrAny;
+  private static List<Typ> allTypesButAny;
   private static Map<Typ, Object> typeValues;
 
   @BeforeClass
   public static void setUpClass() {
-    allTypesButTestOrAny = Arrays.stream(Typ.values())
+    allTypesButAny = Arrays.stream(Typ.values())
         .filter(t -> t != Typ.ANY)
         .collect(Collectors.toList());
     typeValues = new HashMap<>();
@@ -35,9 +35,10 @@ public class TestCol {
 
   @Test
   public void test_allTypesButTestOrAny_acceptEachOther() {
-    for (Typ colTyp : allTypesButTestOrAny) {
-      for (Typ valTyp : allTypesButTestOrAny) {
-        Tab.Col col = new TableUtils.SimpleCol(colTyp, false);
+    int i = 0;
+    for (Typ colTyp : allTypesButAny) {
+      for (Typ valTyp : allTypesButAny) {
+        Tab.Col col = new TableUtils.SimpleCol(colTyp, false, i++);
         Tab.Val val = new TableUtils.SimpleVal(valTyp, typeValues.get(valTyp));
         boolean doesAccept = col.accepts(val);
         if (valTyp == colTyp) {
@@ -53,8 +54,8 @@ public class TestCol {
 
   @Test
   public void test_any_acceptsAll() {
-    Tab.Col col = new TableUtils.SimpleCol(Typ.ANY, false);
-    for (Typ valTyp : allTypesButTestOrAny) {
+    Tab.Col col = new TableUtils.SimpleCol(Typ.ANY, false, 0);
+    for (Typ valTyp : allTypesButAny) {
       Tab.Val val = new TableUtils.SimpleVal(valTyp, typeValues.get(valTyp));
       assertTrue("Col of type " + Typ.ANY + " did not accept a value of type "
           + valTyp + ".", col.accepts(val));

@@ -12,6 +12,9 @@ public interface Tab {
 
   interface Col {
     @NonNull
+    String name();
+
+    @NonNull
     Typ typ();
 
     @NonNull
@@ -20,11 +23,6 @@ public interface Tab {
     boolean accepts(@NonNull Val val);
 
     boolean isKey();
-  }
-
-  interface Named {
-    @NonNull
-    String name();
   }
 
   interface Val {
@@ -45,7 +43,7 @@ public interface Tab {
     Iterable<Val> vals();
   }
 
-  interface ColAdder<T extends ColAdder<T>> {
+  interface ColAdder<T extends ColAdder<T, R>, R extends RowAdder<R>> {
     @NonNull
     T col(@NonNull Typ typ);
 
@@ -57,10 +55,16 @@ public interface Tab {
 
     @NonNull
     T key(@NonNull Typ typ);
+
+    @NonNull
+    R rowAdder();
   }
 
   interface RowAdder<T extends RowAdder<T>> {
     @NonNull
     T row(@Nullable Object first, @NonNull Object... rest);
+
+    @NonNull
+    Tab tab();
   }
 }

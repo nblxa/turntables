@@ -153,10 +153,10 @@ public class TestTurntables {
 
   @Test
   public void test_rowBuilder() {
-    Tab tabFixed = new TableUtils.Builder().rowBuilder()
+    Tab tabFixed = new TableUtils.Builder().rowAdder()
         .row(1, 2, "a")
         .row(3, 4, "b")
-        .build();
+        .tab();
 
     Tab tab = Turntables.tab()
         .row(1,2, "a")

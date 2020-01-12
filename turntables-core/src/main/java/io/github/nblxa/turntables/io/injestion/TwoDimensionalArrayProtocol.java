@@ -11,10 +11,10 @@ public class TwoDimensionalArrayProtocol implements InjestionProtocol<Object[][]
   public Tab injest(@NonNull Object[][] matrix) {
     Objects.requireNonNull(matrix);
     TableUtils.RowBuilder builder = new TableUtils.Builder()
-        .rowBuilder();
+        .rowAdder();
     for (Object[] objects: matrix) {
       builder.row(objects);
     }
-    return builder.build();
+    return builder.tab();
   }
 }
