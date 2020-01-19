@@ -1,6 +1,7 @@
 package io.github.nblxa.turntables.io.rowstore;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.io.Feed;
@@ -45,6 +46,8 @@ public class JdbcRowStore extends RowStore {
   }
 
   @Override
+  @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+      justification = "Input is sanitized by NameSanitizing.")
   public Tab ingest(@NonNull String name) {
     try (Connection conn = getOrReopenConnection();
          Statement stmt = conn.createStatement();

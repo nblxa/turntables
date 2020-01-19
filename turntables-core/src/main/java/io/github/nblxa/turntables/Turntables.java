@@ -63,12 +63,6 @@ public final class Turntables {
     return shouldBeTrue;
   }
 
-  // JUnit
-
-  private static TestDataSource jdbc(String url, Properties jdbcProperties) {
-    return new TestDataFactory().jdbc(url, jdbcProperties);
-  }
-
   public enum RowMode {
     MATCHES_IN_GIVEN_ORDER, MATCHES_IN_ANY_ORDER, MATCHES_BY_KEY
   }

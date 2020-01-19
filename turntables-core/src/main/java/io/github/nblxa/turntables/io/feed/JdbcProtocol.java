@@ -1,6 +1,7 @@
 package io.github.nblxa.turntables.io.feed;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Typ;
 import io.github.nblxa.turntables.Utils;
@@ -22,7 +23,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class JdbcProtocol implements FeedProtocol<Connection> {
-  protected final static String[] TABLE_TYPES = new String[]{"TABLE"};
+  final static String[] TABLE_TYPES = new String[]{"TABLE"};
   private static final Map<Typ, String> SQL_TYPE_MAP;
   static {
     Map<Typ, String> m = new EnumMap<>(Typ.class);
@@ -91,6 +92,8 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
       }
     }
 
+    @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+        justification = "Input is sanitized by NameSanitizing.")
     private void createTable() throws SQLException {
       String createSql = buildCreateTableSql();
       try (Statement stmt = connection.createStatement()) {
@@ -120,6 +123,8 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
       return sb.toString();
     }
 
+    @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+        justification = "Input is sanitized by NameSanitizing.")
     private void truncateTable() throws SQLException {
       String truncateSql = "TRUNCATE TABLE " + sanitizedName;
       try (Statement stmt = connection.createStatement()) {
@@ -127,6 +132,8 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
       }
     }
 
+    @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+        justification = "Input is sanitized by NameSanitizing.")
     private void insertIntoTable() throws SQLException {
       String insertSql = buildInsertSql();
       try (PreparedStatement stmt = connection.prepareStatement(insertSql)) {
@@ -161,6 +168,8 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
       return sb.toString();
     }
 
+    @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+        justification = "Input is sanitized by NameSanitizing.")
     private void insertRow(@NonNull PreparedStatement stmt, @NonNull Tab.Row row)
         throws SQLException {
       int i = 1;
@@ -209,6 +218,8 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
       }
     }
 
+    @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+        justification = "Input is sanitized by NameSanitizing.")
     private void dropTable() throws SQLException {
       String dropSql = "DROP TABLE " + sanitizedName;
       try (Statement stmt = connection.createStatement()) {
