@@ -45,13 +45,25 @@ public class JdbcRowStore extends RowStore {
   }
 
   @Override
-  public Tab injest(@NonNull String name) {
+  public Tab ingest(@NonNull String name) {
     try (Connection conn = getOrReopenConnection();
          Statement stmt = conn.createStatement();
          ResultSet rs = stmt.executeQuery("select * from " + NameSanitizing.sanitizeName(conn, name))
     ) {
       return Turntables.from(rs);
     } catch (SQLException se) {
+      throw new IllegalStateException(se);
+    }
+  }
+
+  @Override
+  public void cleanUp(String name, CleanUpAction cleanUpAction) {
+    try (Connection conn = getOrReopenConnection()) {
+      Feed.getInstance()
+          .protocolFor(conn.getClass(), Connection.class)
+          .cleanUp(name, cleanUpAction)
+          .accept(conn);
+    } catch (Exception se) {
       throw new IllegalStateException(se);
     }
   }

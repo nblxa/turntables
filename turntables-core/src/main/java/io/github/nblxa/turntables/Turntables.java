@@ -1,7 +1,7 @@
 package io.github.nblxa.turntables;
 
 import io.github.nblxa.turntables.assertj.TabAssert;
-import io.github.nblxa.turntables.io.Injestion;
+import io.github.nblxa.turntables.io.Ingestion;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.junit.TestDataSource;
 import io.github.nblxa.turntables.junit.TestDataFactory;
@@ -33,9 +33,9 @@ public final class Turntables {
   @NonNull
   public static <T> Tab from(T object) {
     Objects.requireNonNull(object);
-    return Injestion.getInstance()
+    return Ingestion.getInstance()
         .protocolFor((Class<? super T>) object.getClass())
-        .injest(object);
+        .ingest(object);
   }
 
   @NonNull

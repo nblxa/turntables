@@ -4,19 +4,34 @@
 using a simple fluent interface:
 
 ```java
-ResultSet rs = conn.executeQuery("select * from my_table");
+ResultSet rs = conn.executeQuery("select id, name from employees");
 
 Tab actual = Turntables.from(rs);
 
 Tab expected = Turntables.tab()
-    .row(1, 2)
-    .row(3, 4);
+  .row(2, "Bob")
+  .row(1, "Alice");
 
 Turntables.assertThat(actual)
-    .matches(expected);
+  .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+  .matches(expected);
 ```
 
-## Usage
+JUnit allows setting up test data in the database:
+
+```java
+private TestTable testTab = testDataSource.table("employees")
+  .col("id", Typ.INTEGER).col("name", Typ.STRING)
+  .row(1, "Alice")
+  .row(2, "Bob")
+  .cleanupAfterTest(CleanUpAction.DROP);
+```
+
+For a complete example with MySQL, see
+[ITMysqlTestData.java](turntables-test-mysql/src/test/java/io/github/nblxa/turntables/test/mysql/ITMysqlTestData.java)
+(Docker required).
+
+## Maven
 
 Turntables extends [AssertJ](https://github.com/joel-costigliola/assertj-core)
 and you'll need both dependencies.

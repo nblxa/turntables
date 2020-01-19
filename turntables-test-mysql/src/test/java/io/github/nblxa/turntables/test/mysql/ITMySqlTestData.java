@@ -1,11 +1,10 @@
 package io.github.nblxa.turntables.test.mysql;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 
 import io.github.nblxa.turntables.Typ;
+import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
 import io.github.nblxa.turntables.junit.TestDataSource;
 import io.github.nblxa.turntables.junit.TestDataFactory;
 import io.github.nblxa.turntables.junit.TestTable;
@@ -33,7 +32,8 @@ public class ITMySqlTestData {
   private TestTable testTab = testDataSource.table("testtab")
       .col("a", Typ.INTEGER).col("b", Typ.STRING)
       .row(10, "abc")
-      .row(20, "def");
+      .row(20, "def")
+      .cleanupAfterTest(CleanUpAction.DROP);
 
   @Rule
   public TestRule chain = RuleChain
@@ -44,17 +44,47 @@ public class ITMySqlTestData {
   @Test
   public void test() throws SQLException {
     Tab expected = Turntables.tab()
-        .col("a", Typ.INTEGER).col("b", Typ.STRING)
         .row(1, "abc")
         .row(2, "def");
 
     try (Connection conn = mysql.createConnection("");
-         PreparedStatement s = conn.prepareStatement("UPDATE testtab SET a = a / 10")) {
+         PreparedStatement s = conn.prepareStatement("update testtab set a = a / 10")) {
       s.execute();
     }
 
-    Tab actual = testTab.injest();
-    assertThat(actual)
-        .isEqualTo(expected);
+    Tab actual = testTab.ingest();
+    Turntables.assertThat(actual)
+        .matches(expected);
+  }
+
+  @Test
+  public void testInteger() throws SQLException {
+    Tab initialData = Turntables.tab()
+        .col("red_id", Typ.INTEGER)
+        .col("green_id", Typ.INTEGER)
+        .col("blue_id", Typ.INTEGER)
+        .row(0, 0, 0)
+        .row(40, 140, 25)
+        .row(255, 0, 0)
+        .row(-1, Integer.MAX_VALUE, Integer.MIN_VALUE);
+
+    testDataSource.feed("colors", initialData);
+
+    Tab expectedData = Turntables.tab()
+        .row(-1, Integer.MAX_VALUE, Integer.MIN_VALUE);
+
+    try (Connection conn = mysql.createConnection("");
+         PreparedStatement s = conn.prepareStatement(
+             "delete from colors where red_id between 0 and 255 " +
+                 "and green_id between 0 and 255 " +
+                 "and blue_id between 0 and 255")) {
+      s.execute();
+    }
+
+    Tab actualData = testDataSource.ingest("colors");
+
+    Turntables.assertThat(actualData)
+        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+        .matches(expectedData);
   }
 }

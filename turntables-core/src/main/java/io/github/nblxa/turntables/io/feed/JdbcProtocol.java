@@ -1,11 +1,12 @@
 package io.github.nblxa.turntables.io.feed;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Typ;
 import io.github.nblxa.turntables.Utils;
 import io.github.nblxa.turntables.io.NameSanitizing;
+import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -35,48 +36,38 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
     SQL_TYPE_MAP = Collections.unmodifiableMap(m);
   }
 
-  @Override
   @NonNull
+  @Override
   public ThrowingConsumer<Connection> feed(@NonNull String name, @NonNull Tab tab) {
-    JdbcFeed feed = new JdbcFeed(name, tab);
-    return feed::feed;
+    return conn -> new JdbcFeed(conn, name, tab).feed();
+  }
+
+  @NonNull
+  @Override
+  public ThrowingConsumer<Connection> cleanUp(@NonNull String name, @NonNull CleanUpAction cleanUpAction) {
+    return conn -> new JdbcCleanUp(conn, name, cleanUpAction).cleanUp();
   }
 
   private static class JdbcFeed {
-    @NonNull
-    private final String unsafeName;
-    @NonNull
-    private final Tab tab;
-
-    private JdbcFeed(@NonNull String unsafeName, @NonNull Tab tab) {
-      this.unsafeName = Objects.requireNonNull(unsafeName, "unsafeName is null");
-      this.tab = Objects.requireNonNull(tab, "tab is null");
-    }
-
-    public void feed(@NonNull Connection connection) throws SQLException {
-      Objects.requireNonNull(connection, "connection is null");
-      String sanitizedName = NameSanitizing.sanitizeName(connection, unsafeName);
-      Objects.requireNonNull(sanitizedName, "sanitizedName is null");
-      JdbcFeedInstance instance = new JdbcFeedInstance(connection, sanitizedName, tab);
-      instance.feed();
-    }
-  }
-
-  private static class JdbcFeedInstance {
     @NonNull
     private final Connection connection;
     @NonNull
     private final String sanitizedName;
     @NonNull
     private final Tab tab;
-    @Nullable
-    private List<String> sanitizedColNames;
+    @NonNull
+    private final List<String> sanitizedColNames;
 
-    private JdbcFeedInstance(@NonNull Connection connection, @NonNull String sanitizedName,
-                            @NonNull Tab tab) {
-      this.connection = connection;
-      this.sanitizedName = sanitizedName;
-      this.tab = tab;
+    private JdbcFeed(@NonNull Connection connection, @NonNull String unsafeName,
+                     @NonNull Tab tab) {
+      this.connection = Objects.requireNonNull(connection, "connection is null");
+      Objects.requireNonNull(unsafeName, "unsafeName is null");
+      this.sanitizedName = NameSanitizing.sanitizeName(connection, unsafeName);
+      this.tab = Objects.requireNonNull(tab, "tab is null");
+      this.sanitizedColNames = Utils.stream(tab.cols())
+          .map(Tab.Col::name)
+          .map(n -> NameSanitizing.sanitizeName(connection, n))
+          .collect(Collectors.toList());
     }
 
     private void feed() throws SQLException {
@@ -105,7 +96,6 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
       try (Statement stmt = connection.createStatement()) {
         stmt.execute(createSql);
       }
-      connection.commit();
     }
 
     @NonNull
@@ -113,7 +103,6 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
       StringBuilder sb = new StringBuilder("CREATE TABLE ");
       sb.append(sanitizedName);
       sb.append(" (");
-      List<String> sanitizedColNames = getOrCreateSanitizedColNames();
       boolean first = true;
       int i = 0;
       for (Tab.Col col: tab.cols()) {
@@ -136,7 +125,6 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
       try (Statement stmt = connection.createStatement()) {
         stmt.execute(truncateSql);
       }
-      connection.commit();
     }
 
     private void insertIntoTable() throws SQLException {
@@ -154,7 +142,6 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
       StringBuilder sb = new StringBuilder("INSERT INTO ");
       sb.append(sanitizedName);
       sb.append(" (");
-      List<String> sanitizedColNames = getOrCreateSanitizedColNames();
       int numCols = sanitizedColNames.size();
       for (int i = 0; i < numCols; i++) {
         if (i > 0) {
@@ -185,23 +172,48 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
     }
 
     @NonNull
-    private List<String> getOrCreateSanitizedColNames() {
-      if (sanitizedColNames == null) {
-        sanitizedColNames = Utils.stream(tab.cols())
-            .map(Tab.Col::name)
-            .map(n -> NameSanitizing.sanitizeName(connection, n))
-            .collect(Collectors.toList());
-      }
-      return sanitizedColNames;
-    }
-
-    @NonNull
     private String getSqlType(Typ typ) {
       String sqlType = SQL_TYPE_MAP.get(typ);
       if (sqlType == null) {
         throw new NoSuchElementException("SQL type not found for: " + typ);
       }
       return sqlType;
+    }
+  }
+
+  private static class JdbcCleanUp {
+    @NonNull
+    private final Connection connection;
+    @NonNull
+    private final String sanitizedName;
+    @NonNull
+    private final CleanUpAction cleanUpAction;
+
+    public JdbcCleanUp(@NonNull Connection connection, @NonNull String unsafeName,
+                       @NonNull CleanUpAction cleanUpAction) {
+      this.connection = Objects.requireNonNull(connection, "connection is null");
+      Objects.requireNonNull(unsafeName, "unsafeName is null");
+      this.sanitizedName = NameSanitizing.sanitizeName(connection, unsafeName);
+      this.cleanUpAction = Objects.requireNonNull(cleanUpAction, "cleanUpAction is null");
+    }
+
+    private void cleanUp() throws SQLException {
+      switch (cleanUpAction) {
+        case NONE:
+          return;
+        case DROP:
+          dropTable();
+          return;
+        default:
+          throw new NotImplementedException(); // todo implement
+      }
+    }
+
+    private void dropTable() throws SQLException {
+      String dropSql = "DROP TABLE " + sanitizedName;
+      try (Statement stmt = connection.createStatement()) {
+        stmt.execute(dropSql);
+      }
     }
   }
 }

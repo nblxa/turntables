@@ -5,6 +5,7 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.TableUtils;
 import io.github.nblxa.turntables.Typ;
+import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.MultipleFailureException;
@@ -23,6 +24,7 @@ public class TestTable implements Tab.ColAdder<TestTable, TestTable>, Tab.RowAdd
   private final TableUtils.ColAdder colAdder;
   @Nullable
   private TableUtils.RowAdderTable rowAdder = null;
+  private CleanUpAction cleanUpAction = CleanUpAction.DROP;
 
   public TestTable(@NonNull TestDataSource testDataSource, @NonNull String tableName) {
     this.testDataSource = Objects.requireNonNull(testDataSource, "testData is null");
@@ -31,19 +33,14 @@ public class TestTable implements Tab.ColAdder<TestTable, TestTable>, Tab.RowAdd
   }
 
   @NonNull
-  public Tab injest() {
-    return testDataSource.injest(tableName);
+  public Tab ingest() {
+    return testDataSource.ingest(tableName);
   }
 
-  protected void init() {
-    if (rowAdder != null) {
-      testDataSource.feed(tableName, rowAdder.tab());
-    } else {
-      testDataSource.feed(tableName, colAdder.tab());
-    }
-  }
-
-  protected void cleanup() {
+  @NonNull
+  public TestTable cleanupAfterTest(@NonNull CleanUpAction cleanUpAction) {
+    this.cleanUpAction = Objects.requireNonNull(cleanUpAction, "cleanupAction is null");
+    return this;
   }
 
   @NonNull
@@ -115,5 +112,17 @@ public class TestTable implements Tab.ColAdder<TestTable, TestTable>, Tab.RowAdd
         MultipleFailureException.assertEmpty(errors);
       }
     };
+  }
+
+  protected void init() {
+    if (rowAdder != null) {
+      testDataSource.feed(tableName, rowAdder.tab());
+    } else {
+      testDataSource.feed(tableName, colAdder.tab());
+    }
+  }
+
+  protected void cleanup() {
+    testDataSource.cleanUp(tableName, cleanUpAction);
   }
 }

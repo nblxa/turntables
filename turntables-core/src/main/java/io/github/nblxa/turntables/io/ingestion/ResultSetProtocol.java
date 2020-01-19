@@ -1,18 +1,18 @@
-package io.github.nblxa.turntables.io.injestion;
+package io.github.nblxa.turntables.io.ingestion;
 
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.TableUtils;
 import io.github.nblxa.turntables.Typ;
-import io.github.nblxa.turntables.exception.InjestionException;
+import io.github.nblxa.turntables.exception.IngestionException;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
-public class ResultSetProtocol implements InjestionProtocol<ResultSet> {
+public class ResultSetProtocol implements IngestionProtocol<ResultSet> {
   @Override
   @NonNull
-  public Tab injest(@NonNull ResultSet rs) {
+  public Tab ingest(@NonNull ResultSet rs) {
     TableUtils.Builder builder = new TableUtils.Builder();
     try {
       ResultSetMetaData md = rs.getMetaData();
@@ -31,7 +31,7 @@ public class ResultSetProtocol implements InjestionProtocol<ResultSet> {
       }
       return rowBuilder.tab();
     } catch (SQLException se) {
-      throw new InjestionException(se);
+      throw new IngestionException(se);
     }
   }
 }

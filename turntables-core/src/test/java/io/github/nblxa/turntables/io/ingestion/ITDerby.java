@@ -1,4 +1,4 @@
-package io.github.nblxa.turntables.io.injestion;
+package io.github.nblxa.turntables.io.ingestion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

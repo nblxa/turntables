@@ -1,8 +1,8 @@
 package io.github.nblxa.turntables;
 
-import io.github.nblxa.turntables.io.Injestion;
+import io.github.nblxa.turntables.io.Ingestion;
 import io.github.nblxa.turntables.io.IoProtocolProvider;
-import io.github.nblxa.turntables.io.injestion.InjestionProtocol;
+import io.github.nblxa.turntables.io.ingestion.IngestionProtocol;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.Collections;
 import java.util.Map;
@@ -17,16 +17,16 @@ import org.openjdk.jcstress.infra.results.I_Result;
 @JCStressTest
 @Outcome(id = "1", expect = Expect.ACCEPTABLE, desc = "Default outcome.")
 @State
-public class TestInjestionConcurrency {
+public class TestIngestionConcurrency {
   @Actor
   public void actor1(I_Result res) {
-    Injestion.getInstance().protocolFor(Object.class);
+    Ingestion.getInstance().protocolFor(Object.class);
     res.r1 = TestIoProtocolProvider.getCounter();
   }
 
   @Actor
   public void actor2(I_Result res) {
-    Injestion.getInstance().protocolFor(Object.class);
+    Ingestion.getInstance().protocolFor(Object.class);
     res.r1 = TestIoProtocolProvider.getCounter();
   }
 
@@ -35,7 +35,7 @@ public class TestInjestionConcurrency {
 
     @Override
     @NonNull
-    public Map<Class<?>, InjestionProtocol<?>> injestionProtocols() {
+    public Map<Class<?>, IngestionProtocol<?>> ingestionProtocols() {
       COUNTER.incrementAndGet();
       return Collections.emptyMap();
     }
