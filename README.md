@@ -17,7 +17,7 @@ Turntables.assertThat(actual)
   .matches(expected);
 ```
 
-JUnit allows setting up test data in the database:
+Turntables supports integrating with JUnit to set-up test data in tables:
 
 ```java
 private TestTable testTab = testDataSource.table("employees")
@@ -28,7 +28,7 @@ private TestTable testTab = testDataSource.table("employees")
 ```
 
 For a complete example with MySQL, see
-[ITMysqlTestData.java](turntables-test-mysql/src/test/java/io/github/nblxa/turntables/test/mysql/ITMysqlTestData.java)
+[ITMysqlTestData.java](turntables-test-mysql/src/test/java/io/github/nblxa/turntables/test/mysql/ITMySqlTestData.java)
 (Docker required).
 
 ## Maven
