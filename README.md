@@ -17,7 +17,7 @@ Turntables.assertThat(actual)
   .matches(expected);
 ```
 
-`Turntables` supports integrating with `JUnit` to set up test data in tables:
+`Turntables` integrates with `JUnit` to set up test data in tables:
 
 ```java
 private TestTable testTab = testDataSource.table("employees")
