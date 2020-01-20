@@ -40,7 +40,7 @@
         <pitest.maven.version>1.4.10</pitest.maven.version>
         <maven.checkstyle.plugin.version>3.1.0</maven.checkstyle.plugin.version>
         <checkstyle.version>8.23</checkstyle.version>
-        <maven.jar.plugin.version>3.1.2</maven.jar.plugin.version>
+        <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
         <maven.shade.plugin.version>3.2.1</maven.shade.plugin.version>
         <maven.failsafe.plugin.version>3.0.0-M4</maven.failsafe.plugin.version>
         <coveralls.maven.plugin.version>4.3.0</coveralls.maven.plugin.version>
