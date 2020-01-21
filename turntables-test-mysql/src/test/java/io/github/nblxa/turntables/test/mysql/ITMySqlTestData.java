@@ -20,7 +20,7 @@ import java.sql.SQLException;
 
 public class ITMySqlTestData {
 
-  private JdbcDatabaseContainer mysql = new MySQLContainerProvider()
+  private JdbcDatabaseContainer<?> mysql = new MySQLContainerProvider()
       .newInstance()
       .withDatabaseName("test")
       .withUsername("scott")
@@ -29,10 +29,10 @@ public class ITMySqlTestData {
   private TestDataSource testDataSource = new TestDataFactory()
       .jdbc(mysql::getJdbcUrl, "scott", "tiger");
 
-  private TestTable testTab = testDataSource.table("testtab")
-      .col("a", Typ.INTEGER).col("b", Typ.STRING)
-      .row(10, "abc")
-      .row(20, "def")
+  private TestTable testTab = testDataSource.table("employees")
+      .col("id", Typ.INTEGER).col("name", Typ.STRING).col("dept", Typ.STRING)
+      .row(10, "Alice", "Dev")
+      .row(20, "Bob", "Ops")
       .cleanupAfterTest(CleanUpAction.DROP);
 
   @Rule
@@ -43,17 +43,17 @@ public class ITMySqlTestData {
 
   @Test
   public void test() throws SQLException {
-    Tab expected = Turntables.tab()
-        .row(1, "abc")
-        .row(2, "def");
-
     // Simulate the application logic
     try (Connection conn = mysql.createConnection("");
-         PreparedStatement s = conn.prepareStatement("update testtab set a = a / 10")) {
+         PreparedStatement s = conn.prepareStatement("update employees set dept = 'QA'")) {
       s.execute();
     }
 
     Tab actual = testTab.ingest();
+
+    Tab expected = Turntables.tab()
+        .row(1, "Alice", "QA")
+        .row(2, "Bob", "QA");
     Turntables.assertThat(actual)
         .matches(expected);
   }

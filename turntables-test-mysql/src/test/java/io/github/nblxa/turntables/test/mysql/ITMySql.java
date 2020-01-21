@@ -19,7 +19,7 @@ import org.testcontainers.containers.MySQLContainerProvider;
 public class ITMySql {
 
   @Rule
-  public JdbcDatabaseContainer mysql = new MySQLContainerProvider()
+  public JdbcDatabaseContainer<?> mysql = new MySQLContainerProvider()
       .newInstance()
       .withDatabaseName("test")
       .withUsername("scott")
@@ -60,8 +60,8 @@ public class ITMySql {
     try (PreparedStatement ps = conn.prepareStatement("select * from testtab");
          ResultSet rs = ps.executeQuery()) {
       Tab actual = Turntables.from(rs);
-      assertThat(actual)
-          .isEqualTo(expected);
+      Turntables.assertThat(actual)
+          .matches(expected);
     }
   }
 }
