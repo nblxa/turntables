@@ -47,6 +47,7 @@ public class ITMySqlTestData {
         .row(1, "abc")
         .row(2, "def");
 
+    // Simulate the application logic
     try (Connection conn = mysql.createConnection("");
          PreparedStatement s = conn.prepareStatement("update testtab set a = a / 10")) {
       s.execute();
@@ -70,16 +71,20 @@ public class ITMySqlTestData {
 
     testDataSource.feed("colors", initialData);
 
-    Tab expectedData = Turntables.tab()
-        .row(-1, Integer.MAX_VALUE, Integer.MIN_VALUE);
-
+    // Simulate the application logic
     try (Connection conn = mysql.createConnection("");
          PreparedStatement s = conn.prepareStatement(
-             "delete from colors where red_id between 0 and 255 " +
-                 "and green_id between 0 and 255 " +
-                 "and blue_id between 0 and 255")) {
+             "delete from colors " +
+                 "where red_id not between 0 and 255 " +
+                 "or green_id not between 0 and 255 " +
+                 "or blue_id not between 0 and 255")) {
       s.execute();
     }
+
+    Tab expectedData = Turntables.tab()
+        .row(255, 0, 0)
+        .row(40, 140, 25)
+        .row(0, 0, 0);
 
     Tab actualData = testDataSource.ingest("colors");
 
