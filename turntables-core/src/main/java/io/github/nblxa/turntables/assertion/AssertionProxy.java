@@ -12,25 +12,13 @@ public abstract class AssertionProxy extends AbstractTab {
 
   final Tab tab;
 
-  private AssertionProxy(Tab tab, Conf conf) {
+  private AssertionProxy(Tab tab) {
     super(tab.cols());
     this.tab = Objects.requireNonNull(tab, "tab");
   }
 
   public static Builder builder() {
     return new Builder();
-  }
-
-  @Override
-  @NonNull
-  public Iterable<Tab.Col> cols() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  @NonNull
-  public Iterable<Tab.Row> rows() {
-    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -191,7 +179,7 @@ public abstract class AssertionProxy extends AbstractTab {
     private Actual actual;
 
     private Expected(Tab tab, Conf conf) {
-      super(tab, conf);
+      super(tab);
     }
 
     private void setActual(Actual actual) {
@@ -201,8 +189,8 @@ public abstract class AssertionProxy extends AbstractTab {
     @NonNull
     public String representation() {
       Objects.requireNonNull(actual);
-      Tab rowOrderExp = RowOrderPrism.ofExpected(actual.asserter);
-      Tab rowOrderAct = RowOrderPrism.ofActual(actual.asserter);
+      Tab rowOrderExp = RowOrderPrism.ofExpected(actual.asserter, this);
+      Tab rowOrderAct = RowOrderPrism.ofActual(actual.asserter, actual);
       return new ExpectedAssertionValPrism(rowOrderExp, rowOrderAct).toString();
     }
 
@@ -218,7 +206,7 @@ public abstract class AssertionProxy extends AbstractTab {
     private final Asserter asserter;
 
     private Actual(Tab tab, Conf conf) {
-      super(tab, conf);
+      super(tab);
       this.asserter = Asserter.createAsserter(conf);
     }
 
@@ -228,7 +216,9 @@ public abstract class AssertionProxy extends AbstractTab {
 
     @NonNull
     public String representation() {
-      return RowOrderPrism.ofActual(asserter).toString();
+      Tab rowOrderPrism = RowOrderPrism.ofActual(asserter, this);
+      Tab colNamePrism = ColNamePrism.ofActual(asserter, rowOrderPrism);
+      return colNamePrism.toString();
     }
 
     @Override

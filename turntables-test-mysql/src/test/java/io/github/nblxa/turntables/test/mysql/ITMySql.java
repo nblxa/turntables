@@ -1,7 +1,5 @@
 package io.github.nblxa.turntables.test.mysql;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import java.sql.Connection;

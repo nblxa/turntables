@@ -43,19 +43,36 @@ public interface Tab {
     Iterable<Val> vals();
   }
 
-  interface ColAdder<T extends ColAdder<T, R>, R extends RowAdder<R>> {
+  interface ColAdder<U extends UnnamedColAdder<U, R>, N extends NamedColAdder<N, R>,
+      R extends RowAdder<R>>
+    extends UnnamedColAdderPart<U>, NamedColAdderPart<N>, ColAdderRowAdderPart<R> {
+  }
+
+  interface UnnamedColAdder<U extends UnnamedColAdder<U, R>, R extends RowAdder<R>>
+    extends UnnamedColAdderPart<U>, ColAdderRowAdderPart<R> {
+  }
+
+  interface NamedColAdder<N extends NamedColAdder<N, R>, R extends RowAdder<R>>
+    extends NamedColAdderPart<N>, ColAdderRowAdderPart<R> {
+  }
+
+  interface UnnamedColAdderPart<U extends UnnamedColAdderPart<U>> {
     @NonNull
-    T col(@NonNull Typ typ);
+    U col(@NonNull Typ typ);
 
     @NonNull
-    T col(@NonNull String name, @NonNull Typ typ);
+    U key(@NonNull Typ typ);
+  }
+
+  interface NamedColAdderPart<N extends NamedColAdderPart<N>> {
+    @NonNull
+    N col(@NonNull String name, @NonNull Typ typ);
 
     @NonNull
-    T key(@NonNull String name, @NonNull Typ typ);
+    N key(@NonNull String name, @NonNull Typ typ);
+  }
 
-    @NonNull
-    T key(@NonNull Typ typ);
-
+  interface ColAdderRowAdderPart<R extends RowAdder<R>> {
     @NonNull
     R rowAdder();
   }

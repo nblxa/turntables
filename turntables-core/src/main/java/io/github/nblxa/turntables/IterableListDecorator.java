@@ -9,6 +9,7 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.function.Supplier;
 import javax.annotation.concurrent.NotThreadSafe;
 
 @NotThreadSafe
@@ -19,7 +20,7 @@ final class IterableListDecorator<T> extends AbstractList<T> {
   private transient List<T> list = null;
 
   IterableListDecorator(@NonNull Iterable<T> iterable) {
-    this.iterable = Objects.requireNonNull(iterable, "iterable");
+    this.iterable = Objects.requireNonNull(iterable, "iterable is null");
   }
 
   private List<T> list() {

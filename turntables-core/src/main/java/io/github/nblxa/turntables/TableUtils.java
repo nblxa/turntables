@@ -115,12 +115,12 @@ public final class TableUtils {
     @NonNull
     private final Typ typ;
     @NonNull
-    private final Supplier supp;
+    private final Supplier<?> supp;
     private final transient AtomicBoolean suppCalled;
     private transient volatile Object obj;
     private transient volatile boolean inited;
 
-    SuppVal(Typ typ, Supplier supp) {
+    SuppVal(Typ typ, Supplier<?> supp) {
       this.typ = Objects.requireNonNull(typ, "typ");
       this.supp = Objects.requireNonNull(supp, "supp");
       this.obj = null;
@@ -255,47 +255,8 @@ public final class TableUtils {
     }
   }
 
-  public static final class ColAdder extends AbstractTab
-      implements Tab.ColAdder<ColAdder, RowAdderTable>, Tab.RowAdder<RowAdderTable> {
-
-    public ColAdder() {
-      super();
-    }
-
-    @Override
-    @NonNull
-    public TableUtils.ColAdder col(@NonNull String name, @NonNull Typ typ) {
-      Objects.requireNonNull(name, "name");
-      Objects.requireNonNull(typ, "typ");
-      colsList().add(new NamedCol(name, typ, false));
-      return this;
-    }
-
-    @Override
-    @NonNull
-    public TableUtils.ColAdder col(@NonNull Typ typ) {
-      Objects.requireNonNull(typ, "typ");
-      colsList().add(new SimpleCol(typ, false, colsList().size()));
-      return this;
-    }
-
-    @Override
-    @NonNull
-    public TableUtils.ColAdder key(@NonNull String name, @NonNull Typ typ) {
-      Objects.requireNonNull(name, "name");
-      Objects.requireNonNull(typ, "typ");
-      colsList().add(new NamedCol(name, typ, true));
-      return this;
-    }
-
-    @Override
-    @NonNull
-    public TableUtils.ColAdder key(@NonNull Typ typ) {
-      Objects.requireNonNull(typ, "typ");
-      colsList().add(new SimpleCol(typ, true, colsList().size()));
-      return this;
-    }
-
+  public static abstract class AbstractColRowAdderTable extends AbstractTab
+      implements Tab.RowAdder<RowAdderTable>, Tab.ColAdderRowAdderPart<RowAdderTable> {
     @Override
     @NonNull
     public RowAdderTable row(@Nullable Object first, @NonNull Object... rest) {
@@ -318,13 +279,96 @@ public final class TableUtils {
 
     @NonNull
     @Override
-    public RowAdderTable rowAdder() {
-      return new RowAdderTable(cols());
+    public Tab tab() {
+      return this;
     }
 
     @NonNull
     @Override
-    public Tab tab() {
+    public RowAdderTable rowAdder() {
+      return new RowAdderTable(cols());
+    }
+  }
+
+  public static final class ColAdderTable extends AbstractColRowAdderTable
+      implements Tab.ColAdder<UnnamedColAdderTable, NamedColAdderTable, RowAdderTable> {
+
+    @Override
+    @NonNull
+    public NamedColAdderTable col(@NonNull String name, @NonNull Typ typ) {
+      return new NamedColAdderTable().col(name, typ);
+    }
+
+    @Override
+    @NonNull
+    public NamedColAdderTable key(@NonNull String name, @NonNull Typ typ) {
+      return new NamedColAdderTable().key(name, typ);
+    }
+
+    @Override
+    @NonNull
+    public UnnamedColAdderTable col(@NonNull Typ typ) {
+      return new UnnamedColAdderTable().col(typ);
+    }
+
+    @Override
+    @NonNull
+    public UnnamedColAdderTable key(@NonNull Typ typ) {
+      return new UnnamedColAdderTable().key(typ);
+    }
+
+    @NonNull
+    @Override
+    public RowAdderTable rowAdder() {
+      return new RowAdderTable(cols());
+    }
+
+  }
+
+  public static final class UnnamedColAdderTable extends AbstractColRowAdderTable
+      implements Tab.UnnamedColAdder<UnnamedColAdderTable, RowAdderTable> {
+
+    @Override
+    @NonNull
+    public UnnamedColAdderTable col(@NonNull Typ typ) {
+      Objects.requireNonNull(typ, "typ");
+      colsList().add(new SimpleCol(typ, false, colsList().size()));
+      return this;
+    }
+
+    @Override
+    @NonNull
+    public UnnamedColAdderTable key(@NonNull Typ typ) {
+      Objects.requireNonNull(typ, "typ");
+      colsList().add(new SimpleCol(typ, true, colsList().size()));
+      return this;
+    }
+
+    @NonNull
+    @Override
+    public RowAdderTable rowAdder() {
+      return new RowAdderTable(cols());
+    }
+  }
+
+  public static final class NamedColAdderTable extends AbstractColRowAdderTable
+      implements Tab.NamedColAdder<NamedColAdderTable, RowAdderTable> {
+
+    @Override
+    @NonNull
+    public NamedColAdderTable col(@NonNull String name, @NonNull Typ typ) {
+      Objects.requireNonNull(name, "name");
+      Objects.requireNonNull(typ, "typ");
+      colsList().add(new NamedCol(name, typ, false));
+      return this;
+    }
+
+    @Override
+    @NonNull
+    public NamedColAdderTable key(@NonNull String name, @NonNull Typ typ) {
+      Objects.requireNonNull(name, "name");
+      Objects.requireNonNull(typ, "typ");
+      colsList().add(new NamedCol(name, typ, true));
       return this;
     }
   }
@@ -373,16 +417,50 @@ public final class TableUtils {
     }
   }
 
-  public static final class Builder implements Tab.ColAdder<Builder, RowBuilder> {
+  public static final class Builder implements Tab.ColAdder<UnnamedColBuilder, NamedColBuilder,
+      RowBuilder> {
+    @NonNull
+    @Override
+    public UnnamedColBuilder col(@NonNull Typ typ) {
+      return new UnnamedColBuilder().col(typ);
+    }
+
+    @NonNull
+    @Override
+    public NamedColBuilder col(@NonNull String name, @NonNull Typ typ) {
+      return new NamedColBuilder().col(name, typ);
+    }
+
+    @NonNull
+    @Override
+    public NamedColBuilder key(@NonNull String name, @NonNull Typ typ) {
+      return new NamedColBuilder().key(name, typ);
+    }
+
+    @NonNull
+    @Override
+    public UnnamedColBuilder key(@NonNull Typ typ) {
+      return new UnnamedColBuilder().key(typ);
+    }
+
+    @NonNull
+    @Override
+    public RowBuilder rowAdder() {
+      return new RowBuilder(Collections.emptyList());
+    }
+  }
+
+  public static final class UnnamedColBuilder implements Tab.UnnamedColAdder<UnnamedColBuilder,
+      RowBuilder> {
     private final List<Tab.Col> cols;
 
-    public Builder() {
+    public UnnamedColBuilder() {
       cols = new ArrayList<>();
     }
 
     @NonNull
     @Override
-    public Builder col(@NonNull Typ typ) {
+    public UnnamedColBuilder col(@NonNull Typ typ) {
       Objects.requireNonNull(typ);
       cols.add(new SimpleCol(typ, false, cols.size()));
       return this;
@@ -390,7 +468,30 @@ public final class TableUtils {
 
     @NonNull
     @Override
-    public Builder col(@NonNull String name, @NonNull Typ typ) {
+    public UnnamedColBuilder key(@NonNull Typ typ) {
+      Objects.requireNonNull(typ);
+      cols.add(new SimpleCol(typ, true, cols.size()));
+      return this;
+    }
+
+    @NonNull
+    @Override
+    public RowBuilder rowAdder() {
+      return new RowBuilder(cols);
+    }
+  }
+
+  public static final class NamedColBuilder implements Tab.NamedColAdder<NamedColBuilder,
+        RowBuilder> {
+    private final List<Tab.Col> cols;
+
+    public NamedColBuilder() {
+      cols = new ArrayList<>();
+    }
+
+    @NonNull
+    @Override
+    public NamedColBuilder col(@NonNull String name, @NonNull Typ typ) {
       Objects.requireNonNull(name);
       Objects.requireNonNull(typ);
       cols.add(new NamedCol(name, typ, false));
@@ -399,18 +500,10 @@ public final class TableUtils {
 
     @NonNull
     @Override
-    public Builder key(@NonNull String name, @NonNull Typ typ) {
+    public NamedColBuilder key(@NonNull String name, @NonNull Typ typ) {
       Objects.requireNonNull(name);
       Objects.requireNonNull(typ);
       cols.add(new NamedCol(name, typ, true));
-      return this;
-    }
-
-    @NonNull
-    @Override
-    public Builder key(@NonNull Typ typ) {
-      Objects.requireNonNull(typ);
-      cols.add(new SimpleCol(typ, true, cols.size()));
       return this;
     }
 

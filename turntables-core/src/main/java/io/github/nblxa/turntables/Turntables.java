@@ -22,8 +22,8 @@ public final class Turntables {
    * @return
    */
   @NonNull
-  public static TableUtils.ColAdder tab() {
-    return new TableUtils.ColAdder();
+  public static TableUtils.ColAdderTable tab() {
+    return new TableUtils.ColAdderTable();
   }
 
   @SuppressWarnings("unchecked")

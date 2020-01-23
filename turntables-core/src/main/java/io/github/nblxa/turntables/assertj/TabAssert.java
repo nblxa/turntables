@@ -43,7 +43,8 @@ public class TabAssert<T extends Tab> extends AbstractObjectAssert<TabAssert<T>,
     String actRep = actProxy.representation();
     String expRep = expProxy.representation();
     ErrorMessageFactory errorMessages = new BasicErrorMessageFactory(
-        "%nExpecting:%n <%s>%nto match:%n <%s>%nbut a mismatch was found.", actRep, expRep);
+        "%nExpected: <%s>%nbut was: <%s>%n", expRep, actRep);
+
     throw failures.failure(info, errorMessages);
   }
 

@@ -63,7 +63,7 @@ public class TestEquals {
 
   @Test
   public void testColAdderTable_equalsContract() {
-    EqualsVerifier.forClass(TableUtils.ColAdder.class)
+    EqualsVerifier.forClass(TableUtils.ColAdderTable.class)
         .verify();
   }
 

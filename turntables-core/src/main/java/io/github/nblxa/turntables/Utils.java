@@ -26,6 +26,7 @@ import java.util.function.IntSupplier;
 import java.util.function.LongPredicate;
 import java.util.function.LongSupplier;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -285,11 +286,15 @@ public final class Utils {
     }
   }
 
-  public static <T> ArrayList<T> toArrayList(Iterable<T> iterable) {
+  public static <T> List<T> toList(Iterable<T> iterable, Supplier<List<T>> listSupplier) {
     Iterator<T> iterator = iterable.iterator();
-    ArrayList<T> collection = new ArrayList<>();
-    iterator.forEachRemaining(collection::add);
-    return collection;
+    List<T> list = listSupplier.get();
+    iterator.forEachRemaining(list::add);
+    return list;
+  }
+
+  public static <T> List<T> toArrayList(Iterable<T> iterable) {
+    return toList(iterable, ArrayList::new);
   }
 
   public static <T> List<T> asList(Iterable<T> iterable) {
