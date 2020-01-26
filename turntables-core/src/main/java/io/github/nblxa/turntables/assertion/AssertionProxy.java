@@ -11,14 +11,25 @@ import java.util.Objects;
 public abstract class AssertionProxy extends AbstractTab {
 
   final Tab tab;
+  final Asserter asserter;
 
-  private AssertionProxy(Tab tab) {
+  private AssertionProxy(Tab tab, @NonNull Asserter asserter) {
     super(tab.cols());
-    this.tab = Objects.requireNonNull(tab, "tab");
+    this.tab = Objects.requireNonNull(tab, "tab is null");
+    this.asserter = Objects.requireNonNull(asserter, "asserter is null");
   }
 
   public static Builder builder() {
     return new Builder();
+  }
+
+  @NonNull
+  public abstract String representation();
+
+  @Override
+  @NonNull
+  public Iterable<Row> rows() {
+    return tab.rows();
   }
 
   @Override
@@ -32,9 +43,10 @@ public abstract class AssertionProxy extends AbstractTab {
     throw new UnsupportedOperationException();
   }
 
+  @NonNull
   @Override
   public String toString() {
-    throw new UnsupportedOperationException();
+    return String.format("%s[asserter=%s, tab=%s]", getClass().getSimpleName(), asserter, tab);
   }
 
   public interface AssertionBuilder<S extends AssertionBuilder<S>> {
@@ -58,9 +70,8 @@ public abstract class AssertionProxy extends AbstractTab {
     private long rowPermutationLimit = Turntables.ROW_PERMUTATION_LIMIT;
 
     // built state
-    private Conf conf;
-    private Expected expectedProxy;
-    private Actual actualProxy;
+    private volatile Expected expectedProxy;
+    private volatile Actual actualProxy;
 
     private Builder() {
     }
@@ -114,17 +125,18 @@ public abstract class AssertionProxy extends AbstractTab {
 
     private void build() {
       Conf conf = new Conf(expected, actual, rowMode, colMode, rowPermutationLimit);
-      this.expectedProxy = new Expected(expected, conf);
-      this.actualProxy = new Actual(actual, conf);
-      this.expectedProxy.setActual(actualProxy);
-      this.conf = conf;
+      Asserter asserter = Asserter.createAsserter(conf);
+      this.expectedProxy = new Expected(expected, asserter);
+      this.actualProxy = new Actual(actual, asserter);
     }
 
     @NonNull
     public Expected buildOrGetExpectedProxy() {
-      synchronized (this) {
-        if (conf == null) {
-          build();
+      if (expectedProxy == null) {
+        synchronized (this) {
+          if (expectedProxy == null) {
+            build();
+          }
         }
       }
       return expectedProxy;
@@ -132,9 +144,11 @@ public abstract class AssertionProxy extends AbstractTab {
 
     @NonNull
     public Actual buildOrGetActualProxy() {
-      synchronized (this) {
-        if (conf == null) {
-          build();
+      if (actualProxy == null) {
+        synchronized (this) {
+          if (actualProxy == null) {
+            build();
+          }
         }
       }
       return actualProxy;
@@ -173,41 +187,33 @@ public abstract class AssertionProxy extends AbstractTab {
       this.colMode = Objects.requireNonNull(colMode, "colMode");
       this.rowPermutationLimit = rowPermutationLimit;
     }
+
+    @NonNull
+    @Override
+    public String toString() {
+      return String.format("Conf[rowMode=%s, colMode=%s, rowPermutationLimit=%s]", rowMode, colMode, rowPermutationLimit);
+    }
   }
 
   public static class Expected extends AssertionProxy {
-    private Actual actual;
-
-    private Expected(Tab tab, Conf conf) {
-      super(tab);
-    }
-
-    private void setActual(Actual actual) {
-      this.actual = Objects.requireNonNull(actual, "actual");
+    private Expected(Tab expected, Asserter asserter) {
+      super(expected, asserter);
     }
 
     @NonNull
-    public String representation() {
-      Objects.requireNonNull(actual);
-      Tab rowOrderExp = RowOrderPrism.ofExpected(actual.asserter, this);
-      Tab rowOrderAct = RowOrderPrism.ofActual(actual.asserter, actual);
-      return new ExpectedAssertionValPrism(rowOrderExp, rowOrderAct).toString();
-    }
-
     @Override
-    @NonNull
-    public Iterable<Row> rows() {
-      return tab.rows();
+    public String representation() {
+      Tab rowOrderExp = RowOrderPrism.ofExpected(asserter, tab);
+      Tab rowOrderAct = RowOrderPrism.ofActual(asserter, asserter.getConf().actual);
+      Tab colNameRowOrdExp = ColNamePrism.ofExpected(asserter, rowOrderExp, rowOrderAct);
+      Tab assertValExp = AssertionValPrism.ofExpected(colNameRowOrdExp, rowOrderAct);
+      return assertValExp.toString();
     }
   }
 
   public static class Actual extends AssertionProxy {
-    @NonNull
-    private final Asserter asserter;
-
-    private Actual(Tab tab, Conf conf) {
-      super(tab);
-      this.asserter = Asserter.createAsserter(conf);
+    private Actual(Tab actual, Asserter asserter) {
+      super(actual, asserter);
     }
 
     public boolean matchesExpected() {
@@ -215,16 +221,12 @@ public abstract class AssertionProxy extends AbstractTab {
     }
 
     @NonNull
-    public String representation() {
-      Tab rowOrderPrism = RowOrderPrism.ofActual(asserter, this);
-      Tab colNamePrism = ColNamePrism.ofActual(asserter, rowOrderPrism);
-      return colNamePrism.toString();
-    }
-
     @Override
-    @NonNull
-    public Iterable<Row> rows() {
-      return tab.rows();
+    public String representation() {
+      Tab rowOrderExp = RowOrderPrism.ofExpected(asserter, asserter.getConf().expected);
+      Tab rowOrderAct = RowOrderPrism.ofActual(asserter, tab);
+      Tab colNamePrism = ColNamePrism.ofActual(asserter, rowOrderExp, rowOrderAct);
+      return colNamePrism.toString();
     }
   }
 }

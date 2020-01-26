@@ -89,4 +89,11 @@ class Asserter {
   AssertionProxy.Conf getConf() {
     return conf;
   }
+
+  @NonNull
+  @Override
+  public String toString() {
+    return String.format("Asserter[conf=%s, rowAsserter=%s, colAsserter=%s]",
+        conf, rowAsserter.getClass().getSimpleName(), colAsserter.getClass().getSimpleName());
+  }
 }

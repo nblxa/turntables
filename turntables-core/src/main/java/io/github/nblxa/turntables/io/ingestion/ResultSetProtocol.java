@@ -13,7 +13,7 @@ public class ResultSetProtocol implements IngestionProtocol<ResultSet> {
   @Override
   @NonNull
   public Tab ingest(@NonNull ResultSet rs) {
-    TableUtils.Builder builder = new TableUtils.Builder();
+    TableUtils.NamedColBuilder builder = TableUtils.Builder.named();
     try {
       ResultSetMetaData md = rs.getMetaData();
       int columnCount = md.getColumnCount();

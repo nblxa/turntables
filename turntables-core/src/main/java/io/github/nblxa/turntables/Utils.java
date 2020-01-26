@@ -345,7 +345,7 @@ public final class Utils {
     return StreamSupport.stream(spliterator, false);
   }
 
-  static class InferredTypDecoratorCol extends AbstractTab.AbstractCol {
+  static final class InferredTypDecoratorCol extends AbstractTab.AbstractCol {
     private final transient Tab.Col decoratedCol;
 
     private InferredTypDecoratorCol(@NonNull Tab.Col decoratedColTypAny, Typ typ) {

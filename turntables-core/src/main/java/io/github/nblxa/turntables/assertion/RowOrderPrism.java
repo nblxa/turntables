@@ -14,23 +14,43 @@ import java.util.stream.Stream;
 class RowOrderPrism extends AbstractTab {
   @NonNull
   private final RowAsserter rowAsserter;
+  @NonNull
   private final Function<? super Map.Entry<Optional<Row>, Optional<Row>>,
       ? extends Optional<Row>> rowFunction;
 
-  private RowOrderPrism(@NonNull Asserter asserter, @NonNull Tab tab, @NonNull Function<? super Map.Entry<Optional<Row>,
-      Optional<Row>>, ? extends Optional<Row>> rowFunction) {
-    super(Objects.requireNonNull(tab, "tab is null").cols());
+  @NonNull
+  static Tab ofExpected(@NonNull Asserter asserter, @NonNull Tab expected) {
+    return of(asserter, expected, Map.Entry::getKey);
+  }
+
+  @NonNull
+  static Tab ofActual(@NonNull Asserter asserter, Tab actual) {
+    return of(asserter, actual, Map.Entry::getValue);
+  }
+
+  @NonNull
+  private static Tab of(@NonNull Asserter asserter, @NonNull Tab tab,
+                        @NonNull Function<? super Map.Entry<Optional<Row>, Optional<Row>>,
+                            ? extends Optional<Row>> rowFunction) {
     Objects.requireNonNull(asserter, "asserter is null");
-    this.rowAsserter = asserter.getRowAsserter();
+    Objects.requireNonNull(tab, "tab is null");
+    switch (asserter.getConf().rowMode) {
+      case MATCHES_IN_ANY_ORDER:
+      case MATCHES_BY_KEY:
+        return new RowOrderPrism(asserter.getRowAsserter(), tab, rowFunction);
+      case MATCHES_IN_GIVEN_ORDER:
+        return tab;
+      default:
+        throw new UnsupportedOperationException();
+    }
+  }
+
+  private RowOrderPrism(@NonNull RowAsserter rowAsserter, @NonNull Tab tab,
+                        @NonNull Function<? super Map.Entry<Optional<Row>, Optional<Row>>,
+                                          ? extends Optional<Row>> rowFunction) {
+    super(tab.cols());
+    this.rowAsserter = Objects.requireNonNull(rowAsserter, "rowAsserter is null");
     this.rowFunction = Objects.requireNonNull(rowFunction, "rowFunction is null");
-  }
-
-  static RowOrderPrism ofExpected(@NonNull Asserter asserter, Tab tab) {
-    return new RowOrderPrism(asserter, tab, Map.Entry::getKey);
-  }
-
-  static RowOrderPrism ofActual(@NonNull Asserter asserter, Tab tab) {
-    return new RowOrderPrism(asserter, tab, Map.Entry::getValue);
   }
 
   @NonNull

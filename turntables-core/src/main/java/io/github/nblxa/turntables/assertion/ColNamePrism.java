@@ -4,6 +4,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import io.github.nblxa.turntables.AbstractTab;
 import io.github.nblxa.turntables.Tab;
+import io.github.nblxa.turntables.TableUtils;
 import io.github.nblxa.turntables.Typ;
 import io.github.nblxa.turntables.Utils;
 import java.util.List;
@@ -15,17 +16,41 @@ public class ColNamePrism extends AbstractTab {
   private final Tab tab;
 
   @NonNull
-  static Tab ofActual(@NonNull Asserter asserter, @NonNull Tab tab) {
+  static Tab ofActual(@NonNull Asserter asserter, @NonNull Tab expected, @NonNull Tab actual) {
     Objects.requireNonNull(asserter, "asserter is null");
-    Objects.requireNonNull(tab, "tab is null");
+    Objects.requireNonNull(actual, "actual is null");
     switch (asserter.getConf().colMode) {
       case MATCHES_IN_GIVEN_ORDER:
-        List<String> expectedCols = Utils.stream(asserter.getConf().expected.cols())
+        if (!TableUtils.hasNamedCols(expected) && TableUtils.hasNamedCols(actual)) {
+          return actual;
+        }
+        List<String> expectedCols = Utils.stream(expected.cols())
             .map(Col::name)
             .collect(Collectors.toList());
-        return new ColNamePrism(tab, expectedCols);
+        return new ColNamePrism(actual, expectedCols);
       case MATCHES_BY_NAME:
-        return tab;
+        return actual;
+      default:
+        throw new UnsupportedOperationException();
+    }
+  }
+
+  @NonNull
+  static Tab ofExpected(@NonNull Asserter asserter, @NonNull Tab expected, @NonNull Tab actual) {
+    Objects.requireNonNull(asserter, "asserter is null");
+    Objects.requireNonNull(expected, "expected is null");
+    Objects.requireNonNull(actual, "actual is null");
+    switch (asserter.getConf().colMode) {
+      case MATCHES_IN_GIVEN_ORDER:
+        if (TableUtils.hasNamedCols(expected)) {
+          return expected;
+        }
+        List<String> actualCols = Utils.stream(actual.cols())
+            .map(Col::name)
+            .collect(Collectors.toList());
+        return new ColNamePrism(expected, actualCols);
+      case MATCHES_BY_NAME:
+        return expected;
       default:
         throw new UnsupportedOperationException();
     }

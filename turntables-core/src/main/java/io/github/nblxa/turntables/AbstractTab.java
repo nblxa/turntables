@@ -162,7 +162,7 @@ public abstract class AbstractTab implements Tab {
     }
 
     @Override
-    public final boolean equals(Object o) {
+    public boolean equals(Object o) {
       if (this == o) {
         return true;
       }
@@ -170,13 +170,14 @@ public abstract class AbstractTab implements Tab {
         return false;
       }
       AbstractCol abstractCol = (AbstractCol) o;
-      return abstractCol.canEqual(this) && typ() == abstractCol.typ()
+      return abstractCol.canEqual(this)
+          && typ() == abstractCol.typ()
           && isKey() == abstractCol.isKey()
           && Objects.equals(name(), abstractCol.name());
     }
 
     @Override
-    public final int hashCode() {
+    public int hashCode() {
       return Objects.hash(typ(), isKey(), name());
     }
 

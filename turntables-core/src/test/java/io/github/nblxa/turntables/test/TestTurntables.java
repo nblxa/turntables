@@ -153,7 +153,7 @@ public class TestTurntables {
 
   @Test
   public void test_rowBuilder() {
-    Tab tabFixed = new TableUtils.Builder().rowAdder()
+    Tab tabFixed = TableUtils.Builder.rowBuilder()
         .row(1, 2, "a")
         .row(3, 4, "b")
         .tab();

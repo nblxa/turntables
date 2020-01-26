@@ -5,7 +5,6 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.TableUtils;
 import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
-import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.MultipleFailureException;
 import org.junit.runners.model.Statement;
@@ -13,7 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class AbstractTestTable<SELF extends AbstractTestTable<SELF, T>, T extends Tab.RowAdder<SELF>>
+public abstract class AbstractTestTable<SELF extends AbstractTestTable<SELF, T>,
+                                        T extends Tab.RowAdder<SELF>>
     implements Tab.ColAdderRowAdderPart<SELF>,
                Tab.RowAdder<SELF>,
                TestTable {

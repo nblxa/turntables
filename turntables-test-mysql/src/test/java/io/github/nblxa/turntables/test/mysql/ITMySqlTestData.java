@@ -8,6 +8,7 @@ import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
 import io.github.nblxa.turntables.junit.TestDataSource;
 import io.github.nblxa.turntables.junit.TestDataFactory;
 import io.github.nblxa.turntables.junit.TestTable;
+import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -17,6 +18,9 @@ import org.testcontainers.containers.MySQLContainerProvider;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
+import static io.github.nblxa.turntables.Turntables.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class ITMySqlTestData {
 
@@ -31,8 +35,8 @@ public class ITMySqlTestData {
 
   private TestTable testTab = testDataSource.table("employees")
       .col("id", Typ.INTEGER).col("name", Typ.STRING).col("dept", Typ.STRING)
-      .row(10, "Alice", "Dev")
-      .row(20, "Bob", "Ops")
+      .row(1, "Alice", "Dev")
+      .row(2, "Bob", "Ops")
       .cleanupAfterTest(CleanUpAction.DROP);
 
   @Rule
@@ -56,6 +60,54 @@ public class ITMySqlTestData {
         .row(2, "Bob", "QA");
     Turntables.assertThat(actual)
         .matches(expected);
+  }
+
+
+  @Test
+  public void testMismatch() throws SQLException {
+    // Simulate the application logic
+    try (Connection conn = mysql.createConnection("");
+         PreparedStatement s = conn.prepareStatement("update employees set dept = 'QA'")) {
+      s.execute();
+    }
+
+    Tab actual = testTab.ingest();
+
+    Tab expected = Turntables.tab()
+        .row(1, "Hugh", "QA")
+        .row(2, "Mary", "QA");
+
+    Throwable t = null;
+    // comment next line to check in the IDE:
+    t = catchThrowable(() -> {
+      assertThat(actual)
+          .colMode(Turntables.ColMode.MATCHES_IN_GIVEN_ORDER)
+          .rowMode(Turntables.RowMode.MATCHES_IN_GIVEN_ORDER)
+          .matches(expected);
+      // comment next line to check in the IDE:
+    });
+
+    // Assert that column names from the actual tab are also used in expected tab's representation
+    // so that there is no diff in column names when we are matching by position and names
+    // are irrelevant.
+    String ls = System.lineSeparator();
+    Assertions.assertThat(t)
+        .isInstanceOf(AssertionError.class)
+        .hasMessage(new StringBuilder(ls)
+            .append("Expected: <\"Table:").append(ls)
+            .append("    - id : 1").append(ls)
+            .append("      name : Hugh").append(ls)
+            .append("      dept : QA").append(ls)
+            .append("    - id : 2").append(ls)
+            .append("      name : Mary").append(ls)
+            .append("      dept : QA\">").append(ls)
+            .append("but was: <\"Table:").append(ls)
+            .append("    - id : 1").append(ls)
+            .append("      name : Alice").append(ls)
+            .append("      dept : QA").append(ls)
+            .append("    - id : 2").append(ls)
+            .append("      name : Bob").append(ls)
+            .append("      dept : QA\">").append(ls).toString());
   }
 
   @Test

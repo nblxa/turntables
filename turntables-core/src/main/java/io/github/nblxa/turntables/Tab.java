@@ -84,4 +84,9 @@ public interface Tab {
     @NonNull
     Tab tab();
   }
+
+  interface Named {
+    @NonNull
+    String givenName();
+  }
 }

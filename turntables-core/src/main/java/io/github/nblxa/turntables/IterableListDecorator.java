@@ -9,7 +9,6 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.function.Supplier;
 import javax.annotation.concurrent.NotThreadSafe;
 
 @NotThreadSafe

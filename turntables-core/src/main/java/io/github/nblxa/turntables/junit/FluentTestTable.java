@@ -22,14 +22,14 @@ public class FluentTestTable extends AbstractTestTable<FluentTestTable, FluentTe
 
   @NonNull
   @Override
-  public UnnamedColTestTable key(@NonNull Typ typ) {
-    return new UnnamedColTestTable(testDataSource, tableName, cleanUpAction).key(typ);
+  public NamedColTestTable col(@NonNull String name, @NonNull Typ typ) {
+    return new NamedColTestTable(testDataSource, tableName, cleanUpAction).col(name, typ);
   }
 
   @NonNull
   @Override
-  public NamedColTestTable col(@NonNull String name, @NonNull Typ typ) {
-    return new NamedColTestTable(testDataSource, tableName, cleanUpAction).col(name, typ);
+  public UnnamedColTestTable key(@NonNull Typ typ) {
+    return new UnnamedColTestTable(testDataSource, tableName, cleanUpAction).key(typ);
   }
 
   @NonNull

@@ -13,6 +13,8 @@ import org.assertj.core.internal.Failures;
 
 public class TabAssert<T extends Tab> extends AbstractObjectAssert<TabAssert<T>, T>
     implements AssertionProxy.AssertionBuilder<TabAssert<T>> {
+  private static final String MSG_FORMAT = "%nExpected: <%s>%nbut was: <%s>%n";
+
   private final AssertionProxy.Builder proxyBuilder;
   private final AssertionInfo info;
   private final Failures failures = Failures.instance();
@@ -43,7 +45,7 @@ public class TabAssert<T extends Tab> extends AbstractObjectAssert<TabAssert<T>,
     String actRep = actProxy.representation();
     String expRep = expProxy.representation();
     ErrorMessageFactory errorMessages = new BasicErrorMessageFactory(
-        "%nExpected: <%s>%nbut was: <%s>%n", expRep, actRep);
+        MSG_FORMAT, expRep, actRep);
 
     throw failures.failure(info, errorMessages);
   }

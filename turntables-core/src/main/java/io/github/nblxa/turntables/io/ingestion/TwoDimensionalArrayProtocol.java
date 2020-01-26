@@ -10,8 +10,7 @@ public class TwoDimensionalArrayProtocol implements IngestionProtocol<Object[][]
   @Override
   public Tab ingest(@NonNull Object[][] matrix) {
     Objects.requireNonNull(matrix);
-    TableUtils.RowBuilder builder = new TableUtils.Builder()
-        .rowAdder();
+    TableUtils.RowBuilder builder = TableUtils.Builder.rowBuilder();
     for (Object[] objects: matrix) {
       builder.row(objects);
     }

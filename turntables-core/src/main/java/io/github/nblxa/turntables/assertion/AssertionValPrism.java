@@ -10,10 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-class ExpectedAssertionValPrism extends AbstractTab {
+class AssertionValPrism extends AbstractTab {
   private final List<Row> augmentedRows;
 
-  ExpectedAssertionValPrism(@NonNull Tab expected, @NonNull Tab actual) {
+  static Tab ofExpected(@NonNull Tab expected, @NonNull Tab actual) {
+    return new AssertionValPrism(expected, actual);
+  }
+
+  private AssertionValPrism(@NonNull Tab expected, @NonNull Tab actual) {
     super(expected.cols());
     Objects.requireNonNull(actual, "actual");
     this.augmentedRows = new ArrayList<>();

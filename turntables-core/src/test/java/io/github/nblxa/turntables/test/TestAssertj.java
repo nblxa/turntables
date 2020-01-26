@@ -25,6 +25,7 @@ public class TestAssertj {
     t = catchThrowable(() -> {
       assertThat(act)
           .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+          .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
           .matches(exp);
       // comment next line to check in the IDE:
     });
@@ -58,6 +59,7 @@ public class TestAssertj {
     t = catchThrowable(() -> {
       assertThat(act)
           .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+          .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
           .matches(exp);
       // comment next line to check in the IDE:
     });
@@ -95,6 +97,7 @@ public class TestAssertj {
     t = catchThrowable(() -> {
       assertThat(act)
           .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+          .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
           .matches(exp);
       // comment next line to check in the IDE:
     });
@@ -118,6 +121,45 @@ public class TestAssertj {
   }
 
   @Test
+  public void mismatchMatcher_colByOrder_bothNamed() {
+    Tab exp = Turntables.tab()
+        .col("x", Typ.INTEGER).col("y", Typ.INTEGER)
+        .row(testInt(i -> i > 10), 2)
+        .row(3, 4);
+    Tab act = Turntables.tab()
+        .col("a", Typ.INTEGER).col("b", Typ.INTEGER)
+        .row(1, 2)
+        .row(3, 4);
+
+    Throwable t = null;
+    // comment next line to check in the IDE:
+    t = catchThrowable(() -> {
+      assertThat(act)
+          .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+          .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+          .matches(exp);
+      // comment next line to check in the IDE:
+    });
+
+    // Assert that column names from the actual tab are also used in expected tab's representation
+    // so that there is no diff in column names when we are matching by position and names
+    // are irrelevant.
+    assertThat(t)
+        .isInstanceOf(AssertionError.class)
+        .hasMessage(new StringBuilder(LS)
+            .append("Expected: <\"Table:").append(LS)
+            .append("    - x : java.util.function.IntPredicate").append(LS)
+            .append("      y : 2").append(LS)
+            .append("    - x : 3").append(LS)
+            .append("      y : 4\">").append(LS)
+            .append("but was: <\"Table:").append(LS)
+            .append("    - x : 1").append(LS)
+            .append("      y : 2").append(LS)
+            .append("    - x : 3").append(LS)
+            .append("      y : 4\">").append(LS).toString());
+  }
+
+  @Test
   public void match() {
     Tab act = Turntables.tab()
         .row(1, 2)
@@ -128,6 +170,8 @@ public class TestAssertj {
 
     Throwable t = catchThrowable(() -> {
       assertThat(act)
+          .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+          .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
           .matches(exp)
           .isNotEqualTo(exp);
     });

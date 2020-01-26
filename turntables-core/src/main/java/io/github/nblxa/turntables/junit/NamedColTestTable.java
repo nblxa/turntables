@@ -1,7 +1,6 @@
 package io.github.nblxa.turntables.junit;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.TableUtils;
 import io.github.nblxa.turntables.Typ;
@@ -14,7 +13,7 @@ public class NamedColTestTable extends AbstractTestTable<NamedColTestTable, Name
   private final TableUtils.NamedColAdderTable colAdder = new TableUtils.NamedColAdderTable();
 
   public NamedColTestTable(@NonNull TestDataSource testDataSource, @NonNull String tableName,
-                           @Nullable CleanUpAction cleanUpAction) {
+                           @NonNull CleanUpAction cleanUpAction) {
     super(testDataSource, tableName, cleanUpAction);
   }
 

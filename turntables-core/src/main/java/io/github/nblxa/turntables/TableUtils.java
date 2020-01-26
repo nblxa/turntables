@@ -16,19 +16,42 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public final class TableUtils {
-  static class SimpleCol extends AbstractTab.AbstractCol {
+  static final class SimpleCol extends AbstractTab.AbstractCol {
     public SimpleCol(Typ typ, boolean isKey, int index) {
       super(typ, isKey, "col" + (index + 1));
     }
-
-    public SimpleCol(Typ typ, boolean isKey, String name) {
-      super(typ, isKey, name);
-    }
   }
 
-  static final class NamedCol extends SimpleCol {
+  static final class NamedCol extends AbstractTab.AbstractCol implements Tab.Named {
     private NamedCol(String name, Typ typ, boolean isKey) {
       super(typ, isKey, name);
+    }
+
+    @NonNull
+    @Override
+    public String givenName() {
+      return name();
+    }
+
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass") // checks via the canEqual method
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (!canEqual(o)) {
+        return false;
+      }
+      AbstractTab.AbstractCol abstractCol = (AbstractTab.AbstractCol) o;
+      return abstractCol.canEqual(this)
+          && typ() == abstractCol.typ()
+          && isKey() == abstractCol.isKey()
+          && Objects.equals(name(), abstractCol.name());
+    }
+
+    @Override
+    public boolean canEqual(Object o) {
+      return o instanceof AbstractTab.AbstractCol && o instanceof Tab.Named;
     }
   }
 
@@ -322,7 +345,6 @@ public final class TableUtils {
     public RowAdderTable rowAdder() {
       return new RowAdderTable(cols());
     }
-
   }
 
   public static final class UnnamedColAdderTable extends AbstractColRowAdderTable
@@ -417,36 +439,23 @@ public final class TableUtils {
     }
   }
 
-  public static final class Builder implements Tab.ColAdder<UnnamedColBuilder, NamedColBuilder,
-      RowBuilder> {
+  public static final class Builder {
     @NonNull
-    @Override
-    public UnnamedColBuilder col(@NonNull Typ typ) {
-      return new UnnamedColBuilder().col(typ);
+    public static NamedColBuilder named() {
+      return new NamedColBuilder();
     }
 
     @NonNull
-    @Override
-    public NamedColBuilder col(@NonNull String name, @NonNull Typ typ) {
-      return new NamedColBuilder().col(name, typ);
+    public static UnnamedColBuilder unnamed() {
+      return new UnnamedColBuilder();
     }
 
     @NonNull
-    @Override
-    public NamedColBuilder key(@NonNull String name, @NonNull Typ typ) {
-      return new NamedColBuilder().key(name, typ);
-    }
-
-    @NonNull
-    @Override
-    public UnnamedColBuilder key(@NonNull Typ typ) {
-      return new UnnamedColBuilder().key(typ);
-    }
-
-    @NonNull
-    @Override
-    public RowBuilder rowAdder() {
+    public static RowBuilder rowBuilder() {
       return new RowBuilder(Collections.emptyList());
+    }
+
+    private Builder() {
     }
   }
 
@@ -601,6 +610,14 @@ public final class TableUtils {
       throw new StructureException("Column not defined for position #" + (i + 1));
     }
     return vals;
+  }
+
+  public static boolean hasNamedCols(@NonNull Tab tab) {
+    Objects.requireNonNull(tab, "tab is null");
+    Iterable<Tab.Col> cols = Objects.requireNonNull(tab.cols(), "cols is null");
+    Iterator<Tab.Col> iter = Objects.requireNonNull(cols.iterator(), "iter is null");
+    Tab.Col col = Objects.requireNonNull(iter.next(), "col is null");
+    return col instanceof Tab.Named;
   }
 
   private TableUtils() {
