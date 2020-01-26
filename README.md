@@ -36,9 +36,6 @@ For a complete example with MySQL, see
 Turntables extends [AssertJ](https://github.com/joel-costigliola/assertj-core)
 and you'll need both dependencies.
 
-Note, the dependency is not yet made available on Maven Central. I am working
-on it. Meanwhile, feel free to build the library from source.
-
 ```xml
 <dependency>
     <groupId>io.github.nblxa</groupId>
