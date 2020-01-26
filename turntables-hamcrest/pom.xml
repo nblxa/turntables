@@ -12,6 +12,10 @@
     <artifactId>turntables-hamcrest</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Turntables: Hamcrest module (Experimental)</description>
+    <url>http://github.com/nblxa/turntables</url>
+
     <dependencies>
         <dependency>
             <groupId>io.github.nblxa</groupId>
@@ -95,6 +99,31 @@
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <configuration>
+                    <skipSource>true</skipSource>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
@@ -116,7 +145,7 @@
                                 <param>io.github.nblxa.*</param>
                             </targetClasses>
                             <targetTests>
-                                <param>o.github.nblxa.turntables.*</param>
+                                <param>io.github.nblxa.turntables.*</param>
                             </targetTests>
                         </configuration>
                         <executions>
