@@ -37,7 +37,7 @@
         <jacoco.maven.plugin.version>0.8.4</jacoco.maven.plugin.version>
         <maven.surefire.plugin.version>3.0.0-M4</maven.surefire.plugin.version>
         <maven.enforcer.plugin.version>3.0.0-M3</maven.enforcer.plugin.version>
-        <pitest.maven.version>1.4.10</pitest.maven.version>
+        <pitest.maven.version>1.4.11</pitest.maven.version>
         <maven.checkstyle.plugin.version>3.1.0</maven.checkstyle.plugin.version>
         <checkstyle.version>8.23</checkstyle.version>
         <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
