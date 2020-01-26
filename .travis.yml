@@ -4,4 +4,4 @@ jdk:
 script:
     - ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -Derrorprone
 after_success:
-    - ./mvnw clean test jacoco:report coveralls:report -e
+    - ./mvnw clean verify jacoco:report coveralls:report -e
