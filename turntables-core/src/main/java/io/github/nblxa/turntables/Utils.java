@@ -53,7 +53,12 @@ public final class Utils {
           + " but got " + fromVal.getTyp() + ".");
     } else {
       if (col.typ() == Typ.ANY && fromVal.getTyp() != Typ.ANY) {
-        Tab.Col inferredCol = new InferredTypDecoratorCol(col, fromVal.getTyp());
+        final Tab.Col inferredCol;
+        if (col instanceof Tab.NamedCol) {
+          inferredCol = new InferredTypDecoratorNamedCol((Tab.NamedCol) col, fromVal.getTyp());
+        } else {
+          inferredCol = new InferredTypDecoratorCol(col, fromVal.getTyp());
+        }
         iterCol.set(inferredCol);
       }
     }
@@ -273,13 +278,13 @@ public final class Utils {
       throw new IllegalStateException("No columns defined");
     }
     Tab.Col first = iter.next();
-    boolean named = first instanceof TableUtils.NamedCol;
+    boolean named = first instanceof TableUtils.SimpleNamedCol;
     int i = 0;
     while (iter.hasNext()) {
       i++;
       Tab.Col col = iter.next();
-      if ((!named && col instanceof TableUtils.NamedCol)
-          || (named && !(col instanceof TableUtils.NamedCol))) {
+      if ((!named && col instanceof TableUtils.SimpleNamedCol)
+          || (named && !(col instanceof TableUtils.SimpleNamedCol))) {
         throw new IllegalArgumentException(
             "Mixing named and unnamed columns at position #" + i);
       }
@@ -294,6 +299,9 @@ public final class Utils {
   }
 
   public static <T> List<T> toArrayList(Iterable<T> iterable) {
+    if (iterable instanceof ArrayList) {
+      return new ArrayList<T>((ArrayList<T>) iterable);
+    }
     return toList(iterable, ArrayList::new);
   }
 
@@ -349,18 +357,75 @@ public final class Utils {
     private final transient Tab.Col decoratedCol;
 
     private InferredTypDecoratorCol(@NonNull Tab.Col decoratedColTypAny, Typ typ) {
-      super(typ, decoratedColTypAny.isKey(), decoratedColTypAny.name());
+      super(typ, decoratedColTypAny.isKey());
+      this.decoratedCol = verifyDecoratedCol(decoratedColTypAny);
+    }
+
+    private static <T extends Tab.Col> T verifyDecoratedCol(T decoratedColTypAny) {
       if (decoratedColTypAny.typ() != Typ.ANY) {
         throw new IllegalArgumentException("Expected " + Typ.ANY
             + " but got " + decoratedColTypAny.typ());
       }
-      this.decoratedCol = Objects.requireNonNull(decoratedColTypAny, "decoratedColTypAny");
+      return Objects.requireNonNull(decoratedColTypAny, "decoratedColTypAny");
     }
 
     @NonNull
     @Override
     public Tab.Val valOf(@Nullable Object o) {
       return decoratedCol.valOf(o);
+    }
+  }
+
+  static final class InferredTypDecoratorNamedCol extends AbstractTab.AbstractCol
+      implements Tab.NamedCol {
+    @NonNull
+    private final transient Tab.NamedCol decoratedCol;
+    @NonNull
+    private final String name;
+
+    private InferredTypDecoratorNamedCol(@NonNull Tab.NamedCol decoratedColTypAny,
+                                         @NonNull Typ typ) {
+      super(typ, decoratedColTypAny.isKey());
+      this.decoratedCol = InferredTypDecoratorCol.verifyDecoratedCol(decoratedColTypAny);
+      this.name = Objects.requireNonNull(decoratedCol.name(), "name is null");
+    }
+
+    @NonNull
+    @Override
+    public String name() {
+      return name;
+    }
+
+    @NonNull
+    @Override
+    public Tab.Val valOf(@Nullable Object o) {
+      return decoratedCol.valOf(o);
+    }
+
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass") // checks via the canEqual method
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (!canEqual(o)) {
+        return false;
+      }
+      AbstractTab.AbstractCol abstractCol = (AbstractTab.AbstractCol) o;
+      return abstractCol.canEqual(this)
+          && typ() == abstractCol.typ()
+          && isKey() == abstractCol.isKey()
+          && Objects.equals(name, ((Tab.NamedCol) abstractCol).name());
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(typ(), isKey(), name);
+    }
+
+    @Override
+    public boolean canEqual(Object o) {
+      return o instanceof AbstractTab.AbstractCol && o instanceof Tab.NamedCol;
     }
   }
 

@@ -9,7 +9,7 @@ public class TestEquals {
   @Test
   public void testAbstractCol_equalsContract() {
     EqualsVerifier.forClass(AbstractTab.AbstractCol.class)
-        .withRedefinedSubclass(TableUtils.NamedCol.class)
+        .withRedefinedSubclass(TableUtils.SimpleNamedCol.class)
         .verify();
   }
 
@@ -21,7 +21,7 @@ public class TestEquals {
 
   @Test
   public void testNamedCol_equalsContract() {
-    EqualsVerifier.forClass(TableUtils.NamedCol.class)
+    EqualsVerifier.forClass(TableUtils.SimpleNamedCol.class)
         .withRedefinedSuperclass()
         .verify();
   }
@@ -29,6 +29,13 @@ public class TestEquals {
   @Test
   public void testInferredTypDecoratorCol_equalsContract() {
     EqualsVerifier.forClass(Utils.InferredTypDecoratorCol.class)
+        .verify();
+  }
+
+  @Test
+  public void testInferredTypDecoratorNamedCol_equalsContract() {
+    EqualsVerifier.forClass(Utils.InferredTypDecoratorNamedCol.class)
+        .withRedefinedSuperclass()
         .verify();
   }
 

@@ -6,7 +6,6 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 class NamedValAsserter extends AbstractMatchingValAsserter {
   private final List<Integer> actIndexes;
@@ -23,10 +22,19 @@ class NamedValAsserter extends AbstractMatchingValAsserter {
     }
   }
 
-  private static List<String> names(Iterable<Tab.Col> cols) {
-    return Utils.stream(cols)
-        .map(Tab.Col::name)
-        .collect(Collectors.toList());
+  @NonNull
+  private static List<String> names(@NonNull Iterable<Tab.Col> cols) {
+    List<String> names = new ArrayList<>();
+    Iterator<Tab.Col> iter = cols.iterator();
+    while (iter.hasNext()) {
+      Tab.Col c = iter.next();
+      if (c instanceof Tab.NamedCol) {
+        names.add(((Tab.NamedCol) c).name());
+      } else {
+        throw new IllegalArgumentException("Cannot match unnamed cols by name!");
+      }
+    }
+    return names;
   }
 
   @Override

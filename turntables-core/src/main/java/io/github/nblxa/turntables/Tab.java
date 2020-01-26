@@ -12,9 +12,6 @@ public interface Tab {
 
   interface Col {
     @NonNull
-    String name();
-
-    @NonNull
     Typ typ();
 
     @NonNull
@@ -85,8 +82,13 @@ public interface Tab {
     Tab tab();
   }
 
-  interface Named {
+  interface NamedCol extends Tab.Col {
     @NonNull
-    String givenName();
+    String name();
+  }
+
+  interface NamedColTab extends Tab {
+    @NonNull
+    Iterable<NamedCol> namedCols();
   }
 }

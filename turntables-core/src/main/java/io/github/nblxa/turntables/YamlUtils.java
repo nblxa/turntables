@@ -67,9 +67,12 @@ final class YamlUtils {
     int maxLength = 0;
     List<String> colNames = new ArrayList<>();
     for (Tab.Col col : cols) {
-      colIndex++;
       String colName;
-      colName = col.name();
+      if (col instanceof Tab.NamedCol) {
+        colName = ((Tab.NamedCol) col).name();
+      } else {
+        colName = "col" + (++colIndex);
+      }
       String colEscaped = StringUtils.escape(colName);
       if (colEscaped.length() > maxLength) {
         maxLength = colEscaped.length();

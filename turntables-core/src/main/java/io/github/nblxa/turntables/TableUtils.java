@@ -12,25 +12,30 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public final class TableUtils {
   static final class SimpleCol extends AbstractTab.AbstractCol {
-    public SimpleCol(Typ typ, boolean isKey, int index) {
-      super(typ, isKey, "col" + (index + 1));
+    public SimpleCol(Typ typ, boolean isKey) {
+      super(typ, isKey);
     }
   }
 
-  static final class NamedCol extends AbstractTab.AbstractCol implements Tab.Named {
-    private NamedCol(String name, Typ typ, boolean isKey) {
-      super(typ, isKey, name);
+  static final class SimpleNamedCol extends AbstractTab.AbstractCol implements Tab.NamedCol {
+    @NonNull
+    private final String name;
+
+    private SimpleNamedCol(String name, Typ typ, boolean isKey) {
+      super(typ, isKey);
+      this.name = Objects.requireNonNull(name, "name is null");
     }
 
     @NonNull
     @Override
-    public String givenName() {
-      return name();
+    public String name() {
+      return name;
     }
 
     @SuppressWarnings("EqualsWhichDoesntCheckParameterClass") // checks via the canEqual method
@@ -46,12 +51,27 @@ public final class TableUtils {
       return abstractCol.canEqual(this)
           && typ() == abstractCol.typ()
           && isKey() == abstractCol.isKey()
-          && Objects.equals(name(), abstractCol.name());
+          && Objects.equals(name(), ((Tab.NamedCol) abstractCol).name());
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(typ(), isKey(), name);
     }
 
     @Override
     public boolean canEqual(Object o) {
-      return o instanceof AbstractTab.AbstractCol && o instanceof Tab.Named;
+      return o instanceof AbstractTab.AbstractCol && o instanceof Tab.NamedCol;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+      if (isKey()) {
+        return String.format("[%s KEY %s]", name, typ());
+      } else {
+        return String.format("[%s %s]", name, typ());
+      }
     }
   }
 
@@ -354,7 +374,7 @@ public final class TableUtils {
     @NonNull
     public UnnamedColAdderTable col(@NonNull Typ typ) {
       Objects.requireNonNull(typ, "typ");
-      colsList().add(new SimpleCol(typ, false, colsList().size()));
+      colsList().add(new SimpleCol(typ, false));
       return this;
     }
 
@@ -362,7 +382,7 @@ public final class TableUtils {
     @NonNull
     public UnnamedColAdderTable key(@NonNull Typ typ) {
       Objects.requireNonNull(typ, "typ");
-      colsList().add(new SimpleCol(typ, true, colsList().size()));
+      colsList().add(new SimpleCol(typ, true));
       return this;
     }
 
@@ -381,7 +401,7 @@ public final class TableUtils {
     public NamedColAdderTable col(@NonNull String name, @NonNull Typ typ) {
       Objects.requireNonNull(name, "name");
       Objects.requireNonNull(typ, "typ");
-      colsList().add(new NamedCol(name, typ, false));
+      colsList().add(new SimpleNamedCol(name, typ, false));
       return this;
     }
 
@@ -390,7 +410,7 @@ public final class TableUtils {
     public NamedColAdderTable key(@NonNull String name, @NonNull Typ typ) {
       Objects.requireNonNull(name, "name");
       Objects.requireNonNull(typ, "typ");
-      colsList().add(new NamedCol(name, typ, true));
+      colsList().add(new SimpleNamedCol(name, typ, true));
       return this;
     }
   }
@@ -471,7 +491,7 @@ public final class TableUtils {
     @Override
     public UnnamedColBuilder col(@NonNull Typ typ) {
       Objects.requireNonNull(typ);
-      cols.add(new SimpleCol(typ, false, cols.size()));
+      cols.add(new SimpleCol(typ, false));
       return this;
     }
 
@@ -479,7 +499,7 @@ public final class TableUtils {
     @Override
     public UnnamedColBuilder key(@NonNull Typ typ) {
       Objects.requireNonNull(typ);
-      cols.add(new SimpleCol(typ, true, cols.size()));
+      cols.add(new SimpleCol(typ, true));
       return this;
     }
 
@@ -503,7 +523,7 @@ public final class TableUtils {
     public NamedColBuilder col(@NonNull String name, @NonNull Typ typ) {
       Objects.requireNonNull(name);
       Objects.requireNonNull(typ);
-      cols.add(new NamedCol(name, typ, false));
+      cols.add(new SimpleNamedCol(name, typ, false));
       return this;
     }
 
@@ -512,7 +532,7 @@ public final class TableUtils {
     public NamedColBuilder key(@NonNull String name, @NonNull Typ typ) {
       Objects.requireNonNull(name);
       Objects.requireNonNull(typ);
-      cols.add(new NamedCol(name, typ, true));
+      cols.add(new SimpleNamedCol(name, typ, true));
       return this;
     }
 
@@ -579,7 +599,7 @@ public final class TableUtils {
     for (int i = 0; i < objects.length; i++) {
       Object o = objects[i];
       Typ typ = Utils.getTyp(o);
-      cols.add(new SimpleCol(typ, false, i));
+      cols.add(new SimpleCol(typ, false));
     }
     return cols;
   }
@@ -616,8 +636,73 @@ public final class TableUtils {
     Objects.requireNonNull(tab, "tab is null");
     Iterable<Tab.Col> cols = Objects.requireNonNull(tab.cols(), "cols is null");
     Iterator<Tab.Col> iter = Objects.requireNonNull(cols.iterator(), "iter is null");
-    Tab.Col col = Objects.requireNonNull(iter.next(), "col is null");
-    return col instanceof Tab.Named;
+    boolean processedFirstCol = false;
+    boolean hasNamedCols = false;
+    while (iter.hasNext()) {
+      Tab.Col col = Objects.requireNonNull(iter.next(), "col is null");
+      if (processedFirstCol) {
+        if (hasNamedCols != col instanceof Tab.NamedCol) {
+          throw new IllegalStateException("Mixture of named and unnamed cols!");
+        }
+      } else {
+        hasNamedCols = col instanceof Tab.NamedCol;
+      }
+      processedFirstCol = true;
+    }
+    return hasNamedCols;
+  }
+
+  @NonNull
+  public static Tab.NamedColTab wrapWithNamedCols(@NonNull Tab tab) {
+    Objects.requireNonNull(tab, "tab is null");
+    return new NamedColWrapper(tab);
+  }
+
+  public interface NamedColsMixin extends Tab.NamedColTab {
+    @NonNull
+    @Override
+    default Iterable<Tab.NamedCol> namedCols() {
+      Iterator<Tab.Col> iter = cols().iterator();
+      AtomicInteger i = new AtomicInteger(0);
+      return () -> new Iterator<Tab.NamedCol>() {
+        @Override
+        public boolean hasNext() {
+          return iter.hasNext();
+        }
+
+        @Override
+        public Tab.NamedCol next() {
+          Tab.Col c = iter.next();
+          if (c instanceof Tab.NamedCol) {
+            return (Tab.NamedCol) c;
+          } else {
+            return new TableUtils.SimpleNamedCol("col" + i.incrementAndGet(),c.typ(), c.isKey());
+          }
+        }
+      };
+    }
+  }
+
+  public static class NamedColWrapper extends AbstractTab implements NamedColsMixin {
+    @NonNull
+    private final Tab tab;
+    private final boolean originallyNamed;
+
+    private NamedColWrapper(Tab tab) {
+      super(tab.cols());
+      this.tab = tab;
+      this.originallyNamed = hasNamedCols(tab);
+    }
+
+    public boolean isOriginallyNamed() {
+      return originallyNamed;
+    }
+
+    @NonNull
+    @Override
+    public Iterable<Row> rows() {
+      return tab.rows();
+    }
   }
 
   private TableUtils() {

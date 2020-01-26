@@ -225,7 +225,7 @@ public abstract class AssertionProxy extends AbstractTab {
     public String representation() {
       Tab rowOrderExp = RowOrderPrism.ofExpected(asserter, asserter.getConf().expected);
       Tab rowOrderAct = RowOrderPrism.ofActual(asserter, tab);
-      Tab colNamePrism = ColNamePrism.ofActual(asserter, rowOrderExp, rowOrderAct);
+      Tab.NamedColTab colNamePrism = ColNamePrism.ofActual(asserter, rowOrderExp, rowOrderAct);
       return colNamePrism.toString();
     }
   }

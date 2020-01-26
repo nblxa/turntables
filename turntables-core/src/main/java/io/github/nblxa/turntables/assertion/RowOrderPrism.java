@@ -30,8 +30,8 @@ class RowOrderPrism extends AbstractTab {
 
   @NonNull
   private static Tab of(@NonNull Asserter asserter, @NonNull Tab tab,
-                        @NonNull Function<? super Map.Entry<Optional<Row>, Optional<Row>>,
-                            ? extends Optional<Row>> rowFunction) {
+      @NonNull Function<? super Map.Entry<Optional<Row>, Optional<Row>>,
+          ? extends Optional<Row>> rowFunction) {
     Objects.requireNonNull(asserter, "asserter is null");
     Objects.requireNonNull(tab, "tab is null");
     switch (asserter.getConf().rowMode) {

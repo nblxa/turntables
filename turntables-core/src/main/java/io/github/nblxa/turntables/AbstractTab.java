@@ -120,13 +120,10 @@ public abstract class AbstractTab implements Tab {
     @NonNull
     private final Typ typ;
     private final boolean isKey;
-    @NonNull
-    private final String name;
 
-    public AbstractCol(Typ typ, boolean isKey, String name) {
+    public AbstractCol(Typ typ, boolean isKey) {
       this.typ = Objects.requireNonNull(typ, "typ is null");
       this.isKey = isKey;
-      this.name = Objects.requireNonNull(name, "name is null");
     }
 
     @Override
@@ -138,12 +135,6 @@ public abstract class AbstractTab implements Tab {
     @Override
     public boolean isKey() {
       return isKey;
-    }
-
-    @Override
-    @NonNull
-    public String name() {
-      return name;
     }
 
     @Override
@@ -172,22 +163,22 @@ public abstract class AbstractTab implements Tab {
       AbstractCol abstractCol = (AbstractCol) o;
       return abstractCol.canEqual(this)
           && typ() == abstractCol.typ()
-          && isKey() == abstractCol.isKey()
-          && Objects.equals(name(), abstractCol.name());
+          && isKey() == abstractCol.isKey();
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(typ(), isKey(), name());
+      return Objects.hash(typ(), isKey());
     }
 
+    @NonNull
     @Override
     public String toString() {
-      return getClass().getName() + "{"
-          + "typ=" + typ()
-          + ", isKey=" + isKey()
-          + ", name=" + name()
-          + '}';
+      if (isKey()) {
+        return String.format("[KEY %s]", typ());
+      } else {
+        return String.format("[%s]", typ());
+      }
     }
   }
 

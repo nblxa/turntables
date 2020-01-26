@@ -3,6 +3,7 @@ package io.github.nblxa.turntables.io.feed;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.nblxa.turntables.Tab;
+import io.github.nblxa.turntables.TableUtils;
 import io.github.nblxa.turntables.Typ;
 import io.github.nblxa.turntables.Utils;
 import io.github.nblxa.turntables.io.NameSanitizing;
@@ -65,8 +66,8 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
       Objects.requireNonNull(unsafeName, "unsafeName is null");
       this.sanitizedName = NameSanitizing.sanitizeName(connection, unsafeName);
       this.tab = Objects.requireNonNull(tab, "tab is null");
-      this.sanitizedColNames = Utils.stream(tab.cols())
-          .map(Tab.Col::name)
+      this.sanitizedColNames = Utils.stream(TableUtils.wrapWithNamedCols(tab).namedCols())
+          .map(Tab.NamedCol::name)
           .map(n -> NameSanitizing.sanitizeName(connection, n))
           .collect(Collectors.toList());
     }
@@ -148,15 +149,17 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
     private String buildInsertSql() {
       StringBuilder sb = new StringBuilder("INSERT INTO ");
       sb.append(sanitizedName);
-      sb.append(" (");
       int numCols = sanitizedColNames.size();
-      for (int i = 0; i < numCols; i++) {
-        if (i > 0) {
-          sb.append(", ");
+      if (TableUtils.hasNamedCols(tab)) {
+        sb.append(" (");
+        for (int i = 0; i < numCols; i++) {
+          if (i > 0) {
+            sb.append(", ");
+          }
+          sb.append(sanitizedColNames.get(i));
         }
-        sb.append(sanitizedColNames.get(i));
+        sb.append(')');
       }
-      sb.append(')');
       sb.append(" VALUES (");
       for (int i = 0; i < numCols; i++) {
         if (i > 0) {
