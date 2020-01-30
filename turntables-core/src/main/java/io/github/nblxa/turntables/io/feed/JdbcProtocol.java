@@ -8,7 +8,6 @@ import io.github.nblxa.turntables.Typ;
 import io.github.nblxa.turntables.Utils;
 import io.github.nblxa.turntables.io.NameSanitizing;
 import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -217,7 +216,7 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
           dropTable();
           return;
         default:
-          throw new NotImplementedException(); // todo implement
+          throw new UnsupportedOperationException("not implemented yet");
       }
     }
 
