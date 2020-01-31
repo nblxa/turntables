@@ -37,7 +37,7 @@ public class ITMySqlTestData {
       .col("id", Typ.INTEGER).col("name", Typ.STRING).col("dept", Typ.STRING)
       .row(1, "Alice", "Dev")
       .row(2, "Bob", "Ops")
-      .cleanupAfterTest(CleanUpAction.DROP);
+      .cleanUpAfterTest(CleanUpAction.DROP);
 
   @Rule
   public TestRule chain = RuleChain

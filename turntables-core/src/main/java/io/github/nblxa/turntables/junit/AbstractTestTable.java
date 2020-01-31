@@ -44,8 +44,8 @@ public abstract class AbstractTestTable<SELF extends AbstractTestTable<SELF, T>,
   }
 
   @NonNull
-  public SELF cleanupAfterTest(@NonNull CleanUpAction cleanUpAction) {
-    this.cleanUpAction = Objects.requireNonNull(cleanUpAction, "cleanupAction is null");
+  public SELF cleanUpAfterTest(@NonNull CleanUpAction cleanUpAction) {
+    this.cleanUpAction = Objects.requireNonNull(cleanUpAction, "cleanUpAction is null");
     return self;
   }
 

@@ -24,7 +24,7 @@ private TestTable testTab = testDataSource.table("employees")
   .col("id", Typ.INTEGER).col("name", Typ.STRING)
   .row(1, "Alice")
   .row(2, "Bob")
-  .cleanupAfterTest(CleanUpAction.DROP);
+  .cleanUpAfterTest(CleanUpAction.DROP);
 ```
 
 For a complete example with MySQL, see
