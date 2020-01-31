@@ -288,7 +288,7 @@
                         </dependency>
                     </dependencies>
                     <configuration>
-                        <configLocation>google_checks.xml</configLocation>
+                        <configLocation>${project.basedir}/google_checks_adjusted.xml</configLocation>
                     </configuration>
                 </plugin>
 
