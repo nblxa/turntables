@@ -50,7 +50,7 @@
         <junit.version>4.13</junit.version>
         <hamcrest.version>2.1</hamcrest.version>
         <equalsverifier.version>3.1.12</equalsverifier.version>
-        <assertj.version>3.14.0</assertj.version>
+        <assertj.version>3.15.0</assertj.version>
         <derby.version>10.14.2.0</derby.version>
         <mysql.connector.java.version>8.0.19</mysql.connector.java.version>
         <testcontainers.version>1.12.5</testcontainers.version>
