@@ -4,14 +4,56 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.Objects;
 
+/**
+ * <tt>Typ</tt> is shorthand for <tt>Type</tt>.
+ *
+ * This enum defines the possible types a column or a value may have.
+ */
 public enum Typ {
+  /**
+   * Any type.
+   * <p>Use this to define a {@link Tab.Col} whose type should be inferred.
+   * <p>A {@link Tab.Val} cannot be of type ANY.
+   */
   ANY(new TypAny()),
+
+  /**
+   * Integer type with numeric values corresponding to Java {@link Integer}.
+   */
   INTEGER(new TypInteger()),
+
+  /**
+   * Long type with numeric values corresponding to Java {@link Long}.
+   */
   LONG(new TypLong()),
+
+  /**
+   * String type with text values of any length.
+   */
   STRING(new TypString()),
+
+  /**
+   * Boolean type.
+   */
   BOOLEAN(new TypBoolean()),
+
+  /**
+   * Double type with numeric values corresponding to Java {@link Double}.
+   */
   DOUBLE(new TypDouble()),
+
+  /**
+   * Date type.
+   * <p>This corresponds to a date type without time component or time zone,
+   * e.g. Java {@link java.time.LocalDate}.
+   */
   DATE(new TypDate()),
+
+  /**
+   * Date &amp; time.
+   * <p>This corresponds to a datetime type without time component or time zone,
+   * e.g. Java {@link java.time.LocalDateTime}.
+   */
   DATETIME(new TypDatetime());
 
   private final Internal internal;
@@ -87,9 +129,9 @@ public enum Typ {
     }
 
     @Override
-    public boolean matchesActual(@NonNull Tab.Val other) {
-      Objects.requireNonNull(other, "other");
-      return other.eval() == null;
+    public boolean matchesActual(@NonNull Tab.Val actual) {
+      Objects.requireNonNull(actual, "other");
+      return actual.eval() == null;
     }
 
     @Override

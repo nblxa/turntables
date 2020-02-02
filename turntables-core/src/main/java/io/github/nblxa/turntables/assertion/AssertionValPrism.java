@@ -59,8 +59,8 @@ class AssertionValPrism extends AbstractTab {
     }
 
     @Override
-    public boolean matchesActual(@NonNull Val other) {
-      return expected.matchesActual(other);
+    public boolean matchesActual(@NonNull Val actual) {
+      return expected.matchesActual(actual);
     }
 
     @Override

@@ -36,13 +36,30 @@ public abstract class AbstractTab implements Tab {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof AbstractTab)) {
+    if (!(o instanceof Tab)) {
       return false;
     }
-    AbstractTab abstractTab = (AbstractTab) o;
-    return abstractTab.canEqual(this)
-        && this.cols().equals(abstractTab.cols())
-        && this.rows().equals(abstractTab.rows());
+    final Tab tab;
+    if (o instanceof AbstractTab) {
+      AbstractTab abstractTab = (AbstractTab) o;
+      if (!abstractTab.canEqual(this)) {
+        return false;
+      }
+      tab = abstractTab;
+    } else {
+      tab = (Tab) o;
+    }
+    for (boolean eq: Utils.paired(this.cols(), tab.cols(), Objects::equals)) {
+      if (!eq) {
+        return false;
+      }
+    }
+    for (boolean eq: Utils.paired(this.rows(), tab.rows(), Objects::equals)) {
+      if (!eq) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @Override
@@ -210,9 +227,9 @@ public abstract class AbstractTab implements Tab {
     }
 
     @Override
-    public boolean matchesActual(@NonNull Val other) {
-      Objects.requireNonNull(other, "other");
-      return assertionPredicate.test(other.eval());
+    public boolean matchesActual(@NonNull Val actual) {
+      Objects.requireNonNull(actual, "other");
+      return assertionPredicate.test(actual.eval());
     }
 
     @Override

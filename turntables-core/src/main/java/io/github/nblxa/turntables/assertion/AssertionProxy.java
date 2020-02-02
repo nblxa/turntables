@@ -50,12 +50,31 @@ public abstract class AssertionProxy extends AbstractTab {
   }
 
   public interface AssertionBuilder<S extends AssertionBuilder<S>> {
+    /**
+     * Specify the mode in which to match rows.
+     * <p>Default is {@link Turntables.RowMode#MATCHES_IN_GIVEN_ORDER}.
+     * @param rowMode row mode
+     * @return the assertion object
+     */
     @NonNull
     S rowMode(@NonNull Turntables.RowMode rowMode);
 
+    /**
+     * Specify the mode in which to match columns.
+     * <p>Default is {@link Turntables.ColMode#MATCHES_IN_GIVEN_ORDER}.
+     * @param colMode column mode
+     * @return the assertion object
+     */
     @NonNull
     S colMode(@NonNull Turntables.ColMode colMode);
 
+    /**
+     * Specify the maximum number of row sequence permutations to check for
+     * when matching rows in any order.
+     * <p>Default is 10,000.
+     * @param rowPermutationLimit maximum number of row permutations to try to match
+     * @return the assertion object
+     */
     @NonNull
     S rowPermutationLimit(long rowPermutationLimit);
   }

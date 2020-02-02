@@ -27,11 +27,13 @@ public class TabAssert<T extends Tab> extends AbstractObjectAssert<TabAssert<T>,
   }
 
   /**
-   * TODO
+   * Asserts that the actual {@link Tab} matches the given expected one.
    *
-   * @param expectedTab
-   * @param <U>
-   * @return
+   * <p>In case of a mismatch, an {@link AssertionError} will be thrown by AssertJ.
+   *
+   * @param expectedTab the expected tab
+   * @param <U> subtype of the {@link Tab}
+   * @return the assertion object
    */
   @NonNull
   public <U extends Tab> TabAssert<T> matches(@NonNull U expectedTab) {

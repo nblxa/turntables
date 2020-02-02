@@ -99,9 +99,9 @@ public final class TableUtils {
     }
 
     @Override
-    public boolean matchesActual(@NonNull Tab.Val other) {
-      Objects.requireNonNull(other, "other");
-      return eval().equals(other.eval());
+    public boolean matchesActual(@NonNull Tab.Val actual) {
+      Objects.requireNonNull(actual, "other");
+      return eval().equals(actual.eval());
     }
 
     @Override
@@ -223,8 +223,8 @@ public final class TableUtils {
     }
 
     @Override
-    public boolean matchesActual(@NonNull Tab.Val other) {
-      return Objects.equals(eval(), other.eval());
+    public boolean matchesActual(@NonNull Tab.Val actual) {
+      return Objects.equals(eval(), actual.eval());
     }
 
     @Override

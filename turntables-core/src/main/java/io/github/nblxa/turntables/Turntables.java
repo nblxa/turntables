@@ -102,8 +102,8 @@ public final class Turntables {
   /**
    * Wrapper method for using {@link Predicate} directly in the {@link Tab} with expected data.
    *
-   * Allows testing data not only for exact matches but with arbitrary predicates as well.<br />
-   * Example:
+   * Allows testing data not only for exact matches but with arbitrary predicates as well.
+   * <p>Example:
    * <pre>{@code
    *   Tab expected = Turntables.tab()
    *     .row(Turntables.test(o -> true), 3)
