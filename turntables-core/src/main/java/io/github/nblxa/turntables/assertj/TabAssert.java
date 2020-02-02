@@ -1,9 +1,9 @@
 package io.github.nblxa.turntables.assertj;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.assertion.AssertionProxy;
-import org.assertj.core.annotations.NonNull;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.AssertionInfo;
 import org.assertj.core.api.WritableAssertionInfo;
