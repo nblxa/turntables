@@ -16,6 +16,10 @@
     <description>Turntables: Core module</description>
     <url>http://github.com/nblxa/turntables</url>
 
+    <properties>
+        <sonar.coverage.jacoco.xmlReportsPaths>${project.basedir}/../turntables-coverage/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportsPaths>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.github.spotbugs</groupId>

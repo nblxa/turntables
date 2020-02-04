@@ -14,9 +14,7 @@ if [ "$TRAVIS_PULL_REQUEST" == "true" ]; then
   echo "$SCRPT Building a pull request."
 fi
 
-./mvnw jacoco:prepare-agent \
-       install \
-       jacoco:report \
+./mvnw install \
        sonar:sonar -Dsonar.projectKey=turntables \
        coveralls:report \
        -Derrorprone \
