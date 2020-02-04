@@ -25,7 +25,7 @@ class KeyBasedRowAsserter extends AbstractRowAsserter {
     this.rowsPerKey = new HashMap<>();
     List<Integer> expKeyIndexes = keyColIndexes(expCols);
     for (Tab.Row row : expected) {
-      List<Tab.Val> kv = sublist(Utils.asList(row.vals()), expKeyIndexes);
+      List<Tab.Val> kv = sublist(Utils.toArrayList(row.vals()), expKeyIndexes);
       rowsPerKey.compute(kv, (k, e) -> {
         if (e == null) {
           List<Tab.Row> el = new ArrayList<>();
@@ -40,7 +40,7 @@ class KeyBasedRowAsserter extends AbstractRowAsserter {
     }
     List<Integer> actKeyIndexes = keyColIndexes(actCols);
     for (Tab.Row row : actual) {
-      List<Tab.Val> kv = sublist(Utils.asList(row.vals()), actKeyIndexes);
+      List<Tab.Val> kv = sublist(Utils.toArrayList(row.vals()), actKeyIndexes);
       rowsPerKey.compute(kv, (k, e) -> {
         if (e == null) {
           List<Tab.Row> el = new ArrayList<>();
@@ -57,7 +57,7 @@ class KeyBasedRowAsserter extends AbstractRowAsserter {
 
   @NonNull
   private static List<Integer> keyColIndexes(@NonNull Iterable<Tab.Col> cols) {
-    final List<Tab.Col> colList = Utils.asList(cols);
+    final List<Tab.Col> colList = Utils.toArrayList(cols);
     return IntStream.range(0, colList.size())
         .filter(i -> colList.get(i).isKey())
         .boxed()

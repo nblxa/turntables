@@ -40,7 +40,7 @@ class NamedValAsserter extends AbstractMatchingValAsserter {
   @Override
   public boolean match(@NonNull Iterable<Tab.Val> expected, @NonNull Iterable<Tab.Val> actual) {
     Iterator<Tab.Val> expIter = expected.iterator();
-    List<Tab.Val> actList = Utils.asList(actual);
+    List<Tab.Val> actList = Utils.toArrayList(actual);
     int i = 0;
     while (expIter.hasNext()) {
       int actIndex = actIndexes.get(i);

@@ -2,7 +2,6 @@ package io.github.nblxa.turntables;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
-import nl.jqno.equalsverifier.Warning;
 import org.junit.Test;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -101,14 +100,6 @@ public class TestEquals {
   public void testRowAdderTable_equalsContract() {
     EqualsVerifier.forClass(TableUtils.RowAdderTable.class)
         .withIgnoredFields("rows")
-        .verify();
-  }
-
-  @Test
-  public void testIterableListDecorator_equalsContract() {
-    EqualsVerifier.forClass(IterableListDecorator.class)
-        .suppress(Warning.NONFINAL_FIELDS, Warning.TRANSIENT_FIELDS)
-        .withIgnoredFields("iterable")
         .verify();
   }
 

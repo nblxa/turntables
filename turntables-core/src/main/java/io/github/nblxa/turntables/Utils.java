@@ -300,17 +300,9 @@ public final class Utils {
 
   public static <T> List<T> toArrayList(Iterable<T> iterable) {
     if (iterable instanceof ArrayList) {
-      return new ArrayList<T>((ArrayList<T>) iterable);
+      return (ArrayList<T>) iterable;
     }
     return toList(iterable, ArrayList::new);
-  }
-
-  public static <T> List<T> asList(Iterable<T> iterable) {
-    if (iterable instanceof List) {
-      return (List<T>) iterable;
-    } else {
-      return new IterableListDecorator<>(iterable);
-    }
   }
 
   public static <T, U> Iterable<U> paired(Iterable<T> expected, Iterable<T> actual,

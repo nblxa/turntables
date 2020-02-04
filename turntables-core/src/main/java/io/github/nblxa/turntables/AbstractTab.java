@@ -18,7 +18,7 @@ public abstract class AbstractTab implements Tab {
   }
 
   public AbstractTab(Iterable<Col> cols) {
-    this.cols = Objects.requireNonNull(Utils.asList(cols), "cols");
+    this.cols = Objects.requireNonNull(Utils.toArrayList(cols), "cols");
   }
 
   @Override

@@ -12,8 +12,8 @@ class OrderedColAsserter implements ColAsserter {
   public boolean match(@NonNull Iterable<Tab.Col> expected, @NonNull Iterable<Tab.Col> actual) {
     Objects.requireNonNull(expected, "expected");
     Objects.requireNonNull(actual, "actual");
-    List<Tab.Col> expList = Utils.asList(expected);
-    List<Tab.Col> actList = Utils.asList(actual);
+    List<Tab.Col> expList = Utils.toArrayList(expected);
+    List<Tab.Col> actList = Utils.toArrayList(actual);
     if (expList.size() != actList.size()) {
       return false;
     }

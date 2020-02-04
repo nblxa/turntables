@@ -56,7 +56,7 @@ class RowOrderPrism extends AbstractTab {
   @NonNull
   @Override
   public Iterable<Row> rows() {
-    return Utils.asList(rowAsserter.getRowPairs()).stream()
+    return Utils.toArrayList(rowAsserter.getRowPairs()).stream()
         .map(rowFunction)
         .flatMap(o -> o.map(Stream::of).orElse(Stream.empty()))
         .collect(Collectors.toList());
