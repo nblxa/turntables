@@ -17,7 +17,7 @@
     <url>http://github.com/nblxa/turntables</url>
 
     <properties>
-        <sonar.coverage.jacoco.xmlReportsPaths>${project.basedir}/../turntables-coverage/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportsPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>${basedir}/../${aggregate.report.dir}</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <dependencies>
