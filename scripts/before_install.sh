@@ -2,6 +2,10 @@
 
 set -e
 
+# fetch the whole repository
+
+git fetch --unshallow
+
 # export GPG details
 
 echo "$GPG_SECRET_KEYS" | base64 --decode | $GPG_EXECUTABLE --import --no-tty --batch
