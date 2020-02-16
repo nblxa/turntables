@@ -8,13 +8,12 @@ ResultSet rs = conn.executeQuery("select id, name from employees");
 
 Tab actual = Turntables.from(rs);
 
-Tab expected = Turntables.tab()
-  .row(2, "Bob")
-  .row(1, "Alice");
-
 Turntables.assertThat(actual)
   .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
-  .matches(expected);
+  .matches()
+  .row(2, "Bob")
+  .row(1, "Alice")
+  .asExpected();
 ```
 
 `Turntables` integrates with `JUnit` to set up test data in tables:

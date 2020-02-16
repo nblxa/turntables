@@ -55,13 +55,12 @@ public class ITMySqlTestData {
 
     Tab actual = testTab.ingest();
 
-    Tab expected = Turntables.tab()
-        .row(1, "Alice", "QA")
-        .row(2, "Bob", "QA");
     Turntables.assertThat(actual)
-        .matches(expected);
+        .matches()
+        .row(1, "Alice", "QA")
+        .row(2, "Bob", "QA")
+        .asExpected();
   }
-
 
   @Test
   public void testMismatch() throws SQLException {
@@ -73,17 +72,16 @@ public class ITMySqlTestData {
 
     Tab actual = testTab.ingest();
 
-    Tab expected = Turntables.tab()
-        .row(1, "Hugh", "QA")
-        .row(2, "Mary", "QA");
-
     Throwable t = null;
     // comment next line to check in the IDE:
     t = catchThrowable(() -> {
       assertThat(actual)
           .colMode(Turntables.ColMode.MATCHES_IN_GIVEN_ORDER)
           .rowMode(Turntables.RowMode.MATCHES_IN_GIVEN_ORDER)
-          .matches(expected);
+          .matches()
+          .row(1, "Hugh", "QA")
+          .row(2, "Mary", "QA")
+          .asExpected();
       // comment next line to check in the IDE:
     });
 
@@ -133,15 +131,14 @@ public class ITMySqlTestData {
       s.execute();
     }
 
-    Tab expectedData = Turntables.tab()
-        .row(255, 0, 0)
-        .row(40, 140, 25)
-        .row(0, 0, 0);
-
     Tab actualData = testDataSource.ingest("colors");
 
     Turntables.assertThat(actualData)
         .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
-        .matches(expectedData);
+        .matches()
+        .row(255, 0, 0)
+        .row(40, 140, 25)
+        .row(0, 0, 0)
+        .asExpected();
   }
 }

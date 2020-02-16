@@ -26,7 +26,7 @@ public class TestAssertj {
       assertThat(act)
           .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
           .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
-          .matches(exp);
+          .matchesExpected(exp);
       // comment next line to check in the IDE:
     });
     assertThat(t)
@@ -60,7 +60,7 @@ public class TestAssertj {
       assertThat(act)
           .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
           .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
-          .matches(exp);
+          .matchesExpected(exp);
       // comment next line to check in the IDE:
     });
 
@@ -98,7 +98,7 @@ public class TestAssertj {
       assertThat(act)
           .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
           .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
-          .matches(exp);
+          .matchesExpected(exp);
       // comment next line to check in the IDE:
     });
 
@@ -137,7 +137,7 @@ public class TestAssertj {
       assertThat(act)
           .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
           .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
-          .matches(exp);
+          .matchesExpected(exp);
       // comment next line to check in the IDE:
     });
 
@@ -168,13 +168,295 @@ public class TestAssertj {
         .row(testInt(i -> i <= 10), 2)
         .row(3, 4);
 
-    Throwable t = catchThrowable(() -> {
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matchesExpected(exp)
+        .isNotEqualTo(exp);
+  }
+
+  @Test
+  public void matchFluent_rows() {
+    Tab act = Turntables.tab()
+        .row(1, 2)
+        .row(3, 4);
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .row(testInt(i -> i <= 10), 2)
+        .row(3, 4)
+        .asExpected()
+        .isNotEqualTo(new Object());
+  }
+
+  @Test
+  public void matchFluent_unnamedColsRows() {
+    Tab act = Turntables.tab()
+        .row(1, 2)
+        .row(3, 4);
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .col(Typ.INTEGER)
+        .col(Typ.INTEGER)
+        .row(testInt(i -> i <= 10), 2)
+        .row(3, 4)
+        .asExpected()
+        .isNotEqualTo(new Object());
+  }
+
+  @Test
+  public void matchFluent_namedColsRows() {
+    Tab act = Turntables.tab()
+        .row(1, 2)
+        .row(3, 4);
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .col("a", Typ.INTEGER)
+        .col("b", Typ.INTEGER)
+        .row(testInt(i -> i <= 10), 2)
+        .row(3, 4)
+        .asExpected()
+        .isNotEqualTo(new Object());
+  }
+
+  @Test
+  public void matchFluent_unnamedCols() {
+    Tab act = Turntables.tab()
+        .col(Typ.INTEGER)
+        .col(Typ.INTEGER);
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .col(Typ.INTEGER)
+        .col(Typ.INTEGER)
+        .asExpected()
+        .isNotEqualTo(new Object());
+  }
+
+  @Test
+  public void matchFluent_namedCols() {
+    Tab act = Turntables.tab()
+        .col("a", Typ.INTEGER)
+        .col("b", Typ.INTEGER);
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .col("a", Typ.INTEGER)
+        .col("b", Typ.INTEGER)
+        .asExpected()
+        .isNotEqualTo(new Object());
+  }
+
+  @Test
+  public void matchFluent_unnamedKeyColsRows() {
+    Tab act = Turntables.tab()
+        .row(1, 2, "x")
+        .row(3, 4, "y");
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .key(Typ.INTEGER)
+        .key(Typ.INTEGER)
+        .col(Typ.STRING)
+        .row(testInt(i -> i <= 10), 2, "x")
+        .row(3, 4, "y")
+        .asExpected()
+        .isNotEqualTo(new Object());
+  }
+
+  @Test
+  public void matchFluent_namedKeyColsRows() {
+    Tab act = Turntables.tab()
+        .row(1, 2, "x")
+        .row(3, 4, "y");
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .key("a", Typ.INTEGER)
+        .key("b", Typ.INTEGER)
+        .col("c", Typ.STRING)
+        .row(testInt(i -> i <= 10), 2, "x")
+        .row(3, 4, "y")
+        .asExpected()
+        .isNotEqualTo(new Object());
+  }
+
+  @Test
+  public void matchFluent_unnamedKeyCols() {
+    Tab act = Turntables.tab()
+        .key(Typ.INTEGER)
+        .key(Typ.INTEGER)
+        .col(Typ.STRING);
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .key(Typ.INTEGER)
+        .key(Typ.INTEGER)
+        .col(Typ.STRING)
+        .asExpected()
+        .isNotEqualTo(new Object());
+  }
+
+  @Test
+  public void matchFluent_namedKeyCols() {
+    Tab act = Turntables.tab()
+        .key("a", Typ.INTEGER)
+        .key("b", Typ.INTEGER)
+        .col("c", Typ.STRING);
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .key("a", Typ.INTEGER)
+        .key("b", Typ.INTEGER)
+        .col("c", Typ.STRING)
+        .asExpected()
+        .isNotEqualTo(new Object());
+  }
+
+  @Test
+  public void matchFluent_rowsTab_throwsUoe() {
+    Tab act = Turntables.tab();
+
+    Throwable t = catchThrowable(() ->
+        assertThat(act)
+            .matches()
+            .row(1)
+            .tab());
+    assertThat(t)
+        .isInstanceOf(UnsupportedOperationException.class)
+        .hasNoCause();
+  }
+
+  @Test
+  public void matchFluent_unnamedColsRowsTab_throwsUoe() {
+    Tab act = Turntables.tab();
+
+    Throwable t = catchThrowable(() ->
+        assertThat(act)
+            .matches()
+            .col(Typ.INTEGER)
+            .row(1)
+            .tab());
+    assertThat(t)
+        .isInstanceOf(UnsupportedOperationException.class)
+        .hasNoCause();
+  }
+
+  @Test
+  public void matchFluent_namedColsRowsTab_throwsUoe() {
+    Tab act = Turntables.tab();
+
+    Throwable t = catchThrowable(() ->
+        assertThat(act)
+            .matches()
+            .col("a", Typ.INTEGER)
+            .row(1)
+            .tab());
+    assertThat(t)
+        .isInstanceOf(UnsupportedOperationException.class)
+        .hasNoCause();
+  }
+
+  @Test
+  public void matchFluent_unnamedColsTab_throwsUoe() {
+    Tab act = Turntables.tab();
+
+    Throwable t = catchThrowable(() ->
+        assertThat(act)
+            .matches()
+            .col(Typ.INTEGER)
+            .tab());
+    assertThat(t)
+        .isInstanceOf(UnsupportedOperationException.class)
+        .hasNoCause();
+  }
+
+  @Test
+  public void matchFluent_namedColsTab_throwsUoe() {
+    Tab act = Turntables.tab();
+
+    Throwable t = catchThrowable(() ->
+        assertThat(act)
+            .matches()
+            .col("a", Typ.INTEGER)
+            .tab());
+    assertThat(t)
+        .isInstanceOf(UnsupportedOperationException.class)
+        .hasNoCause();
+  }
+
+  @Test
+  public void matchFluent_rows_rowAdder() {
+    Tab act = Turntables.tab()
+        .row(1, 2)
+        .row(3, 4);
+
+    Throwable t = catchThrowable(() ->
       assertThat(act)
           .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
           .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
-          .matches(exp)
-          .isNotEqualTo(exp);
-    });
-    assertThat(t).isNull();
+          .matches()
+          .rowAdder());
+    assertThat(t)
+        .isInstanceOf(IllegalStateException.class)
+        .hasNoCause();
+  }
+
+  @Test
+  public void matchFluent_unnamedColsRows_rowAdder() {
+    Tab act = Turntables.tab()
+        .row(1, 2)
+        .row(3, 4);
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .col(Typ.INTEGER)
+        .col(Typ.INTEGER)
+        .rowAdder()
+        .row(testInt(i -> i <= 10), 2)
+        .row(3, 4)
+        .asExpected()
+        .isNotEqualTo(new Object());
+  }
+
+  @Test
+  public void matchFluent_namedColsRows_rowAdder() {
+    Tab act = Turntables.tab()
+        .row(1, 2)
+        .row(3, 4);
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .col("a", Typ.INTEGER)
+        .col("b", Typ.INTEGER)
+        .rowAdder()
+        .row(testInt(i -> i <= 10), 2)
+        .row(3, 4)
+        .asExpected()
+        .isNotEqualTo(new Object());
   }
 }

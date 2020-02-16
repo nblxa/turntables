@@ -36,7 +36,7 @@ public class TabAssert<T extends Tab> extends AbstractObjectAssert<TabAssert<T>,
    * @return the assertion object
    */
   @NonNull
-  public <U extends Tab> TabAssert<T> matches(@NonNull U expectedTab) {
+  public <U extends Tab> TabAssert<T> matchesExpected(@NonNull U expectedTab) {
     AssertionProxy.Builder builder = proxyBuilder.copy();
     builder.expected(expectedTab);
     AssertionProxy.Actual actProxy = builder.buildOrGetActualProxy();
@@ -50,6 +50,19 @@ public class TabAssert<T extends Tab> extends AbstractObjectAssert<TabAssert<T>,
         MSG_FORMAT, expRep, actRep);
 
     throw failures.failure(info, errorMessages);
+  }
+
+  /**
+   * Starts a fluent construction of the expected {@link Tab}.
+   *
+   * As soon as the expected {@link Tab} is created, the assertion can be triggered
+   * by calling {@link TabAssertColAdder#asExpected}.
+   *
+   * @return the builder object constructing the expected {@link Tab}
+   */
+  @NonNull
+  public TabAssertColAdder<T> matches() {
+    return new TabAssertColAdder<>(this, Turntables.tab());
   }
 
   @Override
