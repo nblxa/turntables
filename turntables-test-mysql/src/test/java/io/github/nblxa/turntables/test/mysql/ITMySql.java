@@ -59,7 +59,7 @@ public class ITMySql {
          ResultSet rs = ps.executeQuery()) {
       Tab actual = Turntables.from(rs);
       Turntables.assertThat(actual)
-          .matches(expected);
+          .matchesExpected(expected);
     }
   }
 }
