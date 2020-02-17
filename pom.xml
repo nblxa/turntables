@@ -68,7 +68,7 @@
         <jacoco.maven.plugin.version>0.8.4</jacoco.maven.plugin.version>
         <pitest.maven.version>1.4.11</pitest.maven.version>
         <coveralls.maven.plugin.version>4.3.0</coveralls.maven.plugin.version>
-        <maven.checkstyle.plugin.version>3.1.0</maven.checkstyle.plugin.version>
+        <maven.checkstyle.plugin.version>3.1.1</maven.checkstyle.plugin.version>
 
         <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
         <maven.install.plugin.version>3.0.0-M1</maven.install.plugin.version>
