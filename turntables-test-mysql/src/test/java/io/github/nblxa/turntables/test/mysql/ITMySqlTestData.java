@@ -9,6 +9,7 @@ import io.github.nblxa.turntables.junit.TestDataSource;
 import io.github.nblxa.turntables.junit.TestDataFactory;
 import io.github.nblxa.turntables.junit.TestTable;
 import org.assertj.core.api.Assertions;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -24,26 +25,26 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class ITMySqlTestData {
 
-  private JdbcDatabaseContainer<?> mysql = new MySQLContainerProvider()
+  private static JdbcDatabaseContainer<?> mysql = new MySQLContainerProvider()
       .newInstance()
       .withDatabaseName("test")
       .withUsername("scott")
       .withPassword("tiger");
 
-  private TestDataSource testDataSource = new TestDataFactory()
+  private static TestDataSource testDataSource = new TestDataFactory()
       .jdbc(mysql::getJdbcUrl, "scott", "tiger");
 
-  private TestTable testTab = testDataSource.table("employees")
+  @ClassRule
+  public static TestRule chain = RuleChain
+      .outerRule(mysql)
+      .around(testDataSource);
+
+  @Rule
+  public TestTable testTab = testDataSource.table("employees")
       .col("id", Typ.INTEGER).col("name", Typ.STRING).col("dept", Typ.STRING)
       .row(1, "Alice", "Dev")
       .row(2, "Bob", "Ops")
       .cleanUpAfterTest(CleanUpAction.DROP);
-
-  @Rule
-  public TestRule chain = RuleChain
-      .outerRule(mysql)
-      .around(testDataSource)
-      .around(testTab);
 
   @Test
   public void test() throws SQLException {

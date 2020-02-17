@@ -45,21 +45,22 @@ public class ITMySql {
 
   @Test
   public void test() throws SQLException {
-    Tab expected = Turntables.tab()
-        .col("a", Typ.INTEGER).col("b", Typ.STRING)
-        .row(1, "abc")
-        .row(2, "def");
-
     try (Connection conn = mysql.createConnection("");
          PreparedStatement s = conn.prepareStatement("UPDATE testtab SET a = a / 10")) {
       s.execute();
     }
 
+    final Tab actual;
     try (PreparedStatement ps = conn.prepareStatement("select * from testtab");
          ResultSet rs = ps.executeQuery()) {
-      Tab actual = Turntables.from(rs);
-      Turntables.assertThat(actual)
-          .matchesExpected(expected);
+      actual = Turntables.from(rs);
     }
+
+    Turntables.assertThat(actual)
+        .matches()
+        .col("a", Typ.INTEGER).col("b", Typ.STRING)
+        .row(1, "abc")
+        .row(2, "def")
+        .asExpected();
   }
 }

@@ -19,7 +19,8 @@ Turntables.assertThat(actual)
 `Turntables` integrates with `JUnit` to set up test data in tables:
 
 ```java
-private TestTable testTab = testDataSource.table("employees")
+@Rule
+public TestTable testTab = testDataSource.table("employees")
   .col("id", Typ.INTEGER).col("name", Typ.STRING)
   .row(1, "Alice")
   .row(2, "Bob")

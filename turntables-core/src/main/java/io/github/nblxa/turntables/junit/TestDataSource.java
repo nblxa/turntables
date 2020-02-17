@@ -45,9 +45,6 @@ public class TestDataSource implements TestRule {
   @NonNull
   public FluentTestTable table(@NonNull String tableName) {
     Objects.requireNonNull(tableName, "tableName is null");
-    if (initialized.get()) {
-      throw new IllegalStateException("Already initialized.");
-    }
     return new FluentTestTable(this, tableName);
   }
 
