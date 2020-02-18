@@ -10,6 +10,7 @@ import org.junit.Test;
 
 public class TestAssertj {
   private static final String LS = System.lineSeparator();
+  private static final Object SOME_RANDOM_OBJECT = new Object();
 
   @Test
   public void mismatchMatcher_colByOrder_bothUnnamed() {
@@ -188,7 +189,7 @@ public class TestAssertj {
         .row(testInt(i -> i <= 10), 2)
         .row(3, 4)
         .asExpected()
-        .isNotEqualTo(new Object());
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
   }
 
   @Test
@@ -206,7 +207,7 @@ public class TestAssertj {
         .row(testInt(i -> i <= 10), 2)
         .row(3, 4)
         .asExpected()
-        .isNotEqualTo(new Object());
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
   }
 
   @Test
@@ -224,7 +225,7 @@ public class TestAssertj {
         .row(testInt(i -> i <= 10), 2)
         .row(3, 4)
         .asExpected()
-        .isNotEqualTo(new Object());
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
   }
 
   @Test
@@ -240,7 +241,7 @@ public class TestAssertj {
         .col(Typ.INTEGER)
         .col(Typ.INTEGER)
         .asExpected()
-        .isNotEqualTo(new Object());
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
   }
 
   @Test
@@ -256,11 +257,11 @@ public class TestAssertj {
         .col("a", Typ.INTEGER)
         .col("b", Typ.INTEGER)
         .asExpected()
-        .isNotEqualTo(new Object());
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
   }
 
   @Test
-  public void matchFluent_unnamedKeyColsRows() {
+  public void matchFluent_unnamedKeyColsRows1() {
     Tab act = Turntables.tab()
         .row(1, 2, "x")
         .row(3, 4, "y");
@@ -275,11 +276,30 @@ public class TestAssertj {
         .row(testInt(i -> i <= 10), 2, "x")
         .row(3, 4, "y")
         .asExpected()
-        .isNotEqualTo(new Object());
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
   }
 
   @Test
-  public void matchFluent_namedKeyColsRows() {
+  public void matchFluent_unnamedKeyColsRows2() {
+    Tab act = Turntables.tab()
+        .row("x", 1, 2)
+        .row("y", 3, 4);
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .col(Typ.STRING)
+        .key(Typ.INTEGER)
+        .key(Typ.INTEGER)
+        .row("x", testInt(i -> i <= 10), 2)
+        .row("y", 3, 4)
+        .asExpected()
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
+  }
+
+  @Test
+  public void matchFluent_namedKeyColsRows1() {
     Tab act = Turntables.tab()
         .row(1, 2, "x")
         .row(3, 4, "y");
@@ -294,7 +314,26 @@ public class TestAssertj {
         .row(testInt(i -> i <= 10), 2, "x")
         .row(3, 4, "y")
         .asExpected()
-        .isNotEqualTo(new Object());
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
+  }
+
+  @Test
+  public void matchFluent_namedKeyColsRows2() {
+    Tab act = Turntables.tab()
+        .row("x", 1, 2)
+        .row("y", 3, 4);
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .col("c", Typ.STRING)
+        .key("a", Typ.INTEGER)
+        .key("b", Typ.INTEGER)
+        .row("x", testInt(i -> i <= 10), 2)
+        .row("y", 3, 4)
+        .asExpected()
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
   }
 
   @Test
@@ -312,7 +351,7 @@ public class TestAssertj {
         .key(Typ.INTEGER)
         .col(Typ.STRING)
         .asExpected()
-        .isNotEqualTo(new Object());
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
   }
 
   @Test
@@ -330,7 +369,7 @@ public class TestAssertj {
         .key("b", Typ.INTEGER)
         .col("c", Typ.STRING)
         .asExpected()
-        .isNotEqualTo(new Object());
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
   }
 
   @Test
@@ -411,15 +450,15 @@ public class TestAssertj {
         .row(1, 2)
         .row(3, 4);
 
-    Throwable t = catchThrowable(() ->
-      assertThat(act)
-          .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-          .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
-          .matches()
-          .rowAdder());
-    assertThat(t)
-        .isInstanceOf(IllegalStateException.class)
-        .hasNoCause();
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .rowAdder()
+        .row(1, 2)
+        .row(3, 4)
+        .asExpected()
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
   }
 
   @Test
@@ -438,7 +477,7 @@ public class TestAssertj {
         .row(testInt(i -> i <= 10), 2)
         .row(3, 4)
         .asExpected()
-        .isNotEqualTo(new Object());
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
   }
 
   @Test
@@ -457,6 +496,74 @@ public class TestAssertj {
         .row(testInt(i -> i <= 10), 2)
         .row(3, 4)
         .asExpected()
-        .isNotEqualTo(new Object());
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
+  }
+
+  @Test
+  public void matchFluent_empty() {
+    Tab act = Turntables.tab();
+    
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .asExpected()
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
+  }
+
+  @Test
+  public void matchFluent_emptyUnnamed() {
+    Tab act = Turntables.tab()
+        .col(Typ.DATE);
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .col(Typ.DATE)
+        .asExpected()
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
+  }
+
+  @Test
+  public void matchFluent_emptyNamed() {
+    Tab act = Turntables.tab()
+        .col("Wow", Typ.DATE);
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .col("Wow", Typ.DATE)
+        .asExpected()
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
+  }
+
+  @Test
+  public void matchFluent_emptyUnnamedKey() {
+    Tab act = Turntables.tab()
+        .key(Typ.DATE);
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .key(Typ.DATE)
+        .asExpected()
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
+  }
+
+  @Test
+  public void matchFluent_emptyNamedKey() {
+    Tab act = Turntables.tab()
+        .key("Wow", Typ.DATE);
+
+    assertThat(act)
+        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .matches()
+        .key("Wow", Typ.DATE)
+        .asExpected()
+        .isNotEqualTo(SOME_RANDOM_OBJECT);
   }
 }

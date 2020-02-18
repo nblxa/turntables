@@ -1,5 +1,6 @@
 package io.github.nblxa.turntables.junit;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.Tab;
 import org.junit.rules.TestRule;
 
@@ -20,6 +21,13 @@ import org.junit.rules.TestRule;
  *
  * in the end, a clean-up action can be defined to be executed after testing.
  */
-public interface TestTable extends TestRule {
+public interface TestTable extends Table, TestRule {
+  /**
+   * Load data from the table in the test data source and create a new {@link Tab} object
+   * to hold it.
+   *
+   * @return the new {@link Tab} object for use in assertions
+   */
+  @NonNull
   Tab ingest();
 }

@@ -25,26 +25,28 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class ITMySqlTestData {
 
-  private static JdbcDatabaseContainer<?> mysql = new MySQLContainerProvider()
+  @ClassRule
+  public static JdbcDatabaseContainer<?> mysql = new MySQLContainerProvider()
       .newInstance()
       .withDatabaseName("test")
       .withUsername("scott")
       .withPassword("tiger");
 
-  private static TestDataSource testDataSource = new TestDataFactory()
+  private TestDataSource testDataSource = new TestDataFactory()
       .jdbc(mysql::getJdbcUrl, "scott", "tiger");
 
-  @ClassRule
-  public static TestRule chain = RuleChain
-      .outerRule(mysql)
-      .around(testDataSource);
-
-  @Rule
-  public TestTable testTab = testDataSource.table("employees")
-      .col("id", Typ.INTEGER).col("name", Typ.STRING).col("dept", Typ.STRING)
+  private TestTable testTab = testDataSource.table("employees")
+      .col("id", Typ.INTEGER)
+      .col("name", Typ.STRING)
+      .col("dept", Typ.STRING)
       .row(1, "Alice", "Dev")
       .row(2, "Bob", "Ops")
       .cleanUpAfterTest(CleanUpAction.DROP);
+
+  @Rule
+  public TestRule chain = RuleChain
+      .outerRule(testDataSource)
+      .around(testTab);
 
   @Test
   public void test() throws SQLException {
@@ -57,6 +59,7 @@ public class ITMySqlTestData {
     Tab actual = testTab.ingest();
 
     Turntables.assertThat(actual)
+        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
         .matches()
         .row(1, "Alice", "QA")
         .row(2, "Bob", "QA")
@@ -140,6 +143,112 @@ public class ITMySqlTestData {
         .row(255, 0, 0)
         .row(40, 140, 25)
         .row(0, 0, 0)
+        .asExpected();
+  }
+
+  @Test
+  public void testString() throws SQLException {
+    Tab initialData = Turntables.tab()
+        .col("first_name", Typ.STRING)
+        .col("last_name", Typ.STRING)
+        .row("Leo", "Tolstoy")
+        .row("William", "Shakespeare");
+
+    testDataSource.feed("writers", initialData);
+
+    // Simulate the application logic
+    try (Connection conn = mysql.createConnection("");
+         PreparedStatement s = conn.prepareStatement(
+             "insert into writers (first_name, last_name) values ('Alexandre', 'Dumas')")) {
+      s.execute();
+    }
+
+    Tab actualData = testDataSource.ingest("writers");
+
+    Turntables.assertThat(actualData)
+        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+        .matches()
+        .row("Leo", "Tolstoy")
+        .row("William", "Shakespeare")
+        .row("Alexandre", "Dumas")
+        .asExpected();
+  }
+
+  @Test
+  public void testDouble() throws SQLException {
+    Tab initialData = Turntables.tab()
+        .col("constant", Typ.STRING)
+        .col("value", Typ.DOUBLE)
+        .row("Pi", 3.1415926d)
+        .row("e", 2.71828182846d);
+
+    testDataSource.feed("constants", initialData);
+
+    // Simulate the application logic
+    try (Connection conn = mysql.createConnection("");
+         PreparedStatement s = conn.prepareStatement(
+             "update constants set value = value * 2")) {
+      s.execute();
+    }
+
+    Tab actualData = testDataSource.ingest("constants");
+
+    Turntables.assertThat(actualData)
+        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+        .matches()
+        .row("Pi", 3.1415926d * 2)
+        .row("e", 2.71828182846d * 2)
+        .asExpected();
+  }
+
+  @Test
+  public void testBoolean() throws SQLException {
+    Tab initialData = Turntables.tab()
+        .col("constant", Typ.STRING)
+        .col("value", Typ.BOOLEAN)
+        .row("false", false)
+        .row("true", true)
+        .row("null", Turntables.nul());
+
+    testDataSource.feed("constants", initialData);
+
+    // Simulate the application logic
+    try (Connection conn = mysql.createConnection("");
+         PreparedStatement s = conn.prepareStatement(
+             "update constants set value = not value")) {
+      s.execute();
+    }
+
+    Tab actualData = testDataSource.ingest("constants");
+
+    Turntables.assertThat(actualData)
+        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+        .matches()
+        .row("null", Turntables.nul())
+        .row("true", false)
+        .row("false", true)
+        .asExpected();
+  }
+
+  @Test
+  public void testReFeed() throws SQLException {
+    testDataSource.feed(testTab.getName(), Turntables.tab()
+        .row(1, "Leo", "Dev")
+        .row(2, "William", "Ops"));
+
+    // Simulate the application logic
+    try (Connection conn = mysql.createConnection("");
+         PreparedStatement s = conn.prepareStatement("update employees set dept = 'QA'")) {
+      s.execute();
+    }
+
+    Tab actual = testTab.ingest();
+
+    Turntables.assertThat(actual)
+        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+        .matches()
+        .row(1, "Leo", "QA")
+        .row(2, "William", "QA")
         .asExpected();
   }
 }

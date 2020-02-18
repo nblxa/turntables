@@ -425,7 +425,6 @@ public final class TableUtils {
 
     public RowAdderTable(Iterable<Col> cols) {
       super(cols);
-      Utils.checkCols(cols);
     }
 
     @Override
@@ -454,6 +453,11 @@ public final class TableUtils {
 
     private void addRow(Object[] objects) {
       Utils.checkObjects(objects);
+      List<Tab.Col> colsList = colsList();
+      if (colsList.isEmpty()) {
+        colsList.addAll(makeCols(objects));
+        Utils.checkCols(colsList);
+      }
       List<Tab.Val> vals = getVals(objects);
       this.rows.add(new SimpleRow(cols(), vals));
     }

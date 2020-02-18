@@ -2,13 +2,14 @@ package io.github.nblxa.turntables.junit;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.Tab;
+import io.github.nblxa.turntables.TableUtils;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
 import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
 
 public class FluentTestTable extends AbstractTestTable<FluentTestTable, FluentTestTable>
-                       implements Tab.UnnamedColAdderPart<UnnamedColTestTable>,
-                                  Tab.NamedColAdderPart<NamedColTestTable> {
+    implements Tab.UnnamedColAdderPart<UnnamedColTestTable>,
+               Tab.NamedColAdderPart<NamedColTestTable> {
 
   public FluentTestTable(@NonNull TestDataSource testDataSource, @NonNull String tableName) {
     super(testDataSource, tableName, CleanUpAction.DROP);
@@ -38,8 +39,9 @@ public class FluentTestTable extends AbstractTestTable<FluentTestTable, FluentTe
     return new NamedColTestTable(testDataSource, tableName, cleanUpAction).key(name, typ);
   }
 
+  @NonNull
   @Override
-  protected void initEmpty() {
-    testDataSource.feed(tableName, Turntables.tab());
+  TableUtils.AbstractColRowAdderTable colRowAdderTable() {
+    return Turntables.tab();
   }
 }

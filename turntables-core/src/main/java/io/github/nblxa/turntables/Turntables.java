@@ -43,6 +43,8 @@ public final class Turntables {
    */
   public static final long ROW_PERMUTATION_LIMIT = 10_000L;
 
+  private static final Object[] ARRAY_WITH_NULL = new Object[]{null};
+
   /**
    * Start creating a new <code>Tab</code> using a fluent API.
    * Example:
@@ -154,6 +156,11 @@ public final class Turntables {
   @NonNull
   public static DoublePredicate testDouble(@NonNull DoublePredicate shouldBeTrue) {
     return shouldBeTrue;
+  }
+
+  @NonNull
+  public static Object[] nul() {
+    return ARRAY_WITH_NULL;
   }
 
   /**

@@ -31,17 +31,9 @@ public class UnnamedColTestTable extends AbstractTestTable<UnnamedColTestTable, 
     return this;
   }
 
-  @Override
-  protected void initEmpty() {
-    testDataSource.feed(tableName, colAdder.tab());
-  }
-
   @NonNull
   @Override
-  public UnnamedColTestTable rowAdder() {
-    if (rowAdder == null) {
-      rowAdder = colAdder.rowAdder();
-    }
-    return this;
+  TableUtils.AbstractColRowAdderTable colRowAdderTable() {
+    return colAdder;
   }
 }

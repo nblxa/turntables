@@ -4,42 +4,25 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
 import io.github.nblxa.turntables.io.rowstore.RowStore;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.MultipleFailureException;
-import org.junit.runners.model.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-public class TestDataSource implements TestRule {
+public class TestDataSource extends AbstractTestRule {
   @NonNull
   private RowStore rowStore;
   @NonNull
-  private AtomicBoolean initialized;
+  private Map<String, TestTable> testRuleTables;
+  @NonNull
+  private List<Table> testMethodTables;
 
   public TestDataSource(@NonNull RowStore rowStore) {
     this.rowStore = Objects.requireNonNull(rowStore, "rowStore is null");
-    this.initialized = new AtomicBoolean(false);
-  }
-
-  @NonNull
-  @Override
-  public Statement apply(Statement base, Description description) {
-    return new Statement() {
-      @Override
-      public void evaluate() throws Throwable {
-        List<Throwable> errors = new ArrayList<>();
-        try {
-          init();
-          base.evaluate();
-        } catch (Throwable e) {
-          errors.add(e);
-        }
-        MultipleFailureException.assertEmpty(errors);
-      }
-    };
+    this.testRuleTables = new HashMap<>();
+    this.testMethodTables = new ArrayList<>();
   }
 
   @NonNull
@@ -51,31 +34,57 @@ public class TestDataSource implements TestRule {
   public void feed(@NonNull String tableName, @NonNull Tab data) {
     Objects.requireNonNull(tableName, "tableName is null");
     Objects.requireNonNull(data, "data is null");
-    checkIfInitialized();
-    rowStore.feed(tableName, data);
+    final Table table;
+    if (testRuleTables.containsKey(tableName)) {
+      // the table will be cleaned up by its own TestRule
+      table = testRuleTables.get(tableName);
+    } else {
+      // ensure the table is cleaned up after the method
+      table = new SimpleTable(data, tableName, CleanUpAction.DROP);
+      testMethodTables.add(table);
+    }
+    feedInternal(table, data);
   }
 
   @NonNull
   public Tab ingest(@NonNull String tableName) {
     Objects.requireNonNull(tableName, "tableName is null");
-    checkIfInitialized();
-    return rowStore.ingest(tableName);
+    Tab tab = rowStore.ingest(tableName);
+    return Objects.requireNonNull(tab, "tab is null");
   }
 
   public void cleanUp(@NonNull String tableName, @NonNull CleanUpAction cleanUpAction) {
     Objects.requireNonNull(tableName, "tableName is null");
     Objects.requireNonNull(cleanUpAction, "cleanUpAction is null");
-    checkIfInitialized();
     rowStore.cleanUp(tableName, cleanUpAction);
   }
 
-  private void init() {
-    initialized.compareAndSet(false, true);
+  void feedInternal(@NonNull Table table, @NonNull Tab data) {
+    rowStore.feed(table.getName(), data);
   }
 
-  private void checkIfInitialized() {
-    if (!initialized.get()) {
-      throw new IllegalStateException("Not initialized");
+  void addTestRuleTable(@NonNull TestTable testTable) {
+    testRuleTables.compute(testTable.getName(), (name, table) -> {
+      if (table != null) {
+        throw new IllegalStateException("TestTable " + name + " is already defined!");
+      }
+      return testTable;
+    });
+  }
+
+  @Override
+  void setUp() {
+    testRuleTables.clear();
+    testMethodTables.clear();
+  }
+
+  @Override
+  void tearDown() {
+    ListIterator<Table> iter = testMethodTables.listIterator();
+    while (iter.hasNext()) {
+      Table testTable = iter.next();
+      cleanUp(testTable.getName(), testTable.getCleanUpAction());
+      iter.remove();
     }
   }
 }
