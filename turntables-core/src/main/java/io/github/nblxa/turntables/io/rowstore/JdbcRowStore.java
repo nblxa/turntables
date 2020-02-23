@@ -13,7 +13,7 @@ import java.sql.Statement;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class JdbcRowStore extends RowStore {
+public class JdbcRowStore implements RowStore {
   @FunctionalInterface
   public interface ThrowingSupplier<T, E extends Throwable> {
     @NonNull

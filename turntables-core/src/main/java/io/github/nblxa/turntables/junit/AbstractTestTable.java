@@ -5,15 +5,11 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.TableUtils;
 import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
-import org.junit.runner.Description;
-import org.junit.runners.model.MultipleFailureException;
-import org.junit.runners.model.Statement;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public abstract class AbstractTestTable<SELF extends AbstractTestTable<SELF, T>,
                                         T extends Tab.RowAdder<SELF>>
+    extends AbstractTestRule
     implements Tab.ColAdderRowAdderPart<SELF>,
                Tab.RowAdder<SELF>,
                TestTable {
@@ -37,12 +33,11 @@ public abstract class AbstractTestTable<SELF extends AbstractTestTable<SELF, T>,
     this.self = (SELF) this;
   }
 
-  @NonNull
-  @Override
-  public Tab ingest() {
-    return testDataSource.ingest(tableName);
-  }
-
+  /**
+   * Set the clean-up action to be performed for this table.
+   * @param cleanUpAction the clean-up action to set
+   * @return the assertion object
+   */
   @NonNull
   public SELF cleanUpAfterTest(@NonNull CleanUpAction cleanUpAction) {
     this.cleanUpAction = Objects.requireNonNull(cleanUpAction, "cleanUpAction is null");
@@ -51,55 +46,71 @@ public abstract class AbstractTestTable<SELF extends AbstractTestTable<SELF, T>,
 
   @NonNull
   @Override
+  public Tab ingest() {
+    return testDataSource.ingest(tableName);
+  }
+
+  @NonNull
+  @Override
   public SELF row(@Nullable Object first, @NonNull Object... rest) {
-    rowAdder();
-    rowAdder.row(first, rest);
+    getOrCreateRowAdderTable().row(first, rest);
     return self;
   }
 
   @NonNull
   @Override
   public Tab tab() {
-    return rowAdder.tab();
+    return getOrCreateRowAdderTable().tab();
   }
 
   @NonNull
   @Override
-  public Statement apply(@NonNull Statement base, @NonNull Description description) {
-    return new Statement() {
-      @Override
-      public void evaluate() throws Throwable {
-        List<Throwable> errors = new ArrayList<>();
-        try {
-          init();
-          base.evaluate();
-        } catch (Throwable e) {
-          errors.add(e);
-        } finally {
-          cleanup();
-        }
-        MultipleFailureException.assertEmpty(errors);
-      }
-    };
+  public CleanUpAction getCleanUpAction() {
+    return cleanUpAction;
   }
 
   @NonNull
   @Override
+  public String getName() {
+    return tableName;
+  }
+
+  @NonNull
+  @Override
+  @SuppressWarnings("unchecked")
   public SELF rowAdder() {
-    throw new IllegalStateException();
+    getOrCreateRowAdderTable();
+    return self;
   }
 
-  protected void init() {
+  void setUpEmpty() {
+    testDataSource.addTestRuleTable(this);
+    testDataSource.feedInternal(this, colRowAdderTable().tab());
+  }
+
+  @NonNull
+  TableUtils.RowAdderTable getOrCreateRowAdderTable() {
+    if (rowAdder == null) {
+      rowAdder = colRowAdderTable().rowAdder();
+    }
+    return rowAdder;
+  }
+
+  @NonNull
+  abstract TableUtils.AbstractColRowAdderTable colRowAdderTable();
+
+  @Override
+  void setUp() {
     if (rowAdder != null) {
-      testDataSource.feed(tableName, rowAdder.tab());
+      testDataSource.addTestRuleTable(this);
+      testDataSource.feedInternal(this, rowAdder.tab());
     } else {
-      initEmpty();
+      setUpEmpty();
     }
   }
 
-  protected abstract void initEmpty();
-
-  protected void cleanup() {
+  @Override
+  void tearDown() {
     testDataSource.cleanUp(tableName, cleanUpAction);
   }
 }
