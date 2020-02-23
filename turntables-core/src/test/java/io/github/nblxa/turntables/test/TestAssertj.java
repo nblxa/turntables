@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.*;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestAssertj {
@@ -565,5 +566,137 @@ public class TestAssertj {
         .key("Wow", Typ.DATE)
         .asExpected()
         .isNotEqualTo(SOME_RANDOM_OBJECT);
+  }
+
+  @Test
+  public void mismatch_rowColInGivenOrder_moreCols() {
+    Tab exp = Turntables.tab()
+        .row(1, 2)
+        .row(3, 4);
+    Tab act = Turntables.tab()
+        .row(1, 5, 2)
+        .row(3, 6, 4);
+
+    Throwable t = null;
+    // comment next line to check in the IDE:
+    t = catchThrowable(() -> {
+      assertThat(act)
+          .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+          .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+          .matchesExpected(exp);
+      // comment next line to check in the IDE:
+    });
+    assertThat(t)
+        .isInstanceOf(AssertionError.class)
+        .hasMessage(new StringBuilder(LS)
+            .append("Expected: <\"Table:").append(LS)
+            .append("    - col1 : 1").append(LS)
+            .append("      col2 : 2").append(LS)
+            .append("    - col1 : 3").append(LS)
+            .append("      col2 : 4\">").append(LS)
+            .append("but was: <\"Table:").append(LS)
+            .append("    - col1 : 1").append(LS)
+            .append("      col2 : 5").append(LS)
+            .append("      col3 : 2").append(LS)
+            .append("    - col1 : 3").append(LS)
+            .append("      col2 : 6").append(LS)
+            .append("      col3 : 4\">").append(LS).toString());
+  }
+
+  @Test
+  public void mismatch_rowColInGivenOrder_fewerCols() {
+    Tab exp = Turntables.tab()
+        .row(1, 2)
+        .row(3, 4);
+    Tab act = Turntables.tab()
+        .row(2)
+        .row(4);
+
+    Throwable t = null;
+    // comment next line to check in the IDE:
+    t = catchThrowable(() -> {
+      assertThat(act)
+          .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+          .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+          .matchesExpected(exp);
+      // comment next line to check in the IDE:
+    });
+    assertThat(t)
+        .isInstanceOf(AssertionError.class)
+        .hasMessage(new StringBuilder(LS)
+            .append("Expected: <\"Table:").append(LS)
+            .append("    - col1 : 1").append(LS)
+            .append("      col2 : 2").append(LS)
+            .append("    - col1 : 3").append(LS)
+            .append("      col2 : 4\">").append(LS)
+            .append("but was: <\"Table:").append(LS)
+            .append("    - col1 : 2").append(LS)
+            .append("    - col1 : 4\">").append(LS).toString());
+  }
+
+  @Test
+  public void mismatch_rowColInGivenOrder_moreRows() {
+    Tab exp = Turntables.tab()
+        .row(1, 2)
+        .row(3, 4);
+    Tab act = Turntables.tab()
+        .row(1, 2)
+        .row(5, 6)
+        .row(3, 4);
+
+    Throwable t = null;
+    // comment next line to check in the IDE:
+    t = catchThrowable(() -> {
+      assertThat(act)
+          .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+          .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+          .matchesExpected(exp);
+      // comment next line to check in the IDE:
+    });
+    assertThat(t)
+        .isInstanceOf(AssertionError.class)
+        .hasMessage(new StringBuilder(LS)
+            .append("Expected: <\"Table:").append(LS)
+            .append("    - col1 : 1").append(LS)
+            .append("      col2 : 2").append(LS)
+            .append("    - col1 : 3").append(LS)
+            .append("      col2 : 4\">").append(LS)
+            .append("but was: <\"Table:").append(LS)
+            .append("    - col1 : 1").append(LS)
+            .append("      col2 : 2").append(LS)
+            .append("    - col1 : 5").append(LS)
+            .append("      col2 : 6").append(LS)
+            .append("    - col1 : 3").append(LS)
+            .append("      col2 : 4\">").append(LS).toString());
+  }
+
+  @Test
+  public void mismatch_rowColInGivenOrder_fewerRows() {
+    Tab exp = Turntables.tab()
+        .row(1, 2)
+        .row(3, 4);
+    Tab act = Turntables.tab()
+        .row(3, 4);
+
+    Throwable t = null;
+    // comment next line to check in the IDE:
+    t = catchThrowable(() -> {
+      assertThat(act)
+          .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
+          .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+          .matchesExpected(exp);
+      // comment next line to check in the IDE:
+    });
+    assertThat(t)
+        .isInstanceOf(AssertionError.class)
+        .hasMessage(new StringBuilder(LS)
+            .append("Expected: <\"Table:").append(LS)
+            .append("    - col1 : 1").append(LS)
+            .append("      col2 : 2").append(LS)
+            .append("    - col1 : 3").append(LS)
+            .append("      col2 : 4\">").append(LS)
+            .append("but was: <\"Table:").append(LS)
+            .append("    - col1 : 3").append(LS)
+            .append("      col2 : 4\">").append(LS).toString());
   }
 }

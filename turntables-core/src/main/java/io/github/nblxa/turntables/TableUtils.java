@@ -134,8 +134,18 @@ public final class TableUtils {
   }
 
   static class SimpleRow extends AbstractTab.AbstractRow {
+    @NonNull
+    private final Iterable<Tab.Val> vals;
+
     SimpleRow(Iterable<Tab.Col> cols, Iterable<Tab.Val> vals) {
-      super(cols, vals);
+      super(cols);
+      this.vals = Objects.requireNonNull(vals, "vals is null");
+    }
+
+    @NonNull
+    @Override
+    public Iterable<Tab.Val> vals() {
+      return vals;
     }
 
     @Override

@@ -331,6 +331,37 @@ public final class Utils {
     };
   }
 
+  public static <T, U> Iterable<U> pairedSparsely(Iterable<T> expected, Iterable<T> actual,
+                                                  BiFunction<Optional<T>, Optional<T>, U> mapper) {
+    List<U> result = new ArrayList<>();
+
+    Iterator<T> expIter = expected.iterator();
+    Iterator<T> actIter = actual.iterator();
+
+    while (true) {
+      boolean expHasNext = expIter.hasNext();
+      boolean actHasNext = actIter.hasNext();
+      if (!expHasNext && !actHasNext) {
+        break;
+      }
+      final Optional<T> expOpt;
+      if (expHasNext) {
+        expOpt = Optional.of(expIter.next());
+      } else {
+        expOpt = Optional.empty();
+      }
+      final Optional<T> actOpt;
+      if (actHasNext) {
+        actOpt = Optional.of(actIter.next());
+      } else {
+        actOpt = Optional.empty();
+      }
+      result.add(mapper.apply(expOpt, actOpt));
+    }
+
+    return result;
+  }
+
   public static <K, V> Map.Entry<K, V> entry(K k, V v) {
     return new AbstractMap.SimpleImmutableEntry<>(k, v);
   }
