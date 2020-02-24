@@ -1,5 +1,9 @@
 # Turntables
 
+[![Build Status](https://travis-ci.com/nblxa/turntables.svg?branch=master)](https://travis-ci.com/nblxa/turntables)
+[![Coverage Status](https://coveralls.io/repos/github/nblxa/turntables/badge.svg?branch=master)](https://coveralls.io/github/nblxa/turntables?branch=master)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=turntables&metric=alert_status)](https://sonarcloud.io/dashboard?id=turntables)
+
 `Turntables` enables developers to write test assertions for data in tables
 using a simple fluent interface:
 
