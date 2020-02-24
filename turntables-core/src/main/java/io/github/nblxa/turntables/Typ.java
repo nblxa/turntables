@@ -64,7 +64,7 @@ public enum Typ {
     this.nullVal = new NullVal(this);
   }
 
-  boolean acceptsTyp(Typ typ) {
+  boolean accepts(Typ typ) {
     return typ == this || internal.accepts(typ);
   }
 
@@ -118,7 +118,7 @@ public enum Typ {
 
     @Override
     @NonNull
-    public Typ getTyp() {
+    public Typ typ() {
       return typ;
     }
 
@@ -143,7 +143,7 @@ public enum Typ {
         return false;
       }
       NullVal nullVal = (NullVal) o;
-      return nullVal.canEqual(this) && getTyp() == nullVal.getTyp();
+      return nullVal.canEqual(this) && typ() == nullVal.typ();
     }
 
     @Override
@@ -153,7 +153,7 @@ public enum Typ {
 
     @Override
     public int hashCode() {
-      return Objects.hash(getTyp());
+      return Objects.hash(typ());
     }
 
     @Override

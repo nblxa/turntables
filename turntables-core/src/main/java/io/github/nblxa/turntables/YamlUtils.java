@@ -55,7 +55,7 @@ final class YamlUtils {
   }
 
   static String renderVal(Tab.Val val) {
-    if (val.getTyp() == Typ.STRING) {
+    if (val.typ() == Typ.STRING) {
       return StringUtils.escape(String.valueOf(val.eval()));
     } else {
       return String.valueOf(val.eval());

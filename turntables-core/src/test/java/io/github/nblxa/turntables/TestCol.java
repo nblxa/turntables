@@ -40,7 +40,7 @@ public class TestCol {
       for (Typ valTyp : allTypesButAny) {
         Tab.Col col = new TableUtils.SimpleCol(colTyp, false);
         Tab.Val val = new TableUtils.SimpleVal(valTyp, typeValues.get(valTyp));
-        boolean doesAccept = col.accepts(val);
+        boolean doesAccept = col.typ().accepts(val.typ());
         if (valTyp == colTyp) {
           assertTrue("Col of type " + colTyp + " did not accept a value "
               + "of the same type.", doesAccept);
@@ -58,7 +58,7 @@ public class TestCol {
     for (Typ valTyp : allTypesButAny) {
       Tab.Val val = new TableUtils.SimpleVal(valTyp, typeValues.get(valTyp));
       assertTrue("Col of type " + Typ.ANY + " did not accept a value of type "
-          + valTyp + ".", col.accepts(val));
+          + valTyp + ".", col.typ().accepts(val.typ()));
     }
   }
 }

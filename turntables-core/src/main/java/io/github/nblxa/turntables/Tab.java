@@ -46,27 +46,6 @@ public interface Tab {
      * @return true if the column is part of the key
      */
     boolean isKey();
-
-    /**
-     * Creates a {@link Val} of the column's type from the given object.
-     *
-     * @deprecated replace with {@link Utils#getVal}
-     * @param o object to convert to this column's type
-     * @return {@link Val} for the given object
-     */
-    @Deprecated
-    @NonNull
-    Tab.Val valOf(@Nullable Object o);
-
-    /**
-     * Says whether the column accepts a value (i.e. the type allows this).
-     *
-     * @deprecated replace with {@link Typ#acceptsTyp}
-     * @param val value to check
-     * @return true if the value can be stored in the column
-     */
-    @Deprecated
-    boolean accepts(@NonNull Val val);
   }
 
   /**
@@ -79,7 +58,7 @@ public interface Tab {
      * @return value's type
      */
     @NonNull
-    Typ getTyp();
+    Typ typ();
 
     /**
      * Evaluate the <tt>Val</tt> and return the actual value stored in the table.<p>

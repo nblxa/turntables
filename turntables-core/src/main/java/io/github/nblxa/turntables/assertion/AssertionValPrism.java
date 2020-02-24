@@ -68,8 +68,8 @@ class AssertionValPrism extends AbstractTab {
 
     @NonNull
     @Override
-    public Typ getTyp() {
-      return apply(Val::getTyp);
+    public Typ typ() {
+      return apply(Val::typ);
     }
 
     @Nullable

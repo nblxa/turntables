@@ -88,7 +88,7 @@ public final class TableUtils {
 
     @Override
     @NonNull
-    public Typ getTyp() {
+    public Typ typ() {
       return typ;
     }
 
@@ -183,7 +183,7 @@ public final class TableUtils {
 
     @Override
     @NonNull
-    public Typ getTyp() {
+    public Typ typ() {
       return typ;
     }
 
@@ -252,7 +252,7 @@ public final class TableUtils {
 
     @Override
     public int hashCode() {
-      return Objects.hash(getTyp(), supp);
+      return Objects.hash(typ(), supp);
     }
 
     @Override
@@ -278,7 +278,7 @@ public final class TableUtils {
 
     @Override
     @NonNull
-    public Typ getTyp() {
+    public Typ typ() {
       return typ;
     }
 
@@ -630,7 +630,7 @@ public final class TableUtils {
       Object o = iterObj.next();
       Tab.Val val;
       try {
-        val = col.valOf(o);
+        val = Utils.getVal(o, col.typ());
         Utils.inferTyp(col, val, iterCol);
       } catch (Exception e) {
         throw new StructureException("Error at position #" + i, e);

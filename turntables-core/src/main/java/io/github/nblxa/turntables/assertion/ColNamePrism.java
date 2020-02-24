@@ -1,7 +1,6 @@
 package io.github.nblxa.turntables.assertion;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import io.github.nblxa.turntables.AbstractTab;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.TableUtils;
@@ -65,7 +64,7 @@ public class ColNamePrism extends AbstractTab implements Tab.NamedColTab {
 
   @NonNull
   private static List<Tab.NamedCol> renameFirstCols(@NonNull Tab tab,
-                                                        @NonNull List<String> colNames) {
+                                                    @NonNull List<String> colNames) {
     Iterable<Tab.NamedCol> cols = TableUtils.wrapWithNamedCols(tab).namedCols();
     List<Tab.NamedCol> colsList = Utils.toArrayList(cols);
     for (int i = 0; i < Math.min(colsList.size(), colNames.size()); i++) {
@@ -94,17 +93,6 @@ public class ColNamePrism extends AbstractTab implements Tab.NamedColTab {
     @Override
     public Typ typ() {
       return col.typ();
-    }
-
-    @NonNull
-    @Override
-    public Val valOf(@Nullable Object o) {
-      return col.valOf(o);
-    }
-
-    @Override
-    public boolean accepts(@NonNull Val val) {
-      return col.accepts(val);
     }
 
     @Override

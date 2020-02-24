@@ -48,16 +48,16 @@ public final class Utils {
   }
 
   static void inferTyp(Tab.Col col, Tab.Val fromVal, ListIterator<Tab.Col> iterCol) {
-    if (!col.accepts(fromVal)) {
+    if (!col.typ().accepts(fromVal.typ())) {
       throw new StructureException("Expected " + col.typ()
-          + " but got " + fromVal.getTyp() + ".");
+          + " but got " + fromVal.typ() + ".");
     } else {
-      if (col.typ() == Typ.ANY && fromVal.getTyp() != Typ.ANY) {
+      if (col.typ() == Typ.ANY && fromVal.typ() != Typ.ANY) {
         final Tab.Col inferredCol;
         if (col instanceof Tab.NamedCol) {
-          inferredCol = new InferredTypDecoratorNamedCol((Tab.NamedCol) col, fromVal.getTyp());
+          inferredCol = new InferredTypDecoratorNamedCol((Tab.NamedCol) col, fromVal.typ());
         } else {
-          inferredCol = new InferredTypDecoratorCol(col, fromVal.getTyp());
+          inferredCol = new InferredTypDecoratorCol(col, fromVal.typ());
         }
         iterCol.set(inferredCol);
       }
@@ -240,7 +240,7 @@ public final class Utils {
       return AbstractTab.AbstractAssertionVal.TYP;
     }
     if (val != null) {
-      return val.getTyp();
+      return val.typ();
     }
     return null;
   }
@@ -391,12 +391,6 @@ public final class Utils {
       }
       return Objects.requireNonNull(decoratedColTypAny, "decoratedColTypAny");
     }
-
-    @NonNull
-    @Override
-    public Tab.Val valOf(@Nullable Object o) {
-      return decoratedCol.valOf(o);
-    }
   }
 
   static final class InferredTypDecoratorNamedCol extends AbstractTab.AbstractCol
@@ -417,12 +411,6 @@ public final class Utils {
     @Override
     public String name() {
       return name;
-    }
-
-    @NonNull
-    @Override
-    public Tab.Val valOf(@Nullable Object o) {
-      return decoratedCol.valOf(o);
     }
 
     @SuppressWarnings("EqualsWhichDoesntCheckParameterClass") // checks via the canEqual method

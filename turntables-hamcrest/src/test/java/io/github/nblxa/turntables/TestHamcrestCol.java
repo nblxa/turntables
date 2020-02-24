@@ -38,7 +38,7 @@ public class TestHamcrestCol {
     for (Typ colTyp : allTypesButAny) {
       Tab.Col col = new TableUtils.SimpleCol(colTyp, false);
       Tab.Val val = new MatcherVal(Matchers.anything());
-      assertTrue(col.accepts(val));
+      assertTrue(col.typ().accepts(val.typ()));
     }
   }
 }

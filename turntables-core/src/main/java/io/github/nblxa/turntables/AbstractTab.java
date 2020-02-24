@@ -145,17 +145,6 @@ public abstract class AbstractTab implements Tab {
       return isKey;
     }
 
-    @Override
-    @NonNull
-    public Val valOf(@Nullable Object o) {
-      return Utils.getVal(o, typ);
-    }
-
-    @Override
-    public boolean accepts(@NonNull Val val) {
-      return typ.acceptsTyp(val.getTyp());
-    }
-
     public boolean canEqual(Object o) {
       return o instanceof AbstractCol;
     }
@@ -207,7 +196,7 @@ public abstract class AbstractTab implements Tab {
 
     @Override
     @NonNull
-    public Typ getTyp() {
+    public Typ typ() {
       return TYP;
     }
 
