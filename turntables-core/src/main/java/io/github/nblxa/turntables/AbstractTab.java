@@ -180,8 +180,6 @@ public abstract class AbstractTab implements Tab {
   }
 
   public abstract static class AbstractAssertionVal extends AbstractVal {
-    static final Typ TYP = Typ.ANY;
-
     @NonNull
     private final Predicate<Object> assertionPredicate;
     @NonNull
@@ -197,7 +195,7 @@ public abstract class AbstractTab implements Tab {
     @Override
     @NonNull
     public Typ typ() {
-      return TYP;
+      return Typ.ANY;
     }
 
     @Override

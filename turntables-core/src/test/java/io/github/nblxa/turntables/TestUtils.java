@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class TestUtils {
 
@@ -29,5 +30,14 @@ public class TestUtils {
     assertThat(al)
         .isInstanceOf(ArrayList.class)
         .containsExactly("Hello", "world");
+  }
+
+  @Test
+  public void testUnknownTyp() {
+    TestUtils obj = new TestUtils();
+    Throwable t = catchThrowable(() -> Utils.getTyp(obj));
+    assertThat(t)
+        .isExactlyInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Unsupported object type: " + obj.getClass());
   }
 }

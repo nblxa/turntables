@@ -47,7 +47,8 @@ public final class Utils {
     }
   }
 
-  static void inferTyp(Tab.Col col, Tab.Val fromVal, ListIterator<Tab.Col> iterCol) {
+  static void inferTyp(@NonNull Tab.Col col, @NonNull Tab.Val fromVal,
+                       @NonNull ListIterator<Tab.Col> iterCol) {
     if (!col.typ().accepts(fromVal.typ())) {
       throw new StructureException("Expected " + col.typ()
           + " but got " + fromVal.typ() + ".");
@@ -64,6 +65,7 @@ public final class Utils {
     }
   }
 
+  @NonNull
   static Typ getTyp(Object o) {
     Typ typ;
     typ = standard(o);
@@ -79,7 +81,7 @@ public final class Utils {
       return typ;
     }
     try {
-      typ = custom(o);
+      typ = assertion(o);
       if (typ != null) {
         return typ;
       }
@@ -89,11 +91,13 @@ public final class Utils {
     throw new IllegalArgumentException(illegalTypeMessage(o));
   }
 
-  private static String illegalTypeMessage(Object o) {
+  @NonNull
+  private static String illegalTypeMessage(@NonNull Object o) {
     return "Unsupported object type: " + o.getClass();
   }
 
-  static Tab.Val getVal(Object o, Typ typ) {
+  @NonNull
+  static Tab.Val getVal(@Nullable Object o, @NonNull Typ typ) {
     if (o == null) {
       return typ.nullVal();
     }
@@ -106,7 +110,7 @@ public final class Utils {
     }
     if (val == null) {
       try {
-        val = valCustom(o);
+        val = valAssertion(o);
       } catch (Exception e) {
         throw new IllegalArgumentException(illegalTypeMessage(o), e);
       }
@@ -118,7 +122,8 @@ public final class Utils {
     }
   }
 
-  private static Typ standard(Object o) {
+  @Nullable
+  private static Typ standard(@Nullable Object o) {
     if (o == null) {
       return Typ.ANY;
     }
@@ -149,6 +154,7 @@ public final class Utils {
     return null;
   }
 
+  @Nullable
   private static Tab.Val valStandard(Object o) {
     if (o == null) {
       return Typ.ANY.nullVal();
@@ -161,7 +167,8 @@ public final class Utils {
     }
   }
 
-  private static Typ supplier(Object o) {
+  @Nullable
+  private static Typ supplier(@NonNull Object o) {
     if (o instanceof IntSupplier) {
       return Typ.INTEGER;
     }
@@ -177,6 +184,7 @@ public final class Utils {
     return null;
   }
 
+  @Nullable
   private static Tab.Val valSupplier(Object o) {
     if (o instanceof IntSupplier) {
       return new TableUtils.SuppVal(Typ.INTEGER, ((IntSupplier) o)::getAsInt);
@@ -193,7 +201,8 @@ public final class Utils {
     return null;
   }
 
-  private static Typ predicate(Object o) {
+  @Nullable
+  private static Typ predicate(@NonNull Object o) {
     if (o instanceof Predicate) {
       return Typ.ANY;
     }
@@ -209,9 +218,11 @@ public final class Utils {
     return null;
   }
 
+  @Nullable
+  @SuppressWarnings("unchecked")
   private static Tab.Val valPredicate(Object o) {
-    if (o instanceof Predicate) {
-      return new TableUtils.SimpleAssertionVal(Typ.ANY, ((Predicate) o)::test,
+    if (o instanceof Predicate<?>) {
+      return new TableUtils.SimpleAssertionVal(Typ.ANY, ((Predicate<Object>) o),
           Predicate.class::getCanonicalName);
     }
         /* Boxing and unboxing primitives is not nice but performance is not deemed critical
@@ -234,28 +245,25 @@ public final class Utils {
     return null;
   }
 
-  private static Typ custom(Object o) {
-    Tab.Val val = valCustom(o);
-    if (val instanceof AbstractTab.AbstractAssertionVal) {
-      return AbstractTab.AbstractAssertionVal.TYP;
-    }
+  @Nullable
+  private static Typ assertion(@NonNull Object o) {
+    Tab.Val val = valAssertion(o);
     if (val != null) {
       return val.typ();
     }
     return null;
   }
 
-  private static Tab.Val valCustom(Object o) {
-    if (o != null) {
-      AssertionValProvider provider = assertionValProviderForClass(o.getClass())
-          .orElseThrow(() -> new IllegalStateException(
-              "No provider found for class: " + o.getClass().getCanonicalName()));
-      return provider.assertionVal(o);
-    }
-    return null;
+  @Nullable
+  private static Tab.Val valAssertion(@NonNull Object o) {
+    return assertionValProviderForClass(o.getClass())
+        .map(op -> op.assertionVal(o))
+        .orElse(null);
   }
 
-  private static Optional<AssertionValProvider> assertionValProviderForClass(Class<?> klass) {
+  @NonNull
+  private static Optional<AssertionValProvider> assertionValProviderForClass(
+      @NonNull Class<?> klass) {
     ServiceLoader<AssertionValProvider> loader = ServiceLoader.load(AssertionValProvider.class);
     AssertionValProvider res = null;
     for (AssertionValProvider prov : loader) {
@@ -271,7 +279,7 @@ public final class Utils {
     return Optional.ofNullable(res);
   }
 
-  static void checkCols(Iterable<? extends Tab.Col> cols) {
+  static void checkCols(@NonNull Iterable<? extends Tab.Col> cols) {
     Objects.requireNonNull(cols, "Columns are null");
     Iterator<? extends Tab.Col> iter = cols.iterator();
     if (!iter.hasNext()) {
@@ -291,22 +299,26 @@ public final class Utils {
     }
   }
 
-  public static <T> List<T> toList(Iterable<T> iterable, Supplier<List<T>> listSupplier) {
+  @NonNull
+  public static <T> List<T> toList(@NonNull Iterable<T> iterable,
+                                   @NonNull Supplier<List<T>> listSupplier) {
     Iterator<T> iterator = iterable.iterator();
     List<T> list = listSupplier.get();
     iterator.forEachRemaining(list::add);
     return list;
   }
 
-  public static <T> List<T> toArrayList(Iterable<T> iterable) {
+  @NonNull
+  public static <T> List<T> toArrayList(@NonNull Iterable<T> iterable) {
     if (iterable instanceof ArrayList) {
       return (ArrayList<T>) iterable;
     }
     return toList(iterable, ArrayList::new);
   }
 
-  public static <T, U> Iterable<U> paired(Iterable<T> expected, Iterable<T> actual,
-                                          BiFunction<T, T, U> mapper) {
+  @NonNull
+  public static <T, U> Iterable<U> paired(@NonNull Iterable<T> expected, @NonNull Iterable<T> actual,
+                                          @NonNull BiFunction<T, T, U> mapper) {
     Iterator<T> expectedIter = expected.iterator();
     Iterator<T> actualIter = actual.iterator();
     return () -> new Iterator<U>() {
@@ -331,8 +343,10 @@ public final class Utils {
     };
   }
 
-  public static <T, U> Iterable<U> pairedSparsely(Iterable<T> expected, Iterable<T> actual,
-                                                  BiFunction<Optional<T>, Optional<T>, U> mapper) {
+  @NonNull
+  public static <T, U> Iterable<U> pairedSparsely(
+      @NonNull Iterable<T> expected, @NonNull Iterable<T> actual,
+      @NonNull BiFunction<Optional<T>, Optional<T>, U> mapper) {
     List<U> result = new ArrayList<>();
 
     Iterator<T> expIter = expected.iterator();
@@ -362,29 +376,30 @@ public final class Utils {
     return result;
   }
 
-  public static <K, V> Map.Entry<K, V> entry(K k, V v) {
+  @NonNull
+  public static <K, V> Map.Entry<K, V> entry(@Nullable K k, @Nullable V v) {
     return new AbstractMap.SimpleImmutableEntry<>(k, v);
   }
 
-  public static <V, U> boolean areBothPresent(Optional<V> expected, Optional<U> actual) {
+  @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+  public static <V, U> boolean areBothPresent(@NonNull Optional<V> expected,
+                                              @NonNull Optional<U> actual) {
     return expected.isPresent() && actual.isPresent();
   }
 
-  public static <T> Stream<T> stream(Iterable<T> iterable) {
+  @NonNull
+  public static <T> Stream<T> stream(@NonNull Iterable<T> iterable) {
     Spliterator<T> spliterator =
         Spliterators.spliteratorUnknownSize(iterable.iterator(), Spliterator.ORDERED);
     return StreamSupport.stream(spliterator, false);
   }
 
   static final class InferredTypDecoratorCol extends AbstractTab.AbstractCol {
-    private final transient Tab.Col decoratedCol;
-
-    private InferredTypDecoratorCol(@NonNull Tab.Col decoratedColTypAny, Typ typ) {
+    private InferredTypDecoratorCol(@NonNull Tab.Col decoratedColTypAny, @NonNull Typ typ) {
       super(typ, decoratedColTypAny.isKey());
-      this.decoratedCol = verifyDecoratedCol(decoratedColTypAny);
     }
 
-    private static <T extends Tab.Col> T verifyDecoratedCol(T decoratedColTypAny) {
+    private static <T extends Tab.Col> T verifyDecoratedCol(@NonNull T decoratedColTypAny) {
       if (decoratedColTypAny.typ() != Typ.ANY) {
         throw new IllegalArgumentException("Expected " + Typ.ANY
             + " but got " + decoratedColTypAny.typ());
@@ -396,14 +411,12 @@ public final class Utils {
   static final class InferredTypDecoratorNamedCol extends AbstractTab.AbstractCol
       implements Tab.NamedCol {
     @NonNull
-    private final transient Tab.NamedCol decoratedCol;
-    @NonNull
     private final String name;
 
     private InferredTypDecoratorNamedCol(@NonNull Tab.NamedCol decoratedColTypAny,
                                          @NonNull Typ typ) {
       super(typ, decoratedColTypAny.isKey());
-      this.decoratedCol = InferredTypDecoratorCol.verifyDecoratedCol(decoratedColTypAny);
+      Tab.NamedCol decoratedCol = InferredTypDecoratorCol.verifyDecoratedCol(decoratedColTypAny);
       this.name = Objects.requireNonNull(decoratedCol.name(), "name is null");
     }
 
