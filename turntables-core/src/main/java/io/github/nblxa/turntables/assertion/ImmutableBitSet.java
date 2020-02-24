@@ -42,10 +42,6 @@ final class ImmutableBitSet implements Iterable<Integer> {
     return bitSet.cardinality();
   }
 
-  public boolean isEmpty() {
-    return bitSet.isEmpty();
-  }
-
   private ImmutableBitSet newImmutable(Consumer<BitSet> bitSetConsumer) {
     BitSet clone = (BitSet) bitSet.clone();
     bitSetConsumer.accept(clone);

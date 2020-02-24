@@ -4,6 +4,7 @@ import io.github.nblxa.turntables.exception.AssertionEvaluationException;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -11,24 +12,27 @@ import java.util.function.Supplier;
 
 public abstract class AbstractTab implements Tab {
   @NonNull
+  private final List<Col> mutableCols;
+  @NonNull
   private final List<Col> cols;
 
   AbstractTab() {
-    this.cols = new ArrayList<>();
+    this(Collections.emptyList());
   }
 
-  public AbstractTab(Iterable<Col> cols) {
-    this.cols = Objects.requireNonNull(Utils.toArrayList(cols), "cols");
+  public AbstractTab(List<Col> cols) {
+    this.mutableCols = new ArrayList<>(Objects.requireNonNull(cols, "cols"));
+    this.cols = Collections.unmodifiableList(this.mutableCols);
   }
 
   @Override
   @NonNull
-  public Iterable<Col> cols() {
+  public List<Col> cols() {
     return cols;
   }
 
-  List<Col> colsList() {
-    return cols;
+  List<Col> mutableCols() {
+    return mutableCols;
   }
 
   @Override
@@ -78,15 +82,16 @@ public abstract class AbstractTab implements Tab {
 
   public abstract static class AbstractRow implements Row {
     @NonNull
-    private final Iterable<Tab.Col> cols;
+    private final List<Tab.Col> cols;
 
-    public AbstractRow(Iterable<Tab.Col> cols) {
-      this.cols = Objects.requireNonNull(cols, "cols");
+    public AbstractRow(List<Tab.Col> cols) {
+      this.cols = Collections.unmodifiableList(
+          new ArrayList<>(Objects.requireNonNull(cols, "cols")));
     }
 
     @Override
     @NonNull
-    public Iterable<Tab.Col> cols() {
+    public List<Tab.Col> cols() {
       return cols;
     }
 

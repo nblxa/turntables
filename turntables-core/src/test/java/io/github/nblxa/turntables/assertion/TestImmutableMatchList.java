@@ -20,7 +20,7 @@ public class TestImmutableMatchList {
   }
 
   @Test
-  public void empty_asIterable_isEmpty() {
+  public void empty_asList_isEmpty() {
     ImmutableMatchList actual = ImmutableMatchList.EMPTY;
     assertThat(actual)
         .hasSize(0)

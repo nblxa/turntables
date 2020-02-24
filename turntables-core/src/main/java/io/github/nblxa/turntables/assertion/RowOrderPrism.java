@@ -2,8 +2,8 @@ package io.github.nblxa.turntables.assertion;
 
 import io.github.nblxa.turntables.AbstractTab;
 import io.github.nblxa.turntables.Tab;
-import io.github.nblxa.turntables.Utils;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,8 +28,9 @@ class RowOrderPrism extends AbstractTab {
 
   @NonNull
   @Override
-  public Iterable<Row> rows() {
-    return Utils.toArrayList(rowAsserter.getRowPairs()).stream()
+  public List<Row> rows() {
+    return rowAsserter.getRowPairs()
+        .stream()
         .map(rowFunction)
         .flatMap(o -> o.map(Stream::of).orElse(Stream.empty()))
         .collect(Collectors.toList());
