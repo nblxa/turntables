@@ -60,7 +60,7 @@
         <testcontainers.version>1.12.5</testcontainers.version>
         <slf4j.log4j12.version>1.7.30</slf4j.log4j12.version>
 
-        <error.prone.core.version>2.3.3</error.prone.core.version>
+        <error.prone.core.version>2.3.4</error.prone.core.version>
         <checkstyle.version>8.29</checkstyle.version>
         <spotbugs.version>4.0.0</spotbugs.version>
 
