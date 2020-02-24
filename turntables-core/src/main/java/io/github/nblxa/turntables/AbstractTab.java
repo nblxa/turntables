@@ -79,24 +79,15 @@ public abstract class AbstractTab implements Tab {
   public abstract static class AbstractRow implements Row {
     @NonNull
     private final Iterable<Tab.Col> cols;
-    @NonNull
-    private final Iterable<Tab.Val> vals;
 
-    public AbstractRow(Iterable<Tab.Col> cols, Iterable<Tab.Val> vals) {
+    public AbstractRow(Iterable<Tab.Col> cols) {
       this.cols = Objects.requireNonNull(cols, "cols");
-      this.vals = Objects.requireNonNull(vals, "vals");
     }
 
     @Override
     @NonNull
     public Iterable<Tab.Col> cols() {
       return cols;
-    }
-
-    @Override
-    @NonNull
-    public Iterable<Tab.Val> vals() {
-      return vals;
     }
 
     @Override

@@ -1,8 +1,8 @@
 package io.github.nblxa.turntables.assertion;
 
 import io.github.nblxa.turntables.Tab;
-import io.github.nblxa.turntables.Utils;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import io.github.nblxa.turntables.Utils;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -35,6 +35,6 @@ class OrderedRowAsserter extends AbstractRowAsserter {
   @NonNull
   @Override
   public Iterable<Map.Entry<Optional<Tab.Row>, Optional<Tab.Row>>> getRowPairs() {
-    return Utils.paired(expected, actual, (e, a) -> Utils.entry(Optional.of(e), Optional.of(a)));
+    return Utils.pairedSparsely(expected, actual, Utils::entry);
   }
 }

@@ -222,8 +222,8 @@ public abstract class AssertionProxy extends AbstractTab {
     @NonNull
     @Override
     public String representation() {
-      Tab rowOrderExp = RowOrderPrism.ofExpected(asserter, tab);
-      Tab rowOrderAct = RowOrderPrism.ofActual(asserter, asserter.getConf().actual);
+      Tab rowOrderExp = RowPrismFactory.createFromExpected(asserter, tab);
+      Tab rowOrderAct = RowPrismFactory.createFromActual(asserter, asserter.getConf().actual);
       Tab colNameRowOrdExp = ColNamePrism.ofExpected(asserter, rowOrderExp, rowOrderAct);
       Tab assertValExp = AssertionValPrism.ofExpected(colNameRowOrdExp, rowOrderAct);
       return assertValExp.toString();
@@ -242,8 +242,8 @@ public abstract class AssertionProxy extends AbstractTab {
     @NonNull
     @Override
     public String representation() {
-      Tab rowOrderExp = RowOrderPrism.ofExpected(asserter, asserter.getConf().expected);
-      Tab rowOrderAct = RowOrderPrism.ofActual(asserter, tab);
+      Tab rowOrderExp = RowPrismFactory.createFromExpected(asserter, asserter.getConf().expected);
+      Tab rowOrderAct = RowPrismFactory.createFromActual(asserter, tab);
       Tab.NamedColTab colNamePrism = ColNamePrism.ofActual(asserter, rowOrderExp, rowOrderAct);
       return colNamePrism.toString();
     }
