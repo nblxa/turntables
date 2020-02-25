@@ -3,7 +3,7 @@ package io.github.nblxa.turntables.assertion;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.AbstractTab;
 import io.github.nblxa.turntables.Tab;
-import io.github.nblxa.turntables.Utils;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -27,8 +27,9 @@ public class RowDiffPrism extends AbstractTab {
 
   @NonNull
   @Override
-  public Iterable<Row> rows() {
-    return Utils.stream(rowAsserter.getRowPairs())
+  public List<Row> rows() {
+    return rowAsserter.getRowPairs()
+        .stream()
         .map(rowFunction)
         .filter(Optional::isPresent)
         .map(Optional::get)

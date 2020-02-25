@@ -6,6 +6,7 @@ import io.github.nblxa.turntables.AbstractTab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Tab;
 
+import java.util.List;
 import java.util.Objects;
 
 public abstract class AssertionProxy extends AbstractTab {
@@ -28,7 +29,7 @@ public abstract class AssertionProxy extends AbstractTab {
 
   @Override
   @NonNull
-  public Iterable<Row> rows() {
+  public List<Row> rows() {
     return tab.rows();
   }
 
@@ -89,8 +90,8 @@ public abstract class AssertionProxy extends AbstractTab {
     private long rowPermutationLimit = Turntables.ROW_PERMUTATION_LIMIT;
 
     // built state
-    private volatile Expected expectedProxy;
-    private volatile Actual actualProxy;
+    private Expected expectedProxy;
+    private Actual actualProxy;
 
     private Builder() {
     }
@@ -152,11 +153,7 @@ public abstract class AssertionProxy extends AbstractTab {
     @NonNull
     public Expected buildOrGetExpectedProxy() {
       if (expectedProxy == null) {
-        synchronized (this) {
-          if (expectedProxy == null) {
-            build();
-          }
-        }
+        build();
       }
       return expectedProxy;
     }
@@ -164,11 +161,7 @@ public abstract class AssertionProxy extends AbstractTab {
     @NonNull
     public Actual buildOrGetActualProxy() {
       if (actualProxy == null) {
-        synchronized (this) {
-          if (actualProxy == null) {
-            build();
-          }
-        }
+        build();
       }
       return actualProxy;
     }

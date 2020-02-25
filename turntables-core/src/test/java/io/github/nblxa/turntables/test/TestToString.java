@@ -7,6 +7,7 @@ import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import io.github.nblxa.turntables.Typ;
 import org.junit.Test;
 
 public class TestToString {
@@ -118,5 +119,19 @@ public class TestToString {
 
     Throwable t = catchThrowable(() -> assertThat(tab1).isEqualTo(tab2));
     assertThat(t).isInstanceOf(AssertionError.class);
+  }
+
+  @Test
+  public void testColsUnnamed() {
+    Tab tab = Turntables.tab().col(Typ.INTEGER).key(Typ.STRING);
+    assertThat(tab.cols().toString())
+        .isEqualTo("[[INTEGER], [KEY STRING]]");
+  }
+
+  @Test
+  public void testColsNamed() {
+    Tab tab = Turntables.tab().col("x", Typ.INTEGER).key("y", Typ.STRING);
+    assertThat(tab.cols().toString())
+        .isEqualTo("[[x INTEGER], [y KEY STRING]]");
   }
 }

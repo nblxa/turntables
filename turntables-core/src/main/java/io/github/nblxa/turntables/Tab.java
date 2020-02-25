@@ -2,6 +2,7 @@ package io.github.nblxa.turntables;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import java.util.List;
 
 /**
  * <tt>Tab</tt> is shorthand for <tt>Table</tt>, a minimal interface describing a container
@@ -15,19 +16,19 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 public interface Tab {
   /**
    * The columns of the table.
-   * <p>The <tt>Iterable</tt> should always have the same order of columns.
+   * <p>The <tt>List</tt> should always have the same order of columns.
    * @return the columns of the table
    */
   @NonNull
-  Iterable<Col> cols();
+  List<Col> cols();
 
   /**
    * The rows of the table.
-   * <p>The <tt>Iterable</tt> should always have the same order of rows.
+   * <p>The <tt>List</tt> should always have the same order of rows.
    * @return the columns of the table
    */
   @NonNull
-  Iterable<Row> rows();
+  List<Row> rows();
 
   /**
    * <tt>Col</tt> is shorthand for "Column".<p>
@@ -90,7 +91,7 @@ public interface Tab {
      * @return the columns of the row
      */
     @NonNull
-    Iterable<Col> cols();
+    List<Col> cols();
 
     /**
      * Values stored in each column.<p>
@@ -98,7 +99,7 @@ public interface Tab {
      * @return values stored in each column.
      */
     @NonNull
-    Iterable<Val> vals();
+    List<Val> vals();
   }
 
   /**
@@ -206,10 +207,10 @@ public interface Tab {
   interface NamedColTab extends Tab {
     /**
      * Return the named columns of this table.
-     * <p>The <tt>Iterable</tt> should always have the same order of columns.
+     * <p>The <tt>List</tt> should always have the same order of columns.
      * @return the named columns of the table
      */
     @NonNull
-    Iterable<NamedCol> namedCols();
+    List<NamedCol> namedCols();
   }
 }

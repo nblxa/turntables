@@ -1,7 +1,6 @@
 package io.github.nblxa.turntables.assertion;
 
 import io.github.nblxa.turntables.Tab;
-import io.github.nblxa.turntables.Utils;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -17,15 +16,15 @@ class KeyBasedRowAsserter extends AbstractRowAsserter {
   private Map<List<Tab.Val>, Map.Entry<List<Tab.Row>, List<Tab.Row>>> rowsPerKey;
   private long rowPermutationLimit;
 
-  KeyBasedRowAsserter(@NonNull Iterable<Tab.Row> expected, @NonNull Iterable<Tab.Row> actual,
-                      @NonNull Iterable<Tab.Col> expCols, @NonNull Iterable<Tab.Col> actCols,
+  KeyBasedRowAsserter(@NonNull List<Tab.Row> expected, @NonNull List<Tab.Row> actual,
+                      @NonNull List<Tab.Col> expCols, @NonNull List<Tab.Col> actCols,
                       long rowPermutationLimit, ValAsserter valAsserter) {
     super(valAsserter);
     this.rowPermutationLimit = rowPermutationLimit;
     this.rowsPerKey = new HashMap<>();
     List<Integer> expKeyIndexes = keyColIndexes(expCols);
     for (Tab.Row row : expected) {
-      List<Tab.Val> kv = sublist(Utils.toArrayList(row.vals()), expKeyIndexes);
+      List<Tab.Val> kv = sublist(row.vals(), expKeyIndexes);
       rowsPerKey.compute(kv, (k, e) -> {
         if (e == null) {
           List<Tab.Row> el = new ArrayList<>();
@@ -40,7 +39,7 @@ class KeyBasedRowAsserter extends AbstractRowAsserter {
     }
     List<Integer> actKeyIndexes = keyColIndexes(actCols);
     for (Tab.Row row : actual) {
-      List<Tab.Val> kv = sublist(Utils.toArrayList(row.vals()), actKeyIndexes);
+      List<Tab.Val> kv = sublist(row.vals(), actKeyIndexes);
       rowsPerKey.compute(kv, (k, e) -> {
         if (e == null) {
           List<Tab.Row> el = new ArrayList<>();
@@ -56,10 +55,9 @@ class KeyBasedRowAsserter extends AbstractRowAsserter {
   }
 
   @NonNull
-  private static List<Integer> keyColIndexes(@NonNull Iterable<Tab.Col> cols) {
-    final List<Tab.Col> colList = Utils.toArrayList(cols);
-    return IntStream.range(0, colList.size())
-        .filter(i -> colList.get(i).isKey())
+  private static List<Integer> keyColIndexes(@NonNull List<Tab.Col> cols) {
+    return IntStream.range(0, cols.size())
+        .filter(i -> cols.get(i).isKey())
         .boxed()
         .collect(Collectors.toList());
   }
@@ -82,7 +80,7 @@ class KeyBasedRowAsserter extends AbstractRowAsserter {
 
   @NonNull
   @Override
-  public Iterable<Map.Entry<Optional<Tab.Row>, Optional<Tab.Row>>> getRowPairs() {
+  public List<Map.Entry<Optional<Tab.Row>, Optional<Tab.Row>>> getRowPairs() {
     int initSize = rowsPerKey.size();
     List<Map.Entry<Optional<Tab.Row>, Optional<Tab.Row>>> pairs = new ArrayList<>(initSize);
     rowsPerKey.values().forEach(ea -> {
@@ -93,8 +91,7 @@ class KeyBasedRowAsserter extends AbstractRowAsserter {
         Optional<Tab.Row> oa = a.isEmpty() ? Optional.empty() : Optional.of(a.get(0));
         pairs.add(new AbstractMap.SimpleImmutableEntry<>(oe, oa));
       } else {
-        new UnorderedRowAsserter(e, a, rowPermutationLimit, valAsserter).getRowPairs()
-            .forEach(pairs::add);
+        pairs.addAll(new UnorderedRowAsserter(e, a, rowPermutationLimit, valAsserter).getRowPairs());
       }
     });
     return pairs;

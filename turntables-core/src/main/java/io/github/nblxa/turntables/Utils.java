@@ -15,8 +15,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ServiceLoader;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoublePredicate;
@@ -26,9 +24,6 @@ import java.util.function.IntSupplier;
 import java.util.function.LongPredicate;
 import java.util.function.LongSupplier;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public final class Utils {
   @NonNull
@@ -56,9 +51,9 @@ public final class Utils {
       if (col.typ() == Typ.ANY && fromVal.typ() != Typ.ANY) {
         final Tab.Col inferredCol;
         if (col instanceof Tab.NamedCol) {
-          inferredCol = new InferredTypDecoratorNamedCol((Tab.NamedCol) col, fromVal.typ());
+          inferredCol = new TableUtils.SimpleNamedCol(((Tab.NamedCol) col).name(), fromVal.typ(), col.isKey());
         } else {
-          inferredCol = new InferredTypDecoratorCol(col, fromVal.typ());
+          inferredCol = new TableUtils.SimpleCol(fromVal.typ(), col.isKey());
         }
         iterCol.set(inferredCol);
       }
@@ -279,7 +274,7 @@ public final class Utils {
     return Optional.ofNullable(res);
   }
 
-  static void checkCols(@NonNull Iterable<? extends Tab.Col> cols) {
+  static void checkCols(@NonNull List<? extends Tab.Col> cols) {
     Objects.requireNonNull(cols, "Columns are null");
     Iterator<? extends Tab.Col> iter = cols.iterator();
     if (!iter.hasNext()) {
@@ -300,58 +295,35 @@ public final class Utils {
   }
 
   @NonNull
-  public static <T> List<T> toList(@NonNull Iterable<T> iterable,
-                                   @NonNull Supplier<List<T>> listSupplier) {
-    Iterator<T> iterator = iterable.iterator();
-    List<T> list = listSupplier.get();
-    iterator.forEachRemaining(list::add);
-    return list;
-  }
-
-  @NonNull
-  public static <T> List<T> toArrayList(@NonNull Iterable<T> iterable) {
-    if (iterable instanceof ArrayList) {
-      return (ArrayList<T>) iterable;
+  public static <T, U> List<U> paired(@NonNull Iterable<T> expected, @NonNull Iterable<T> actual,
+                                      @NonNull BiFunction<T, T, U> mapper) {
+    List<U> result = new ArrayList<>();
+    Iterator<T> expIter = expected.iterator();
+    Iterator<T> actIter = actual.iterator();
+    while (true) {
+      boolean expHasNext = expIter.hasNext();
+      boolean actHasNext = actIter.hasNext();
+      if (!expHasNext && !actHasNext) {
+        break;
+      }
+      if (!expHasNext) {
+        throw new IllegalStateException("actual has more elements than expected");
+      }
+      if (!actHasNext) {
+        throw new IllegalStateException("expected has more elements than actual");
+      }
+      result.add(mapper.apply(expIter.next(), actIter.next()));
     }
-    return toList(iterable, ArrayList::new);
+    return result;
   }
 
   @NonNull
-  public static <T, U> Iterable<U> paired(@NonNull Iterable<T> expected, @NonNull Iterable<T> actual,
-                                          @NonNull BiFunction<T, T, U> mapper) {
-    Iterator<T> expectedIter = expected.iterator();
-    Iterator<T> actualIter = actual.iterator();
-    return () -> new Iterator<U>() {
-      @Override
-      public boolean hasNext() {
-        boolean expectedHasNext = expectedIter.hasNext();
-        boolean actualHasNext = actualIter.hasNext();
-        if (expectedHasNext && actualHasNext) {
-          return true;
-        }
-        if (!(expectedHasNext || actualHasNext)) {
-          return false;
-        }
-        throw new IllegalStateException("expectedHasNext=" + expectedHasNext
-            + " actualHasNext=" + actualHasNext);
-      }
-
-      @Override
-      public U next() {
-        return mapper.apply(expectedIter.next(), actualIter.next());
-      }
-    };
-  }
-
-  @NonNull
-  public static <T, U> Iterable<U> pairedSparsely(
+  public static <T, U> List<U> pairedSparsely(
       @NonNull Iterable<T> expected, @NonNull Iterable<T> actual,
       @NonNull BiFunction<Optional<T>, Optional<T>, U> mapper) {
     List<U> result = new ArrayList<>();
-
     Iterator<T> expIter = expected.iterator();
     Iterator<T> actIter = actual.iterator();
-
     while (true) {
       boolean expHasNext = expIter.hasNext();
       boolean actHasNext = actIter.hasNext();
@@ -372,7 +344,6 @@ public final class Utils {
       }
       result.add(mapper.apply(expOpt, actOpt));
     }
-
     return result;
   }
 
@@ -385,72 +356,6 @@ public final class Utils {
   public static <V, U> boolean areBothPresent(@NonNull Optional<V> expected,
                                               @NonNull Optional<U> actual) {
     return expected.isPresent() && actual.isPresent();
-  }
-
-  @NonNull
-  public static <T> Stream<T> stream(@NonNull Iterable<T> iterable) {
-    Spliterator<T> spliterator =
-        Spliterators.spliteratorUnknownSize(iterable.iterator(), Spliterator.ORDERED);
-    return StreamSupport.stream(spliterator, false);
-  }
-
-  static final class InferredTypDecoratorCol extends AbstractTab.AbstractCol {
-    private InferredTypDecoratorCol(@NonNull Tab.Col decoratedColTypAny, @NonNull Typ typ) {
-      super(typ, decoratedColTypAny.isKey());
-    }
-
-    private static <T extends Tab.Col> T verifyDecoratedCol(@NonNull T decoratedColTypAny) {
-      if (decoratedColTypAny.typ() != Typ.ANY) {
-        throw new IllegalArgumentException("Expected " + Typ.ANY
-            + " but got " + decoratedColTypAny.typ());
-      }
-      return Objects.requireNonNull(decoratedColTypAny, "decoratedColTypAny");
-    }
-  }
-
-  static final class InferredTypDecoratorNamedCol extends AbstractTab.AbstractCol
-      implements Tab.NamedCol {
-    @NonNull
-    private final String name;
-
-    private InferredTypDecoratorNamedCol(@NonNull Tab.NamedCol decoratedColTypAny,
-                                         @NonNull Typ typ) {
-      super(typ, decoratedColTypAny.isKey());
-      Tab.NamedCol decoratedCol = InferredTypDecoratorCol.verifyDecoratedCol(decoratedColTypAny);
-      this.name = Objects.requireNonNull(decoratedCol.name(), "name is null");
-    }
-
-    @NonNull
-    @Override
-    public String name() {
-      return name;
-    }
-
-    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass") // checks via the canEqual method
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (!canEqual(o)) {
-        return false;
-      }
-      AbstractTab.AbstractCol abstractCol = (AbstractTab.AbstractCol) o;
-      return abstractCol.canEqual(this)
-          && typ() == abstractCol.typ()
-          && isKey() == abstractCol.isKey()
-          && Objects.equals(name, ((Tab.NamedCol) abstractCol).name());
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(typ(), isKey(), name);
-    }
-
-    @Override
-    public boolean canEqual(Object o) {
-      return o instanceof AbstractTab.AbstractCol && o instanceof Tab.NamedCol;
-    }
   }
 
   private Utils() {

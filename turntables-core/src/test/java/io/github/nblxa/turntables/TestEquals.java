@@ -5,8 +5,6 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 public class TestEquals {
@@ -32,19 +30,6 @@ public class TestEquals {
   }
 
   @Test
-  public void testInferredTypDecoratorCol_equalsContract() {
-    EqualsVerifier.forClass(Utils.InferredTypDecoratorCol.class)
-        .verify();
-  }
-
-  @Test
-  public void testInferredTypDecoratorNamedCol_equalsContract() {
-    EqualsVerifier.forClass(Utils.InferredTypDecoratorNamedCol.class)
-        .withRedefinedSuperclass()
-        .verify();
-  }
-
-  @Test
   public void testSimpleVal_equalsContract() {
     EqualsVerifier.forClass(TableUtils.SimpleVal.class)
         .withRedefinedSuperclass()
@@ -55,6 +40,7 @@ public class TestEquals {
   public void testSuppVal_equalsContract() {
     EqualsVerifier.forClass(TableUtils.SuppVal.class)
         .withRedefinedSuperclass()
+        .withIgnoredFields("suppCalled", "obj", "inited")
         .verify();
   }
 
@@ -81,31 +67,35 @@ public class TestEquals {
   @Test
   public void testColAdderTable_equalsContract() {
     EqualsVerifier.forClass(TableUtils.ColAdderTable.class)
+        .withIgnoredFields("mutableCols")
         .verify();
   }
 
   @Test
   public void testNamedColAdderTable_equalsContract() {
     EqualsVerifier.forClass(TableUtils.NamedColAdderTable.class)
+        .withIgnoredFields("mutableCols")
         .verify();
   }
 
   @Test
   public void testUnnamedColAdderTable_equalsContract() {
     EqualsVerifier.forClass(TableUtils.UnnamedColAdderTable.class)
+        .withIgnoredFields("mutableCols")
         .verify();
   }
 
   @Test
   public void testRowAdderTable_equalsContract() {
     EqualsVerifier.forClass(TableUtils.RowAdderTable.class)
-        .withIgnoredFields("rows")
+        .withIgnoredFields("mutableCols", "mutableRows")
         .verify();
   }
 
   @Test
   public void testFixedTable_equalsContract() {
     EqualsVerifier.forClass(TableUtils.FixedTable.class)
+        .withIgnoredFields("mutableCols")
         .verify();
   }
 
@@ -121,15 +111,13 @@ public class TestEquals {
         .col(Typ.ANY).col(Typ.ANY)
         .row(1, "abc")
         .row(2, "def");
-    List<Tab.Col> cols = new LinkedList<>();
-    tab.cols().forEach(cols::add);
-    List<Tab.Row> rows = new LinkedList<>();
-    tab.rows().forEach(rows::add);
+    List<Tab.Col> cols = new ArrayList<>(tab.cols());
+    List<Tab.Row> rows = new ArrayList<>(tab.rows());
     NonAbstractTab nonAbstractTab = new NonAbstractTab(cols, rows);
 
     EqualsVerifier.forClass(TableUtils.RowAdderTable.class)
         .withPrefabValues(Tab.class, rowAdderTable, nonAbstractTab)
-        .withIgnoredFields("rows")
+        .withIgnoredFields("mutableCols", "mutableRows")
         .verify();
   }
 
@@ -140,7 +128,7 @@ public class TestEquals {
         .col("B", Typ.DATE)
         .row("abc", LocalDate.of(2020, 1, 1))
         .row("xyz", LocalDate.of(2020, 2, 2));
-    List<Tab.Row> rows = Utils.toArrayList(tab1.rows());
+    List<Tab.Row> rows = tab1.rows();
     List<Tab.Row> rowsReversed = new ArrayList<>(2);
     rowsReversed.add(rows.get(1));
     rowsReversed.add(rows.get(0));
@@ -149,58 +137,46 @@ public class TestEquals {
 
     EqualsVerifier.forClass(TableUtils.RowAdderTable.class)
         .withPrefabValues(AbstractTab.class, tab1, tab2)
-        .withIgnoredFields("rows")
+        .withIgnoredFields("mutableCols", "mutableRows")
         .verify();
   }
 
   static class NonAbstractTab implements Tab {
     @NonNull
-    private final Iterable<Col> cols;
+    private final List<Col> cols;
     @NonNull
-    private final Iterable<Row> rows;
+    private final List<Row> rows;
 
-    NonAbstractTab(@NonNull Iterable<Col> cols, @NonNull Iterable<Row> rows) {
+    NonAbstractTab(@NonNull List<Col> cols, @NonNull List<Row> rows) {
       this.cols = cols;
       this.rows = rows;
     }
 
     @NonNull
     @Override
-    public Iterable<Col> cols() {
-      return new Iterable<Col>() {
-        @NonNull
-        @Override
-        public Iterator<Col> iterator() {
-          return cols.iterator();
-        }
-      };
+    public List<Col> cols() {
+      return new ArrayList<>(cols);
     }
 
     @NonNull
     @Override
-    public Iterable<Row> rows() {
-      return new Iterable<Row>() {
-        @NonNull
-        @Override
-        public Iterator<Row> iterator() {
-          return rows.iterator();
-        }
-      };
+    public List<Row> rows() {
+      return new ArrayList<>(rows);
     }
   }
 
   public static final class SubclassAbstractTab extends AbstractTab {
     @NonNull
-    private final Iterable<Row> rows;
+    private final List<Row> rows;
 
-    SubclassAbstractTab(@NonNull Iterable<Col> cols, @NonNull Iterable<Row> rows) {
+    SubclassAbstractTab(@NonNull List<Col> cols, @NonNull List<Row> rows) {
       super(cols);
       this.rows = rows;
     }
 
     @NonNull
     @Override
-    public Iterable<Row> rows() {
+    public List<Row> rows() {
       return rows;
     }
   }

@@ -5,7 +5,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.TableUtils;
 import io.github.nblxa.turntables.Typ;
-import io.github.nblxa.turntables.Utils;
 import io.github.nblxa.turntables.io.NameSanitizing;
 import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
 import java.sql.Connection;
@@ -65,8 +64,8 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
       Objects.requireNonNull(unsafeName, "unsafeName is null");
       this.sanitizedName = NameSanitizing.sanitizeName(connection, unsafeName);
       this.tab = Objects.requireNonNull(tab, "tab is null");
-      this.sanitizedColNames = Utils.stream(TableUtils.wrapWithNamedCols(tab).namedCols())
-          .map(Tab.NamedCol::name)
+      this.sanitizedColNames = TableUtils.colNames(tab)
+          .stream()
           .map(n -> NameSanitizing.sanitizeName(connection, n))
           .collect(Collectors.toList());
     }

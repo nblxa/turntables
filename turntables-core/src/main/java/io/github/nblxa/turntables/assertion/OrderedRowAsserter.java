@@ -4,16 +4,17 @@ import io.github.nblxa.turntables.Tab;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.Utils;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 class OrderedRowAsserter extends AbstractRowAsserter {
   @NonNull
-  final Iterable<Tab.Row> expected;
+  final List<Tab.Row> expected;
   @NonNull
-  final Iterable<Tab.Row> actual;
+  final List<Tab.Row> actual;
 
-  OrderedRowAsserter(@NonNull Iterable<Tab.Row> expected, @NonNull Iterable<Tab.Row> actual,
+  OrderedRowAsserter(@NonNull List<Tab.Row> expected, @NonNull List<Tab.Row> actual,
                      @NonNull ValAsserter valAsserter) {
     super(valAsserter);
     this.expected = expected;
@@ -34,7 +35,7 @@ class OrderedRowAsserter extends AbstractRowAsserter {
 
   @NonNull
   @Override
-  public Iterable<Map.Entry<Optional<Tab.Row>, Optional<Tab.Row>>> getRowPairs() {
+  public List<Map.Entry<Optional<Tab.Row>, Optional<Tab.Row>>> getRowPairs() {
     return Utils.pairedSparsely(expected, actual, Utils::entry);
   }
 }

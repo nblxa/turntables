@@ -31,17 +31,16 @@ class AssertionValPrism extends AbstractTab {
   private static Optional<Tab.Row> augmentedRow(Map.Entry<Optional<Tab.Row>, Optional<Tab.Row>> e) {
     return e.getKey().map(exp -> {
       Optional<Tab.Row> optAct = e.getValue();
-      List<Col> cols = Utils.toArrayList(exp.cols());
+      List<Col> cols = exp.cols();
       return new AbstractTab.AbstractRow(cols) {
         @NonNull
         @Override
-        public Iterable<Val> vals() {
-          Iterable<Val> vals = optAct.map(act ->
+        public List<Val> vals() {
+          List<Val> vals = optAct.map(act ->
               Utils.<Val, Val>pairedSparsely(exp.vals(), act.vals(), EvalToActualIfMatches::new))
                 .orElse(exp.vals());
           // Only include values that can be mapped to existing columns
-          return Utils.toArrayList(vals)
-              .subList(0, cols.size());
+          return vals.subList(0, cols.size());
         }
       };
     });
@@ -49,7 +48,7 @@ class AssertionValPrism extends AbstractTab {
 
   @NonNull
   @Override
-  public Iterable<Row> rows() {
+  public List<Row> rows() {
     return augmentedRows;
   }
 

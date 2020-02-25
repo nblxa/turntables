@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public abstract class ClassTreeHolder<T> {
-  private volatile ClassTree<T> protocolTree;
+  private ClassTree<T> protocolTree;
   private final Map<Class<?>, T> protocolCache = new ConcurrentHashMap<>();
   private final ReentrantLock treeLock = new ReentrantLock(true);
 
@@ -46,21 +46,16 @@ public abstract class ClassTreeHolder<T> {
     if (treeLock.isHeldByCurrentThread()) {
       throw new UnsupportedOperationException();
     }
-    ClassTree<T> tree = protocolTree;
-    if (tree == null) {
+    if (protocolTree == null) {
       treeLock.lock();
       try {
-        tree = protocolTree;
-        if (tree == null) {
-          tree = defaultProtocols();
-          tree = externalProtocols(tree);
-          protocolTree = tree;
-        }
+        protocolTree = defaultProtocols();
+        protocolTree = externalProtocols(protocolTree);
       } finally {
         treeLock.unlock();
       }
     }
-    return tree;
+    return protocolTree;
   }
 
   @NonNull

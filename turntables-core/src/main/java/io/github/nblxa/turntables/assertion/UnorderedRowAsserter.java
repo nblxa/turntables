@@ -23,30 +23,29 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
   private final long rowPermutationLimit;
   private long permutationCount = 0L;
 
-  private List<Tab.Row> expectedRowList;
-  private List<Tab.Row> actualRowList;
+  private List<Tab.Row> expected;
+  private List<Tab.Row> actual;
 
-  private Iterable<Optional<Tab.Row>> expOrdered;
-  private Iterable<Optional<Tab.Row>> actOrdered;
+  private List<Optional<Tab.Row>> expOrdered;
+  private List<Optional<Tab.Row>> actOrdered;
 
-  UnorderedRowAsserter(@NonNull Iterable<Tab.Row> expected, @NonNull Iterable<Tab.Row> actual,
+  UnorderedRowAsserter(@NonNull List<Tab.Row> expected, @NonNull List<Tab.Row> actual,
                        long rowPermutationLimit, @NonNull ValAsserter valAsserter) {
     super(valAsserter);
     this.rowPermutationLimit = rowPermutationLimit;
-
-    expectedRowList = Utils.toArrayList(expected);
-    actualRowList = Utils.toArrayList(actual);
+    this.expected = expected;
+    this.actual = actual;
 
     ImmutableMatchList matchList = createMatchList();
-    expOrdered = orderExpected(expectedRowList, matchList, actualRowList.size());
-    actOrdered = orderActual(actualRowList, matchList, expectedRowList.size());
+    expOrdered = orderExpected(this.expected, matchList, this.actual.size());
+    actOrdered = orderActual(this.actual, matchList, this.expected.size());
   }
 
   @NonNull
   private static Comparator<Tab.Row> rowComparator() {
     return (iter1, iter2) -> {
-      List<Tab.Val> list1 = Utils.toArrayList(iter1.vals());
-      List<Tab.Val> list2 = Utils.toArrayList(iter2.vals());
+      List<Tab.Val> list1 = iter1.vals();
+      List<Tab.Val> list2 = iter2.vals();
       for (int i = 0; i < list1.size(); i++) {
         String val1 = list1.get(i).toString();
         String val2 = list2.get(i).toString();
@@ -162,15 +161,15 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
 
   @NonNull
   @Override
-  public Iterable<Map.Entry<Optional<Tab.Row>, Optional<Tab.Row>>> getRowPairs() {
+  public List<Map.Entry<Optional<Tab.Row>, Optional<Tab.Row>>> getRowPairs() {
     return Utils.paired(expOrdered, actOrdered, Utils::entry);
   }
 
   private ImmutableMatchList createMatchList() {
     List<Map.Entry<Integer, Tab.Row>> expectedValueRows = new ArrayList<>();
     List<Map.Entry<Integer, Tab.Row>> expectedAssertionRows = new ArrayList<>();
-    for (int i = 0; i < expectedRowList.size(); i++) {
-      Tab.Row r = expectedRowList.get(i);
+    for (int i = 0; i < expected.size(); i++) {
+      Tab.Row r = expected.get(i);
       boolean hasMatcher = StreamSupport.stream(r.vals().spliterator(), false)
           .anyMatch(v -> v instanceof AbstractTab.AbstractAssertionVal);
       if (hasMatcher) {
@@ -179,8 +178,8 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
         expectedValueRows.add(Utils.entry(i, r));
       }
     }
-    List<Map.Entry<Integer, Tab.Row>> allActualRows = IntStream.range(0, actualRowList.size())
-        .mapToObj(i -> Utils.entry(i, actualRowList.get(i)))
+    List<Map.Entry<Integer, Tab.Row>> allActualRows = IntStream.range(0, actual.size())
+        .mapToObj(i -> Utils.entry(i, actual.get(i)))
         .collect(Collectors.toList());
 
     Comparator<Map.Entry<Integer, Tab.Row>> entryComp = Comparator.comparing(Map.Entry::getValue, rowComparator());
@@ -198,8 +197,8 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
   }
 
   private ImmutableMatchList valueRowMatches(
-      @NonNull Iterable<Map.Entry<Integer, Tab.Row>> sortedExpectedValueRows,
-      @NonNull Iterable<Map.Entry<Integer, Tab.Row>> sortedAllActualRows
+      @NonNull List<Map.Entry<Integer, Tab.Row>> sortedExpectedValueRows,
+      @NonNull List<Map.Entry<Integer, Tab.Row>> sortedAllActualRows
   ) {
     ImmutableMatchList matchList = ImmutableMatchList.EMPTY;
     Iterator<Map.Entry<Integer, Tab.Row>> expIter = sortedExpectedValueRows.iterator();
@@ -230,19 +229,19 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
     }
 
     Map<Integer, ImmutableBitSet> expectedToMatchingActuals = new LinkedHashMap<>(numExpected);
-    for (Map.Entry<Integer, Tab.Row> expected : expectedAssertionRows) {
-      Tab.Row expectedRow = expected.getValue();
+    for (Map.Entry<Integer, Tab.Row> expEntry : expectedAssertionRows) {
+      Tab.Row expectedRow = expEntry.getValue();
       ImmutableBitSet bitSet = actualsMatchingExpected(
           expectedRow, unmatchedActualRows);
-      expectedToMatchingActuals.put(expected.getKey(), bitSet);
+      expectedToMatchingActuals.put(expEntry.getKey(), bitSet);
     }
     expectedToMatchingActuals = sortByCardinality(expectedToMatchingActuals);
 
     Map<Integer, ImmutableBitSet> actualToMatchingExpecteds = new LinkedHashMap<>(numActual);
     for (Map.Entry<Integer, Tab.Row> unmatchedActualRow : unmatchedActualRows) {
-      int actual = unmatchedActualRow.getKey();
-      ImmutableBitSet bitSet = expectedsMatchingActual(actual, expectedToMatchingActuals);
-      actualToMatchingExpecteds.put(actual, bitSet);
+      int actualKey = unmatchedActualRow.getKey();
+      ImmutableBitSet bitSet = expectedsMatchingActual(actualKey, expectedToMatchingActuals);
+      actualToMatchingExpecteds.put(actualKey, bitSet);
     }
     actualToMatchingExpecteds = sortByCardinality(actualToMatchingExpecteds);
 

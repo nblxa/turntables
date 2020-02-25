@@ -1,12 +1,10 @@
 package io.github.nblxa.turntables.assertion;
 
 import io.github.nblxa.turntables.Tab;
-import io.github.nblxa.turntables.Utils;
 import io.github.nblxa.turntables.exception.StructureException;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -16,8 +14,8 @@ class NamedColAsserter implements ColAsserter {
   private final OrderedColAsserter colAsserter = new OrderedColAsserter();
 
   @NonNull
-  private static List<Tab.NamedCol> orderedByName(@NonNull Iterable<Tab.NamedCol> cols) {
-    return Utils.stream(cols)
+  private static List<Tab.NamedCol> orderedByName(@NonNull List<Tab.NamedCol> cols) {
+    return cols.stream()
         .sorted(Comparator.comparing(Tab.NamedCol::name))
         .collect(Collectors.toList());
   }
@@ -40,33 +38,25 @@ class NamedColAsserter implements ColAsserter {
   }
 
   @NonNull
-  private static Iterable<Tab.NamedCol> named(@NonNull Iterable<Tab.Col> unnamed) {
-    Iterator<Tab.Col> iter = unnamed.iterator();
-    return () -> new Iterator<Tab.NamedCol>() {
-      @Override
-      public boolean hasNext() {
-        return iter.hasNext();
-      }
-
-      @Override
-      public Tab.NamedCol next() {
-        Tab.Col c = iter.next();
-        if (c instanceof Tab.NamedCol) {
-          return (Tab.NamedCol) c;
-        } else {
-          throw new IllegalArgumentException("Cannot match unnamed cols by name!");
-        }
-      }
-    };
+  private static List<Tab.NamedCol> named(@NonNull List<Tab.Col> unnamed) {
+    return unnamed.stream()
+        .map(c -> {
+          if (c instanceof Tab.NamedCol) {
+            return (Tab.NamedCol) c;
+          } else {
+            throw new IllegalArgumentException("Cannot match unnamed cols by name!");
+          }
+        })
+        .collect(Collectors.toList());
   }
 
   @Override
-  public boolean match(@NonNull Iterable<Tab.Col> expected, @NonNull Iterable<Tab.Col> actual) {
+  public boolean match(@NonNull List<Tab.Col> expected, @NonNull List<Tab.Col> actual) {
     return matchNamed(named(expected), named(actual));
   }
 
-  private boolean matchNamed(@NonNull Iterable<Tab.NamedCol> expected,
-                             @NonNull Iterable<Tab.NamedCol> actual) {
+  private boolean matchNamed(@NonNull List<Tab.NamedCol> expected,
+                             @NonNull List<Tab.NamedCol> actual) {
     List<Tab.NamedCol> expOrdered = orderedByName(expected);
     List<Tab.NamedCol> actOrdered = orderedByName(actual);
     checkForDuplicates(expOrdered, "expected");

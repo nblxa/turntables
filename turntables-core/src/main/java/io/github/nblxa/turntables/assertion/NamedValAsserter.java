@@ -1,7 +1,6 @@
 package io.github.nblxa.turntables.assertion;
 
 import io.github.nblxa.turntables.Tab;
-import io.github.nblxa.turntables.Utils;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,7 +9,7 @@ import java.util.List;
 class NamedValAsserter extends AbstractMatchingValAsserter {
   private final List<Integer> actIndexes;
 
-  NamedValAsserter(@NonNull Iterable<Tab.Col> expCols, @NonNull Iterable<Tab.Col> actCols) {
+  NamedValAsserter(@NonNull List<Tab.Col> expCols, @NonNull List<Tab.Col> actCols) {
     List<String> expNames = names(expCols);
     List<String> actNames = names(actCols);
     actIndexes = new ArrayList<>(actNames.size());
@@ -23,7 +22,7 @@ class NamedValAsserter extends AbstractMatchingValAsserter {
   }
 
   @NonNull
-  private static List<String> names(@NonNull Iterable<Tab.Col> cols) {
+  private static List<String> names(@NonNull List<Tab.Col> cols) {
     List<String> names = new ArrayList<>();
     Iterator<Tab.Col> iter = cols.iterator();
     while (iter.hasNext()) {
@@ -38,13 +37,12 @@ class NamedValAsserter extends AbstractMatchingValAsserter {
   }
 
   @Override
-  public boolean match(@NonNull Iterable<Tab.Val> expected, @NonNull Iterable<Tab.Val> actual) {
+  public boolean match(@NonNull List<Tab.Val> expected, @NonNull List<Tab.Val> actual) {
     Iterator<Tab.Val> expIter = expected.iterator();
-    List<Tab.Val> actList = Utils.toArrayList(actual);
     int i = 0;
     while (expIter.hasNext()) {
       int actIndex = actIndexes.get(i);
-      Tab.Val actVal = actList.get(actIndex);
+      Tab.Val actVal = actual.get(actIndex);
       if (!matchVals(expIter.next(), actVal)) {
         return false;
       }
