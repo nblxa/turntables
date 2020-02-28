@@ -4,6 +4,7 @@ import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.exception.StructureException;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
@@ -39,15 +40,15 @@ class NamedColAsserter implements ColAsserter {
 
   @NonNull
   private static List<Tab.NamedCol> named(@NonNull List<Tab.Col> unnamed) {
-    return unnamed.stream()
-        .map(c -> {
-          if (c instanceof Tab.NamedCol) {
-            return (Tab.NamedCol) c;
-          } else {
-            throw new IllegalArgumentException("Cannot match unnamed cols by name!");
-          }
-        })
-        .collect(Collectors.toList());
+    List<Tab.NamedCol> res = new ArrayList<>();
+    for (Tab.Col c: unnamed) {
+      if (c instanceof Tab.NamedCol) {
+        res.add((Tab.NamedCol) c);
+      } else {
+        throw new IllegalArgumentException("Cannot match unnamed cols by name!");
+      }
+    }
+    return Collections.unmodifiableList(res);
   }
 
   @Override

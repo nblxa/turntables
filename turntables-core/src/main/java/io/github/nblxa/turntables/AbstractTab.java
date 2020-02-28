@@ -84,7 +84,7 @@ public abstract class AbstractTab implements Tab {
     @NonNull
     private final List<Tab.Col> cols;
 
-    public AbstractRow(List<Tab.Col> cols) {
+    public AbstractRow(@NonNull List<Tab.Col> cols) {
       this.cols = Collections.unmodifiableList(
           new ArrayList<>(Objects.requireNonNull(cols, "cols")));
     }

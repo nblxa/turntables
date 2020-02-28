@@ -11,11 +11,13 @@ import org.junit.Test;
 
 public class TestColsMatchByName {
 
-  private AssertionProxy.Builder matchByName(Tab expected, Tab actual) {
+  private boolean matchByName(Tab expected, Tab actual) {
     return AssertionProxy.builder()
         .expected(expected)
         .actual(actual)
-        .colMode(Turntables.ColMode.MATCHES_BY_NAME);
+        .colMode(Turntables.ColMode.MATCHES_BY_NAME)
+        .buildOrGetActualProxy()
+        .matchesExpected();
   }
 
   @Test
@@ -26,9 +28,7 @@ public class TestColsMatchByName {
         .row(1, 2)
         .row(3, 4);
 
-    boolean res = matchByName(actual, actual)
-        .buildOrGetActualProxy()
-        .matchesExpected();
+    boolean res = matchByName(actual, actual);
     assertThat(res).isTrue();
   }
 
@@ -43,9 +43,7 @@ public class TestColsMatchByName {
         .col("B", Typ.INTEGER)
         .row(1, 2).row(5, 6);
 
-    boolean res = matchByName(expected, actual)
-        .buildOrGetActualProxy()
-        .matchesExpected();
+    boolean res = matchByName(expected, actual);
     assertThat(res).isTrue();
   }
 
@@ -60,11 +58,7 @@ public class TestColsMatchByName {
         .col("B", Typ.INTEGER)
         .row(1, 2).row(5, 6);
 
-    Throwable t = catchThrowable(() -> {
-      matchByName(expected, actual)
-          .buildOrGetActualProxy()
-          .matchesExpected();
-    });
+    Throwable t = catchThrowable(() -> matchByName(expected, actual));
     assertThat(t)
         .isInstanceOf(StructureException.class)
         .hasMessage("Duplicate column names in expected: A");
@@ -81,11 +75,7 @@ public class TestColsMatchByName {
         .col("B", Typ.INTEGER)
         .row(1, 2).row(5, 6);
 
-    Throwable t = catchThrowable(() -> {
-      matchByName(expected, actual)
-          .buildOrGetActualProxy()
-          .matchesExpected();
-    });
+    Throwable t = catchThrowable(() -> matchByName(expected, actual));
     assertThat(t)
         .isInstanceOf(StructureException.class)
         .hasMessage("Duplicate column names in actual: B");
@@ -102,9 +92,7 @@ public class TestColsMatchByName {
         .col("D", Typ.INTEGER)
         .row(1, 2).row(5, 6);
 
-    boolean res = matchByName(expected, actual)
-        .buildOrGetActualProxy()
-        .matchesExpected();
+    boolean res = matchByName(expected, actual);
     assertThat(res).isFalse();
   }
 

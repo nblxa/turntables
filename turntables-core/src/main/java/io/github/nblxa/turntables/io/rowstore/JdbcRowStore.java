@@ -22,7 +22,7 @@ public class JdbcRowStore implements RowStore {
 
   @NonNull
   private final ThrowingSupplier<Connection, Exception> connectionSupplier;
-  private volatile Connection connection;
+  private Connection connection;
   @NonNull
   private final ReentrantLock createConnectionLock = new ReentrantLock(true);
   @NonNull
