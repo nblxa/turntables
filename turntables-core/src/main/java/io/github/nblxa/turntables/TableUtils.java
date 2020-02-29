@@ -132,7 +132,7 @@ public final class TableUtils {
     }
   }
 
-  static class SimpleRow extends AbstractTab.AbstractRow {
+  static final class SimpleRow extends AbstractTab.AbstractRow {
     @NonNull
     private final List<Tab.Val> vals;
 
@@ -145,21 +145,6 @@ public final class TableUtils {
     @Override
     public List<Tab.Val> vals() {
       return vals;
-    }
-
-    @Override
-    public final boolean equals(Object o) {
-      return super.equals(o);
-    }
-
-    @Override
-    public final int hashCode() {
-      return super.hashCode();
-    }
-
-    @Override
-    public final boolean canEqual(Object o) {
-      return super.canEqual(o);
     }
   }
 

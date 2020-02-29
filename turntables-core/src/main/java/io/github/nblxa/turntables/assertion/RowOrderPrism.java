@@ -1,6 +1,5 @@
 package io.github.nblxa.turntables.assertion;
 
-import io.github.nblxa.turntables.AbstractTab;
 import io.github.nblxa.turntables.Tab;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class RowOrderPrism extends AbstractTab {
+class RowOrderPrism extends Prism {
   @NonNull
   private final RowAsserter rowAsserter;
   @NonNull

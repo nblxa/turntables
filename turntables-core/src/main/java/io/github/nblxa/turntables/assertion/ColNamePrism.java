@@ -1,9 +1,9 @@
 package io.github.nblxa.turntables.assertion;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import io.github.nblxa.turntables.AbstractTab;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.TableUtils;
+import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,47 +11,44 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ColNamePrism extends AbstractTab implements Tab.NamedColTab {
+public class ColNamePrism extends Prism implements Tab.NamedColTab {
   @NonNull
   private final Tab tab;
   @NonNull
   private final List<Tab.NamedCol> namedCols;
 
   @NonNull
-  static Tab.NamedColTab ofActual(@NonNull Asserter asserter, @NonNull Tab expected,
+  static Prism ofActual(@NonNull Asserter asserter, @NonNull Tab expected,
                                   @NonNull Tab actual) {
     Objects.requireNonNull(asserter, "asserter is null");
+    Objects.requireNonNull(expected, "expected is null");
     Objects.requireNonNull(actual, "actual is null");
-    switch (asserter.getConf().colMode) {
-      case MATCHES_IN_GIVEN_ORDER:
-        if (!TableUtils.hasNamedCols(expected) && TableUtils.hasNamedCols(actual)) {
-          return TableUtils.wrapWithNamedCols(actual);
-        }
-        List<String> expectedCols = TableUtils.colNames(expected);
-        List<Tab.NamedCol> renamedCols = renameFirstCols(actual, expectedCols);
-        return new ColNamePrism(actual, renamedCols);
-      case MATCHES_BY_NAME:
-        return TableUtils.wrapWithNamedCols(actual);
-      default:
-        throw new UnsupportedOperationException();
+    if (asserter.getConf().colMode != Turntables.ColMode.MATCHES_IN_GIVEN_ORDER) {
+      throw new UnsupportedOperationException();
     }
+    if (!TableUtils.hasNamedCols(expected) && TableUtils.hasNamedCols(actual)) {
+      return NoOpPrism.of(actual);
+    }
+    List<String> expectedCols = TableUtils.colNames(expected);
+    List<NamedCol> renamedCols = renameFirstCols(actual, expectedCols);
+    return new ColNamePrism(actual, renamedCols);
   }
 
   @NonNull
-  static Tab ofExpected(@NonNull Asserter asserter, @NonNull Tab expected, @NonNull Tab actual) {
+  static Prism ofExpected(@NonNull Asserter asserter, @NonNull Tab expected, @NonNull Tab actual) {
     Objects.requireNonNull(asserter, "asserter is null");
     Objects.requireNonNull(expected, "expected is null");
     Objects.requireNonNull(actual, "actual is null");
     switch (asserter.getConf().colMode) {
       case MATCHES_IN_GIVEN_ORDER:
         if (TableUtils.hasNamedCols(expected)) {
-          return expected;
+          return NoOpPrism.of(expected);
         }
-        List<String> actualCols = TableUtils.colNames(actual);
-        List<Tab.NamedCol> renamedCols = renameFirstCols(expected, actualCols);
+        List<String> actualColNames = TableUtils.colNames(actual);
+        List<Tab.NamedCol> renamedCols = renameFirstCols(expected, actualColNames);
         return new ColNamePrism(expected, renamedCols);
       case MATCHES_BY_NAME:
-        return expected;
+        return NoOpPrism.of(expected);
       default:
         throw new UnsupportedOperationException();
     }
@@ -116,19 +113,12 @@ public class ColNamePrism extends AbstractTab implements Tab.NamedColTab {
     return namedCols;
   }
 
-  private static class RenamedColRow implements Tab.Row {
+  private static class RenamedColRow extends Prism.PrismRow {
     private final Tab.Row row;
-    private final List<Tab.Col> cols;
 
     public RenamedColRow(Row row, List<Tab.Col> renamedCols) {
+      super(renamedCols);
       this.row = row;
-      this.cols = renamedCols;
-    }
-
-    @NonNull
-    @Override
-    public List<Col> cols() {
-      return cols;
     }
 
     @NonNull

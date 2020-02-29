@@ -1,6 +1,5 @@
 package io.github.nblxa.turntables.assertion;
 
-import io.github.nblxa.turntables.AbstractTab;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Typ;
 import io.github.nblxa.turntables.Utils;
@@ -13,10 +12,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
-class AssertionValPrism extends AbstractTab {
+class AssertionValPrism extends Prism {
   private final List<Row> augmentedRows;
 
-  static Tab ofExpected(@NonNull Tab expected, @NonNull Tab actual) {
+  static Prism ofExpected(@NonNull Tab expected, @NonNull Tab actual) {
     return new AssertionValPrism(expected, actual);
   }
 
@@ -32,7 +31,7 @@ class AssertionValPrism extends AbstractTab {
     return e.getKey().map(exp -> {
       Optional<Tab.Row> optAct = e.getValue();
       List<Col> cols = exp.cols();
-      return new AbstractTab.AbstractRow(cols) {
+      return new Prism.PrismRow(cols) {
         @NonNull
         @Override
         public List<Val> vals() {
