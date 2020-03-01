@@ -1,5 +1,6 @@
 package io.github.nblxa.turntables.assertion;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -8,8 +9,10 @@ import java.util.PrimitiveIterator;
 import java.util.function.Consumer;
 
 final class ImmutableBitSet implements Iterable<Integer> {
+  @NonNull
   static final ImmutableBitSet EMPTY = new ImmutableBitSet(new BitSet());
 
+  @NonNull
   private final BitSet bitSet;
 
   ImmutableBitSet(BitSet bitSet) {
@@ -17,7 +20,7 @@ final class ImmutableBitSet implements Iterable<Integer> {
     this.bitSet = Objects.requireNonNull(clone, "bitSet");
   }
 
-  private ImmutableBitSet(BitSet bitSet, boolean noClone) {
+  private ImmutableBitSet(@NonNull BitSet bitSet, boolean noClone) {
     assert noClone;
     this.bitSet = bitSet;
   }
@@ -26,14 +29,17 @@ final class ImmutableBitSet implements Iterable<Integer> {
     return bitSet.get(bit);
   }
 
+  @NonNull
   public ImmutableBitSet set(final int bit) {
     return newImmutable(bs -> bs.set(bit));
   }
 
+  @NonNull
   public ImmutableBitSet andNot(final ImmutableBitSet other) {
     return newImmutable(bs -> bs.andNot(other.bitSet));
   }
 
+  @NonNull
   public Iterator<Integer> iterator() {
     return new ImmutableBitSetIterator();
   }
@@ -42,6 +48,7 @@ final class ImmutableBitSet implements Iterable<Integer> {
     return bitSet.cardinality();
   }
 
+  @NonNull
   private ImmutableBitSet newImmutable(Consumer<BitSet> bitSetConsumer) {
     BitSet clone = (BitSet) bitSet.clone();
     bitSetConsumer.accept(clone);

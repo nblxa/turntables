@@ -2,7 +2,7 @@ package io.github.nblxa.turntables.assertion;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
-import java.util.AbstractMap;
+import io.github.nblxa.turntables.Utils;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -196,7 +196,7 @@ final class ImmutableMatchList implements Iterable<Map.Entry<Integer, Integer>> 
         throw new NoSuchElementException();
       }
       target = target.tail;
-      return new AbstractMap.SimpleImmutableEntry<>(target.expected, target.actual);
+      return Utils.entry(target.expected, target.actual);
     }
   }
 }

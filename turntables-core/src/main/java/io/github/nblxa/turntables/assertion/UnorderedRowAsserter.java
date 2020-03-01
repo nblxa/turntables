@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.StreamSupport;
 
 class UnorderedRowAsserter extends AbstractRowAsserter {
   private final long rowPermutationLimit;
@@ -58,6 +57,7 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
     };
   }
 
+  @NonNull
   private static Map<Integer, ImmutableBitSet> withLeastCardinalityFirstElement(
       @NonNull final Map<Integer, ImmutableBitSet> map1,
       @NonNull final Map<Integer, ImmutableBitSet> map2
@@ -79,6 +79,7 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
     }
   }
 
+  @NonNull
   private static ImmutableBitSet expectedsMatchingActual(
       final int actualIndex,
       @NonNull final Map<Integer, ImmutableBitSet> expectedToMatchingActuals
@@ -94,6 +95,7 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
     return new ImmutableBitSet(bitSet);
   }
 
+  @NonNull
   private static Map<Integer, ImmutableBitSet> sortByCardinality(
       @NonNull final Map<Integer, ImmutableBitSet> matchMatrixAB) {
     return matchMatrixAB.entrySet().stream()
@@ -104,6 +106,7 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
             });
   }
 
+  @NonNull
   private static Map<Integer, ImmutableBitSet> filterPriorMatchesAndSort(
       @NonNull final Map<Integer, ImmutableBitSet> matchMatrixAB,
       @NonNull final ImmutableBitSet matchedA,
@@ -170,7 +173,7 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
     List<Map.Entry<Integer, Tab.Row>> expectedAssertionRows = new ArrayList<>();
     for (int i = 0; i < expected.size(); i++) {
       Tab.Row r = expected.get(i);
-      boolean hasMatcher = StreamSupport.stream(r.vals().spliterator(), false)
+      boolean hasMatcher = r.vals().stream()
           .anyMatch(v -> v instanceof AbstractTab.AbstractAssertionVal);
       if (hasMatcher) {
         expectedAssertionRows.add(Utils.entry(i, r));
@@ -182,7 +185,7 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
         .mapToObj(i -> Utils.entry(i, actual.get(i)))
         .collect(Collectors.toList());
 
-    Comparator<Map.Entry<Integer, Tab.Row>> entryComp = Comparator.comparing(Map.Entry::getValue, rowComparator());
+    Comparator<Map.Entry<Integer, Tab.Row>> entryComp = Map.Entry.comparingByValue(rowComparator());
     expectedValueRows.sort(entryComp);
     allActualRows.sort(entryComp);
 
@@ -196,6 +199,7 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
     return valueRowMatches.concat(assertionRowMatches);
   }
 
+  @NonNull
   private ImmutableMatchList valueRowMatches(
       @NonNull List<Map.Entry<Integer, Tab.Row>> sortedExpectedValueRows,
       @NonNull List<Map.Entry<Integer, Tab.Row>> sortedAllActualRows
@@ -217,6 +221,7 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
     return matchList;
   }
 
+  @NonNull
   private ImmutableMatchList assertionRowMatches(
       @NonNull final List<Map.Entry<Integer, Tab.Row>> expectedAssertionRows,
       @NonNull final List<Map.Entry<Integer, Tab.Row>> unmatchedActualRows
@@ -263,6 +268,7 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
     }
   }
 
+  @NonNull
   private ImmutableBitSet actualsMatchingExpected(
       @NonNull final Tab.Row expectedRow,
       @NonNull final List<Map.Entry<Integer, Tab.Row>> actualRows
@@ -276,6 +282,7 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
     return new ImmutableBitSet(bitSet);
   }
 
+  @NonNull
   private MatchDetail matchByBitSets(
       @NonNull final Map<Integer, ImmutableBitSet> matchMatrixAB,
       @NonNull final ImmutableBitSet matchedA,

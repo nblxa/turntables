@@ -8,7 +8,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 class RowOrderPrism extends Prism {
   @NonNull
@@ -31,7 +30,8 @@ class RowOrderPrism extends Prism {
     return rowAsserter.getRowPairs()
         .stream()
         .map(rowFunction)
-        .flatMap(o -> o.map(Stream::of).orElse(Stream.empty()))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
         .collect(Collectors.toList());
   }
 }

@@ -2,10 +2,10 @@ package io.github.nblxa.turntables.assertion;
 
 import io.github.nblxa.turntables.Tab;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import java.util.AbstractMap;
+import io.github.nblxa.turntables.Utils;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,7 +13,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 class KeyBasedRowAsserter extends AbstractRowAsserter {
-  private Map<List<Tab.Val>, Map.Entry<List<Tab.Row>, List<Tab.Row>>> rowsPerKey;
+  @NonNull
+  private final Map<List<Tab.Val>, Map.Entry<List<Tab.Row>, List<Tab.Row>>> rowsPerKey;
   private long rowPermutationLimit;
 
   KeyBasedRowAsserter(@NonNull List<Tab.Row> expected, @NonNull List<Tab.Row> actual,
@@ -21,7 +22,7 @@ class KeyBasedRowAsserter extends AbstractRowAsserter {
                       long rowPermutationLimit, ValAsserter valAsserter) {
     super(valAsserter);
     this.rowPermutationLimit = rowPermutationLimit;
-    this.rowsPerKey = new HashMap<>();
+    this.rowsPerKey = new LinkedHashMap<>();
     List<Integer> expKeyIndexes = keyColIndexes(expCols);
     for (Tab.Row row : expected) {
       List<Tab.Val> kv = sublist(row.vals(), expKeyIndexes);
@@ -30,7 +31,7 @@ class KeyBasedRowAsserter extends AbstractRowAsserter {
           List<Tab.Row> el = new ArrayList<>();
           el.add(row);
           List<Tab.Row> al = new ArrayList<>();
-          return new AbstractMap.SimpleImmutableEntry<>(el, al);
+          return Utils.entry(el, al);
         } else {
           e.getKey().add(row);
           return e;
@@ -45,7 +46,7 @@ class KeyBasedRowAsserter extends AbstractRowAsserter {
           List<Tab.Row> el = new ArrayList<>();
           List<Tab.Row> al = new ArrayList<>();
           al.add(row);
-          return new AbstractMap.SimpleImmutableEntry<>(el, al);
+          return Utils.entry(el, al);
         } else {
           e.getValue().add(row);
           return e;
@@ -89,7 +90,7 @@ class KeyBasedRowAsserter extends AbstractRowAsserter {
       if (e.size() <= 1 && a.size() <= 1) {
         Optional<Tab.Row> oe = e.isEmpty() ? Optional.empty() : Optional.of(e.get(0));
         Optional<Tab.Row> oa = a.isEmpty() ? Optional.empty() : Optional.of(a.get(0));
-        pairs.add(new AbstractMap.SimpleImmutableEntry<>(oe, oa));
+        pairs.add(Utils.entry(oe, oa));
       } else {
         pairs.addAll(new UnorderedRowAsserter(e, a, rowPermutationLimit, valAsserter).getRowPairs());
       }
@@ -97,7 +98,7 @@ class KeyBasedRowAsserter extends AbstractRowAsserter {
     return pairs;
   }
 
-  private boolean matchRowLists(List<Tab.Row> expRows, List<Tab.Row> actRows) {
+  private boolean matchRowLists(@NonNull List<Tab.Row> expRows, @NonNull List<Tab.Row> actRows) {
     final int expSize = expRows.size();
     final int actSize = actRows.size();
     if (expSize != actSize) {
