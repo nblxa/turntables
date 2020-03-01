@@ -621,7 +621,7 @@ public final class TableUtils {
       vals.add(val);
     }
     if (iterCol.hasNext()) {
-      throw new StructureException("Missing object at position #" + (i + 1));
+      throw new StructureException("Missing value at position #" + (i + 1));
     }
     if (iterObj.hasNext()) {
       throw new StructureException("Column not defined for position #" + (i + 1));

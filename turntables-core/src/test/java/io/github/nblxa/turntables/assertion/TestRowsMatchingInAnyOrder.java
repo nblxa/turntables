@@ -6,11 +6,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -197,10 +196,8 @@ public class TestRowsMatchingInAnyOrder {
     Tab expected = Turntables.tab().row(test, test).row(0, test);
     Tab actual = Turntables.tab().row(1, 2).row(1, 2);
 
-    Set<Tab.Row> distinctExp = StreamSupport.stream(expected.rows().spliterator(), false)
-        .collect(Collectors.toSet());
-    Set<Tab.Row> distinctAct = StreamSupport.stream(actual.rows().spliterator(), false)
-        .collect(Collectors.toSet());
+    Set<Tab.Row> distinctExp = new HashSet<>(expected.rows());
+    Set<Tab.Row> distinctAct = new HashSet<>(actual.rows());
     assertThat(distinctExp).hasSize(2);
     assertThat(distinctAct).hasSize(1);
     boolean res = matchInAnyOrder(expected, actual)
