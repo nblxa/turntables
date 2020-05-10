@@ -2,6 +2,7 @@ package io.github.nblxa.turntables;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -70,6 +71,11 @@ public enum Typ {
 
   Tab.Val nullVal() {
     return nullVal;
+  }
+
+  @Override
+  public String toString() {
+    return super.toString().toLowerCase(Locale.getDefault());
   }
 
   abstract static class Internal {

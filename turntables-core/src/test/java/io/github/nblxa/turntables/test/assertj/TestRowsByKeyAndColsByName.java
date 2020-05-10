@@ -7,7 +7,7 @@ import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
 import io.github.nblxa.turntables.assertj.TabAssert;
-import org.assertj.core.api.Assertions;
+import io.github.nblxa.turntables.assertj.assertj.AssertAssertJ;
 import org.junit.Test;
 
 public class TestRowsByKeyAndColsByName {
@@ -56,21 +56,39 @@ public class TestRowsByKeyAndColsByName {
       tabAssert(exp, act);
       // comment next line to check in the IDE:
     });
-    Assertions.assertThat(t)
-        .isInstanceOf(AssertionError.class)
-        .hasMessage(new StringBuilder(LS)
-            .append("Expected: <\"Table:").append(LS)
-            .append("    - a : 1").append(LS)
-            .append("      b : 2").append(LS)
-            .append("    - a : 3").append(LS)
-            .append("      b : 4\">").append(LS)
-            .append("but was: <\"Table:").append(LS)
-            .append("    - a : 1").append(LS)
-            .append("      b : 2").append(LS)
-            .append("      c : 5").append(LS)
-            .append("    - a : 3").append(LS)
-            .append("      b : 4").append(LS)
-            .append("      c : 6\">").append(LS).toString());
+    AssertAssertJ.assertThat(t)
+        .isAssertionErrorWithMessage(new StringBuilder(LS)
+            .append("EXPECTED: Table:").append(LS)
+            .append("  cols:").append(LS)
+            .append("      - name : a").append(LS)
+            .append("        type : integer").append(LS)
+            .append("        key  : true").append(LS)
+            .append("      - name : b").append(LS)
+            .append("        type : integer").append(LS)
+            .append("        key  : false").append(LS)
+            .append("  rows:").append(LS)
+            .append("      - a : 1").append(LS)
+            .append("        b : 2").append(LS)
+            .append("      - a : 3").append(LS)
+            .append("        b : 4").append(LS)
+            .append("BUT: WAS Table:").append(LS)
+            .append("  cols:").append(LS)
+            .append("      - name : a").append(LS)
+            .append("        type : integer").append(LS)
+            .append("        key  : true").append(LS)
+            .append("      - name : b").append(LS)
+            .append("        type : integer").append(LS)
+            .append("        key  : false").append(LS)
+            .append("      - name : c").append(LS)
+            .append("        type : integer").append(LS)
+            .append("        key  : false").append(LS)
+            .append("  rows:").append(LS)
+            .append("      - a : 1").append(LS)
+            .append("        b : 2").append(LS)
+            .append("        c : 5").append(LS)
+            .append("      - a : 3").append(LS)
+            .append("        b : 4").append(LS)
+            .append("        c : 6").append(LS).toString());
   }
 
   @Test
@@ -91,17 +109,29 @@ public class TestRowsByKeyAndColsByName {
       tabAssert(exp, act);
       // comment next line to check in the IDE:
     });
-    Assertions.assertThat(t)
-        .isInstanceOf(AssertionError.class)
-        .hasMessage(new StringBuilder(LS)
-            .append("Expected: <\"Table:").append(LS)
-            .append("    - a : 1").append(LS)
-            .append("      b : 2").append(LS)
-            .append("    - a : 3").append(LS)
-            .append("      b : 4\">").append(LS)
-            .append("but was: <\"Table:").append(LS)
-            .append("    - b : 2").append(LS)
-            .append("    - b : 4\">").append(LS).toString());
+    AssertAssertJ.assertThat(t)
+        .isAssertionErrorWithMessage(new StringBuilder(LS)
+            .append("EXPECTED: Table:").append(LS)
+            .append("  cols:").append(LS)
+            .append("      - name : a").append(LS)
+            .append("        type : integer").append(LS)
+            .append("        key  : false").append(LS)
+            .append("      - name : b").append(LS)
+            .append("        type : integer").append(LS)
+            .append("        key  : true").append(LS)
+            .append("  rows:").append(LS)
+            .append("      - a : 1").append(LS)
+            .append("        b : 2").append(LS)
+            .append("      - a : 3").append(LS)
+            .append("        b : 4").append(LS)
+            .append("BUT: WAS Table:").append(LS)
+            .append("  cols:").append(LS)
+            .append("      - name : b").append(LS)
+            .append("        type : integer").append(LS)
+            .append("        key  : true").append(LS)
+            .append("  rows:").append(LS)
+            .append("      - b : 2").append(LS)
+            .append("      - b : 4").append(LS).toString());
   }
 
   @Test
@@ -124,21 +154,20 @@ public class TestRowsByKeyAndColsByName {
       tabAssert(exp, act);
       // comment next line to check in the IDE:
     });
-    Assertions.assertThat(t)
-        .isInstanceOf(AssertionError.class)
-        .hasMessage(new StringBuilder(LS)
-            .append("Expected: <\"Table:").append(LS)
+    AssertAssertJ.assertThat(t)
+        .isAssertionErrorWithMessage(new StringBuilder(LS)
+            .append("EXPECTED: Table:").append(LS)
             .append("    - a : 1").append(LS)
             .append("      b : 2").append(LS)
             .append("    - a : 3").append(LS)
-            .append("      b : 4\">").append(LS)
-            .append("but was: <\"Table:").append(LS)
+            .append("      b : 4").append(LS)
+            .append("BUT: WAS Table:").append(LS)
             .append("    - a : 1").append(LS)
             .append("      b : 2").append(LS)
             .append("    - a : 3").append(LS)
             .append("      b : 4").append(LS)
             .append("    - a : 5").append(LS)
-            .append("      b : 6\">").append(LS).toString());
+            .append("      b : 6").append(LS).toString());
   }
 
   @Test
@@ -159,16 +188,15 @@ public class TestRowsByKeyAndColsByName {
       tabAssert(exp, act);
       // comment next line to check in the IDE:
     });
-    Assertions.assertThat(t)
-        .isInstanceOf(AssertionError.class)
-        .hasMessage(new StringBuilder(LS)
-            .append("Expected: <\"Table:").append(LS)
+    AssertAssertJ.assertThat(t)
+        .isAssertionErrorWithMessage(new StringBuilder(LS)
+            .append("EXPECTED: Table:").append(LS)
             .append("    - a : 1").append(LS)
             .append("      b : 2").append(LS)
             .append("    - a : 3").append(LS)
-            .append("      b : 4\">").append(LS)
-            .append("but was: <\"Table:").append(LS)
+            .append("      b : 4").append(LS)
+            .append("BUT: WAS Table:").append(LS)
             .append("    - a : 3").append(LS)
-            .append("      b : 4\">").append(LS).toString());
+            .append("      b : 4").append(LS).toString());
   }
 }

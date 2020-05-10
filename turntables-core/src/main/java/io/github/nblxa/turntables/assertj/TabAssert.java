@@ -5,25 +5,27 @@ import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.assertion.AssertionProxy;
 import org.assertj.core.api.AbstractObjectAssert;
-import org.assertj.core.api.AssertionInfo;
-import org.assertj.core.api.WritableAssertionInfo;
 import org.assertj.core.error.BasicErrorMessageFactory;
 import org.assertj.core.error.ErrorMessageFactory;
 import org.assertj.core.internal.Failures;
 
+@SuppressWarnings("java:S2160")
 public class TabAssert<T extends Tab> extends AbstractObjectAssert<TabAssert<T>, T>
     implements AssertionProxy.AssertionBuilder<TabAssert<T>> {
-  private static final String MSG_FORMAT = "%nExpected: <%s>%nbut was: <%s>%n";
+
+  /**
+   * One of the patterns recognized by IntelliJ IDEA.
+   * See <a href="https://github.com/JetBrains/intellij-community/blob/201.7223/plugins/junit_rt/src/com/intellij/junit4/ExpectedPatterns.java">ExpectedPatterns.java</a>.
+   */
+  private static final String MSG_FORMAT = "%nEXPECTED: %s%nBUT: WAS %s%n";
 
   private final AssertionProxy.Builder proxyBuilder;
-  private final AssertionInfo info;
   private final Failures failures = Failures.instance();
 
   public TabAssert(T tab) {
     super(tab, TabAssert.class);
     this.proxyBuilder = AssertionProxy.builder()
         .actual(tab);
-    this.info = new WritableAssertionInfo(null);
   }
 
   /**
@@ -44,10 +46,10 @@ public class TabAssert<T extends Tab> extends AbstractObjectAssert<TabAssert<T>,
       return this;
     }
     AssertionProxy.Expected expProxy = builder.buildOrGetExpectedProxy();
-    String actRep = actProxy.representation();
-    String expRep = expProxy.representation();
-    ErrorMessageFactory errorMessages = new BasicErrorMessageFactory(
-        MSG_FORMAT, expRep, actRep);
+    // Use the Representation objects to prevent AssertJ from enclosing the String values in double quotes.
+    AssertionProxy.Representation actRep = new AssertionProxy.Representation(actProxy);
+    AssertionProxy.Representation expRep = new AssertionProxy.Representation(expProxy);
+    ErrorMessageFactory errorMessages = new BasicErrorMessageFactory(MSG_FORMAT, expRep, actRep);
 
     throw failures.failure(info, errorMessages);
   }

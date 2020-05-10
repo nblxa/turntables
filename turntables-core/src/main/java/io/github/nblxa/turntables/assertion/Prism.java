@@ -32,7 +32,7 @@ public abstract class Prism extends AbstractTab {
    * @return the augmented String representation of the {@link Tab}
    */
   @NonNull
-  public final String representation() {
+  public String representation() {
     return toString();
   }
 

@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.*;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
-import org.junit.Ignore;
+import io.github.nblxa.turntables.assertj.assertj.AssertAssertJ;
 import org.junit.Test;
 
 public class TestAssertj {
@@ -31,19 +31,18 @@ public class TestAssertj {
           .matchesExpected(exp);
       // comment next line to check in the IDE:
     });
-    assertThat(t)
-        .isInstanceOf(AssertionError.class)
-        .hasMessage(new StringBuilder(LS)
-            .append("Expected: <\"Table:").append(LS)
+    AssertAssertJ.assertThat(t)
+        .isAssertionErrorWithMessage(new StringBuilder(LS)
+            .append("EXPECTED: Table:").append(LS)
             .append("    - col1 : java.util.function.IntPredicate").append(LS)
             .append("      col2 : 2").append(LS)
             .append("    - col1 : 3").append(LS)
-            .append("      col2 : 4\">").append(LS)
-            .append("but was: <\"Table:").append(LS)
+            .append("      col2 : 4").append(LS)
+            .append("BUT: WAS Table:").append(LS)
             .append("    - col1 : 1").append(LS)
             .append("      col2 : 2").append(LS)
             .append("    - col1 : 3").append(LS)
-            .append("      col2 : 4\">").append(LS).toString());
+            .append("      col2 : 4").append(LS).toString());
   }
 
   @Test
@@ -69,19 +68,18 @@ public class TestAssertj {
     // Assert that column names from the expected tab are also used in actual tab's representation
     // so that there is no diff in column names when we are matching by position and names
     // are irrelevant.
-    assertThat(t)
-        .isInstanceOf(AssertionError.class)
-        .hasMessage(new StringBuilder(LS)
-            .append("Expected: <\"Table:").append(LS)
+    AssertAssertJ.assertThat(t)
+        .isAssertionErrorWithMessage(new StringBuilder(LS)
+            .append("EXPECTED: Table:").append(LS)
             .append("    - a : java.util.function.IntPredicate").append(LS)
             .append("      b : 2").append(LS)
             .append("    - a : 3").append(LS)
-            .append("      b : 4\">").append(LS)
-            .append("but was: <\"Table:").append(LS)
+            .append("      b : 4").append(LS)
+            .append("BUT: WAS Table:").append(LS)
             .append("    - a : 1").append(LS)
             .append("      b : 2").append(LS)
             .append("    - a : 3").append(LS)
-            .append("      b : 4\">").append(LS).toString());
+            .append("      b : 4").append(LS).toString());
   }
 
   @Test
@@ -107,19 +105,18 @@ public class TestAssertj {
     // Assert that column names from the actual tab are also used in expected tab's representation
     // so that there is no diff in column names when we are matching by position and names
     // are irrelevant.
-    assertThat(t)
-        .isInstanceOf(AssertionError.class)
-        .hasMessage(new StringBuilder(LS)
-            .append("Expected: <\"Table:").append(LS)
+    AssertAssertJ.assertThat(t)
+        .isAssertionErrorWithMessage(new StringBuilder(LS)
+            .append("EXPECTED: Table:").append(LS)
             .append("    - a : java.util.function.IntPredicate").append(LS)
             .append("      b : 2").append(LS)
             .append("    - a : 3").append(LS)
-            .append("      b : 4\">").append(LS)
-            .append("but was: <\"Table:").append(LS)
+            .append("      b : 4").append(LS)
+            .append("BUT: WAS Table:").append(LS)
             .append("    - a : 1").append(LS)
             .append("      b : 2").append(LS)
             .append("    - a : 3").append(LS)
-            .append("      b : 4\">").append(LS).toString());
+            .append("      b : 4").append(LS).toString());
   }
 
   @Test
@@ -146,19 +143,18 @@ public class TestAssertj {
     // Assert that column names from the actual tab are also used in expected tab's representation
     // so that there is no diff in column names when we are matching by position and names
     // are irrelevant.
-    assertThat(t)
-        .isInstanceOf(AssertionError.class)
-        .hasMessage(new StringBuilder(LS)
-            .append("Expected: <\"Table:").append(LS)
+    AssertAssertJ.assertThat(t)
+        .isAssertionErrorWithMessage(new StringBuilder(LS)
+            .append("EXPECTED: Table:").append(LS)
             .append("    - x : java.util.function.IntPredicate").append(LS)
             .append("      y : 2").append(LS)
             .append("    - x : 3").append(LS)
-            .append("      y : 4\">").append(LS)
-            .append("but was: <\"Table:").append(LS)
+            .append("      y : 4").append(LS)
+            .append("BUT: WAS Table:").append(LS)
             .append("    - x : 1").append(LS)
             .append("      y : 2").append(LS)
             .append("    - x : 3").append(LS)
-            .append("      y : 4\">").append(LS).toString());
+            .append("      y : 4").append(LS).toString());
   }
 
   @Test

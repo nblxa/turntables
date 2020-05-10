@@ -4,11 +4,11 @@ import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 
 import io.github.nblxa.turntables.Typ;
+import io.github.nblxa.turntables.assertj.assertj.AssertAssertJ;
 import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
 import io.github.nblxa.turntables.junit.TestDataSource;
 import io.github.nblxa.turntables.junit.TestDataFactory;
 import io.github.nblxa.turntables.junit.TestTable;
-import org.assertj.core.api.Assertions;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -93,23 +93,22 @@ public class ITMySqlTestData {
     // so that there is no diff in column names when we are matching by position and names
     // are irrelevant.
     String ls = System.lineSeparator();
-    Assertions.assertThat(t)
-        .isInstanceOf(AssertionError.class)
-        .hasMessage(new StringBuilder(ls)
-            .append("Expected: <\"Table:").append(ls)
+    AssertAssertJ.assertThat(t)
+        .isAssertionErrorWithMessage(new StringBuilder(ls)
+            .append("EXPECTED: Table:").append(ls)
             .append("    - id   : 1").append(ls)
             .append("      name : Hugh").append(ls)
             .append("      dept : QA").append(ls)
             .append("    - id   : 2").append(ls)
             .append("      name : Mary").append(ls)
-            .append("      dept : QA\">").append(ls)
-            .append("but was: <\"Table:").append(ls)
+            .append("      dept : QA").append(ls)
+            .append("BUT: WAS Table:").append(ls)
             .append("    - id   : 1").append(ls)
             .append("      name : Alice").append(ls)
             .append("      dept : QA").append(ls)
             .append("    - id   : 2").append(ls)
             .append("      name : Bob").append(ls)
-            .append("      dept : QA\">").append(ls).toString());
+            .append("      dept : QA").append(ls).toString());
   }
 
   @Test

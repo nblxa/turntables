@@ -11,12 +11,15 @@ class Asserter {
   private final RowAsserter rowAsserter;
   @NonNull
   private final ColAsserter colAsserter;
+  @NonNull
+  private AssertionResult assertionResult;
 
   private Asserter(@NonNull AssertionProxy.Conf conf, @NonNull RowAsserter rowAsserter,
                    @NonNull ColAsserter colAsserter) {
     this.conf = conf;
     this.rowAsserter = rowAsserter;
     this.colAsserter = colAsserter;
+    this.assertionResult = AssertionResult.NOT_YET_ASSERTED;
   }
 
   static Asserter createAsserter(@NonNull AssertionProxy.Conf conf) {
@@ -41,7 +44,7 @@ class Asserter {
             conf.expected.cols(), conf.actual.cols(), conf.rowPermutationLimit,
             valAsserter);
       default:
-        throw new UnsupportedOperationException(); // TODO
+        throw new UnsupportedOperationException();
     }
   }
 
@@ -55,7 +58,7 @@ class Asserter {
         colAsserter = new NamedColAsserter();
         break;
       default:
-        throw new UnsupportedOperationException(); // TODO
+        throw new UnsupportedOperationException();
     }
     if (conf.rowMode == Turntables.RowMode.MATCHES_BY_KEY) {
       return new KeyColAsserter(colAsserter);
@@ -71,18 +74,38 @@ class Asserter {
       case MATCHES_BY_NAME:
         return new NamedValAsserter(conf.expected.cols(), conf.actual.cols());
       default:
-        throw new UnsupportedOperationException(); // TODO
+        throw new UnsupportedOperationException();
     }
   }
 
   public boolean match() {
-    return colAsserter.match(conf.expected.cols(), conf.actual.cols())
-        && rowAsserter.match();
+    AssertionResult.MatchResult colsMatch = AssertionResult.MatchResult.of(
+        colAsserter.match(conf.expected.cols(), conf.actual.cols()));
+    assertionResult = assertionResult.colsMatched(colsMatch);
+    if (assertionResult.colsMatched() != AssertionResult.MatchResult.MATCH) {
+      return false;
+    }
+    AssertionResult.MatchResult rowsMatch = AssertionResult.MatchResult.of(rowAsserter.match());
+    assertionResult = assertionResult.rowsMatched(rowsMatch);
+    return assertionResult.rowsMatched() == AssertionResult.MatchResult.MATCH
+        && assertionResult.colsMatched() == AssertionResult.MatchResult.MATCH;
+  }
+
+  public AssertionResult getOrCalculateResult() {
+    if (assertionResult == AssertionResult.NOT_YET_ASSERTED) {
+      match();
+    }
+    return assertionResult;
   }
 
   @NonNull
   RowAsserter getRowAsserter() {
     return rowAsserter;
+  }
+
+  @NonNull
+  ColAsserter getColAsserter() {
+    return colAsserter;
   }
 
   @NonNull

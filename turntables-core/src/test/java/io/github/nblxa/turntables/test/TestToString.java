@@ -125,13 +125,27 @@ public class TestToString {
   public void testColsUnnamed() {
     Tab tab = Turntables.tab().col(Typ.INTEGER).key(Typ.STRING);
     assertThat(tab.cols().toString())
-        .isEqualTo("[[INTEGER], [KEY STRING]]");
+        .isEqualTo("[[integer], [KEY string]]");
   }
 
   @Test
   public void testColsNamed() {
     Tab tab = Turntables.tab().col("x", Typ.INTEGER).key("y", Typ.STRING);
     assertThat(tab.cols().toString())
-        .isEqualTo("[[x INTEGER], [y KEY STRING]]");
+        .isEqualTo("[[x integer], [y KEY string]]");
+  }
+
+  @Test
+  public void testRow() {
+    Tab tab = Turntables.tab()
+        .col(Typ.INTEGER)
+        .col(Typ.STRING)
+        .row(1, "red");
+    assertThat(tab.rows().iterator().next().toString())
+        .isEqualTo(new StringBuilder()
+            .append("Row:").append(LS)
+            .append("    - col1 : 1").append(LS)
+            .append("      col2 : red")
+            .toString());
   }
 }
