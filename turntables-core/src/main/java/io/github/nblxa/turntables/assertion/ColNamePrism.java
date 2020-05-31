@@ -6,16 +6,13 @@ import io.github.nblxa.turntables.TableUtils;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ColNamePrism extends Prism implements Tab.NamedColTab {
+public class ColNamePrism extends Prism implements Tab {
   @NonNull
   private final Tab tab;
-  @NonNull
-  private final List<Tab.NamedCol> namedCols;
 
   @NonNull
   static Prism ofActual(@NonNull Asserter asserter, @NonNull Tab expected,
@@ -30,7 +27,7 @@ public class ColNamePrism extends Prism implements Tab.NamedColTab {
       return NoOpPrism.of(actual);
     }
     List<String> expectedCols = TableUtils.colNames(expected);
-    List<NamedCol> renamedCols = renameFirstCols(actual, expectedCols);
+    List<Tab.Col> renamedCols = renameFirstCols(actual, expectedCols);
     return new ColNamePrism(actual, renamedCols);
   }
 
@@ -45,7 +42,7 @@ public class ColNamePrism extends Prism implements Tab.NamedColTab {
           return NoOpPrism.of(expected);
         }
         List<String> actualColNames = TableUtils.colNames(actual);
-        List<Tab.NamedCol> renamedCols = renameFirstCols(expected, actualColNames);
+        List<Tab.Col> renamedCols = renameFirstCols(expected, actualColNames);
         return new ColNamePrism(expected, renamedCols);
       case MATCHES_BY_NAME:
         return NoOpPrism.of(expected);
@@ -55,9 +52,9 @@ public class ColNamePrism extends Prism implements Tab.NamedColTab {
   }
 
   @NonNull
-  private static List<Tab.NamedCol> renameFirstCols(@NonNull Tab tab,
+  private static List<Tab.Col> renameFirstCols(@NonNull Tab tab,
                                                     @NonNull List<String> colNames) {
-    List<Tab.NamedCol> cols = new ArrayList<>(TableUtils.wrapWithNamedCols(tab).namedCols());
+    List<Tab.Col> cols = new ArrayList<>(tab.cols());
     for (int i = 0; i < Math.min(cols.size(), colNames.size()); i++) {
       Tab.Col oldCol = cols.get(i);
       cols.set(i, new RenamedCol(oldCol, colNames.get(i)));
@@ -65,7 +62,7 @@ public class ColNamePrism extends Prism implements Tab.NamedColTab {
     return cols;
   }
 
-  private static class RenamedCol implements Tab.NamedCol {
+  private static class RenamedCol implements Tab.Col {
     private final Tab.Col col;
     private final String newName;
 
@@ -92,10 +89,9 @@ public class ColNamePrism extends Prism implements Tab.NamedColTab {
     }
   }
 
-  private ColNamePrism(@NonNull Tab tab, @NonNull List<Tab.NamedCol> renamedCols) {
-    super(new ArrayList<>(renamedCols));
+  private ColNamePrism(@NonNull Tab tab, @NonNull List<Tab.Col> renamedCols) {
+    super(renamedCols);
     this.tab = tab;
-    this.namedCols = Collections.unmodifiableList(renamedCols);
   }
 
   @NonNull
@@ -105,12 +101,6 @@ public class ColNamePrism extends Prism implements Tab.NamedColTab {
         .stream()
         .map(r -> new RenamedColRow(r, cols()))
         .collect(Collectors.toList());
-  }
-
-  @NonNull
-  @Override
-  public List<NamedCol> namedCols() {
-    return namedCols;
   }
 
   private static class RenamedColRow extends Prism.PrismRow {

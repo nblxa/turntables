@@ -55,13 +55,6 @@ public class ITDerby {
 
   @Test
   public void testDerby() throws SQLException {
-    Tab expected = Turntables.tab()
-        .col("a", Typ.INTEGER)
-        .col("b", Typ.STRING)
-        .col("c", Typ.DATE)
-        .row(10, "qwerty", LocalDate.of(2019, 1, 9))
-        .row(20, "text", null);
-
     try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM testtab");
          ResultSet rs = ps.executeQuery()) {
 

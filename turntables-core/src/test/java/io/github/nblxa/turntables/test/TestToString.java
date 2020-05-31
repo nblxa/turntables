@@ -122,14 +122,7 @@ public class TestToString {
   }
 
   @Test
-  public void testColsUnnamed() {
-    Tab tab = Turntables.tab().col(Typ.INTEGER).key(Typ.STRING);
-    assertThat(tab.cols().toString())
-        .isEqualTo("[[integer], [KEY string]]");
-  }
-
-  @Test
-  public void testColsNamed() {
+  public void testCols() {
     Tab tab = Turntables.tab().col("x", Typ.INTEGER).key("y", Typ.STRING);
     assertThat(tab.cols().toString())
         .isEqualTo("[[x integer], [y KEY string]]");

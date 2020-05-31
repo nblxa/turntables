@@ -38,7 +38,7 @@ public class TestCol {
     int i = 0;
     for (Typ colTyp : allTypesButAny) {
       for (Typ valTyp : allTypesButAny) {
-        Tab.Col col = new TableUtils.SimpleCol(colTyp, false);
+        Tab.Col col = new TableUtils.SimpleCol("col" + (++i), colTyp, false);
         Tab.Val val = new TableUtils.SimpleVal(valTyp, typeValues.get(valTyp));
         boolean doesAccept = col.typ().accepts(val.typ());
         if (valTyp == colTyp) {
@@ -54,7 +54,7 @@ public class TestCol {
 
   @Test
   public void test_any_acceptsAll() {
-    Tab.Col col = new TableUtils.SimpleCol(Typ.ANY, false);
+    Tab.Col col = new TableUtils.SimpleCol("x", Typ.ANY, false);
     for (Typ valTyp : allTypesButAny) {
       Tab.Val val = new TableUtils.SimpleVal(valTyp, typeValues.get(valTyp));
       assertTrue("Col of type " + Typ.ANY + " did not accept a value of type "
