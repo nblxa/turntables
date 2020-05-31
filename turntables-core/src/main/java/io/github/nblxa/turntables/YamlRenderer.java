@@ -29,32 +29,31 @@ public final class YamlRenderer implements Renderer {
   @NonNull
   public String renderTab(@NonNull Tab tab, int indent) {
     Objects.requireNonNull(tab, "tab");
-    Tab.NamedColTab namedColTab = TableUtils.wrapWithNamedCols(tab);
     StringBuilder sb = new StringBuilder();
-    renderTab(sb, namedColTab, indent);
+    renderTab(sb, tab, indent);
     return sb.toString();
   }
 
-  private void renderTab(@NonNull StringBuilder sb, @NonNull Tab.NamedColTab tab, int indent) {
+  private void renderTab(@NonNull StringBuilder sb, @NonNull Tab tab, int indent) {
     sb.append(title);
     sb.append(":");
-    renderCols(sb, tab.namedCols(), indent);
+    renderCols(sb, tab.cols(), indent);
     renderRows(sb, tab.rows(), indent);
   }
 
-  void renderCols(@NonNull StringBuilder sb, @NonNull List<Tab.NamedCol> cols, int indent) {
+  void renderCols(@NonNull StringBuilder sb, @NonNull List<Tab.Col> cols, int indent) {
     if (extended) {
       TableUtils.RowAdderTable colsTab = new TableUtils.ColAdderTable()
           .col("name", Typ.STRING)
           .col("type", Typ.STRING)
           .col("key", Typ.BOOLEAN)
           .rowAdder();
-      for (Tab.NamedCol col: cols) {
+      for (Tab.Col col: cols) {
         colsTab.row(col.name(), col.typ().toString(), col.isKey());
       }
       sb.append(LS);
       spaces(sb, indent + 2);
-      COLS_DETAIL.renderTab(sb, TableUtils.wrapWithNamedCols(colsTab), indent + 2);
+      COLS_DETAIL.renderTab(sb, colsTab, indent + 2);
     }
   }
 
@@ -86,7 +85,7 @@ public final class YamlRenderer implements Renderer {
 
   private void renderRow(@NonNull StringBuilder sb, @NonNull Tab.Row row, int indent) {
     List<Tab.Val> vals = row.vals();
-    List<String> paddedColNames = rightPaddedColNames(sb, row.cols());
+    List<String> paddedColNames = rightPaddedColNames(row.cols());
     if (vals.size() != paddedColNames.size()) {
       throw new IllegalStateException();
     }
@@ -118,17 +117,11 @@ public final class YamlRenderer implements Renderer {
   }
 
   @NonNull
-  private List<String> rightPaddedColNames(@NonNull StringBuilder sb, @NonNull List<Tab.Col> cols) {
-    int colIndex = 0;
+  private List<String> rightPaddedColNames(@NonNull List<Tab.Col> cols) {
     int maxLength = 0;
     List<String> colNames = new ArrayList<>();
     for (Tab.Col col : cols) {
-      String colName;
-      if (col instanceof Tab.NamedCol) {
-        colName = ((Tab.NamedCol) col).name();
-      } else {
-        colName = "col" + (++colIndex);
-      }
+      String colName = col.name();
       String colEscaped = StringUtils.escape(colName);
       if (colEscaped.length() > maxLength) {
         maxLength = colEscaped.length();

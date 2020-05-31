@@ -49,12 +49,7 @@ public final class Utils {
           + " but got " + fromVal.typ() + ".");
     } else {
       if (col.typ() == Typ.ANY && fromVal.typ() != Typ.ANY) {
-        final Tab.Col inferredCol;
-        if (col instanceof Tab.NamedCol) {
-          inferredCol = new TableUtils.SimpleNamedCol(((Tab.NamedCol) col).name(), fromVal.typ(), col.isKey());
-        } else {
-          inferredCol = new TableUtils.SimpleCol(fromVal.typ(), col.isKey());
-        }
+        final Tab.Col inferredCol = new TableUtils.SimpleCol(col.name(), fromVal.typ(), col.isKey());
         iterCol.set(inferredCol);
       }
     }
@@ -279,18 +274,6 @@ public final class Utils {
     Iterator<? extends Tab.Col> iter = cols.iterator();
     if (!iter.hasNext()) {
       throw new IllegalStateException("No columns defined");
-    }
-    Tab.Col first = iter.next();
-    boolean named = first instanceof TableUtils.SimpleNamedCol;
-    int i = 0;
-    while (iter.hasNext()) {
-      i++;
-      Tab.Col col = iter.next();
-      if ((!named && col instanceof TableUtils.SimpleNamedCol)
-          || (named && !(col instanceof TableUtils.SimpleNamedCol))) {
-        throw new IllegalArgumentException(
-            "Mixing named and unnamed columns at position #" + i);
-      }
     }
   }
 

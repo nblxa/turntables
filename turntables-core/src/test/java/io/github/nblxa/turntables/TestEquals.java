@@ -12,20 +12,12 @@ public class TestEquals {
   @Test
   public void testAbstractCol_equalsContract() {
     EqualsVerifier.forClass(AbstractTab.AbstractCol.class)
-        .withRedefinedSubclass(TableUtils.SimpleNamedCol.class)
         .verify();
   }
 
   @Test
   public void testSimpleCol_equalsContract() {
     EqualsVerifier.forClass(TableUtils.SimpleCol.class)
-        .verify();
-  }
-
-  @Test
-  public void testNamedCol_equalsContract() {
-    EqualsVerifier.forClass(TableUtils.SimpleNamedCol.class)
-        .withRedefinedSuperclass()
         .verify();
   }
 
@@ -81,7 +73,7 @@ public class TestEquals {
   @Test
   public void testUnnamedColAdderTable_equalsContract() {
     EqualsVerifier.forClass(TableUtils.UnnamedColAdderTable.class)
-        .withIgnoredFields("mutableCols")
+        .withIgnoredFields("mutableCols", "colIndex")
         .verify();
   }
 

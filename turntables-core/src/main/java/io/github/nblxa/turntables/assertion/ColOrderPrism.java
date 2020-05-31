@@ -4,7 +4,6 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.TableUtils;
 import io.github.nblxa.turntables.Turntables;
-import io.github.nblxa.turntables.exception.StructureException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -33,21 +32,17 @@ public class ColOrderPrism extends Prism {
   @NonNull
   private static List<Integer> reorderSequence(@NonNull List<Tab.Col> originalCols,
                                                @NonNull List<String> newNames) {
-    Map<Integer, NamedCol> namedCols = new LinkedHashMap<>();
+    Map<Integer, Col> colMap = new LinkedHashMap<>();
     for (int i = 0; i < originalCols.size(); i++) {
-      Tab.Col c = originalCols.get(i);
-      if (!(c instanceof Tab.NamedCol)) {
-        throw new StructureException("Expecting a named column, got: " + c);
-      }
-      namedCols.put(i, (Tab.NamedCol) c);
+      colMap.put(i, originalCols.get(i));
     }
     List<Integer> result = new ArrayList<>();
     for (String newName: newNames) {
       Objects.requireNonNull(newName, "newName is null");
-      for (Iterator<Map.Entry<Integer, NamedCol>> it = namedCols.entrySet().iterator(); it.hasNext(); ) {
-        Map.Entry<Integer, Tab.NamedCol> entry = it.next();
-        Tab.NamedCol namedCol = entry.getValue();
-        String name = Objects.requireNonNull(namedCol.name(), "name is required");
+      for (Iterator<Map.Entry<Integer, Tab.Col>> it = colMap.entrySet().iterator(); it.hasNext(); ) {
+        Map.Entry<Integer, Tab.Col> entry = it.next();
+        Tab.Col col = entry.getValue();
+        String name = Objects.requireNonNull(col.name(), "name is required");
         if (name.equals(newName)) {
           result.add(entry.getKey());
           it.remove();
@@ -55,7 +50,7 @@ public class ColOrderPrism extends Prism {
         }
       }
     }
-    result.addAll(namedCols.keySet());
+    result.addAll(colMap.keySet());
     assert result.size() == originalCols.size();
     return Collections.unmodifiableList(result);
   }

@@ -35,6 +35,14 @@ public interface Tab {
    * Columns summarize the information about the table's columns such as their names and types.
    */
   interface Col {
+
+    /**
+     * Return the column's name.
+     * @return column's name
+     */
+    @NonNull
+    String name();
+
     /**
      * Column's type.
      * @return column's type
@@ -187,30 +195,5 @@ public interface Tab {
      */
     @NonNull
     Tab tab();
-  }
-
-  /**
-   * Named column.
-   */
-  interface NamedCol extends Tab.Col {
-    /**
-     * Return the column's name.
-     * @return column's name
-     */
-    @NonNull
-    String name();
-  }
-
-  /**
-   * Table with named columns.
-   */
-  interface NamedColTab extends Tab {
-    /**
-     * Return the named columns of this table.
-     * <p>The <tt>List</tt> should always have the same order of columns.
-     * @return the named columns of the table
-     */
-    @NonNull
-    List<NamedCol> namedCols();
   }
 }

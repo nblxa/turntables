@@ -16,61 +16,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public final class TableUtils {
+  private static final String COL = "col";
+
   static final class SimpleCol extends AbstractTab.AbstractCol {
-    public SimpleCol(Typ typ, boolean isKey) {
-      super(typ, isKey);
-    }
-  }
-
-  static final class SimpleNamedCol extends AbstractTab.AbstractCol implements Tab.NamedCol {
-    @NonNull
-    private final String name;
-
-    SimpleNamedCol(String name, Typ typ, boolean isKey) {
-      super(typ, isKey);
-      this.name = Objects.requireNonNull(name, "name is null");
-    }
-
-    @NonNull
-    @Override
-    public String name() {
-      return name;
-    }
-
-    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass") // checks via the canEqual method
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (!canEqual(o)) {
-        return false;
-      }
-      AbstractTab.AbstractCol abstractCol = (AbstractTab.AbstractCol) o;
-      return abstractCol.canEqual(this)
-          && typ() == abstractCol.typ()
-          && isKey() == abstractCol.isKey()
-          && Objects.equals(name(), ((Tab.NamedCol) abstractCol).name());
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(typ(), isKey(), name);
-    }
-
-    @Override
-    public boolean canEqual(Object o) {
-      return o instanceof AbstractTab.AbstractCol && o instanceof Tab.NamedCol;
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-      if (isKey()) {
-        return String.format("[%s KEY %s]", name, typ());
-      } else {
-        return String.format("[%s %s]", name, typ());
-      }
+    public SimpleCol(String name, Typ typ, boolean isKey) {
+      super(name, typ, isKey);
     }
   }
 
@@ -361,14 +311,16 @@ public final class TableUtils {
     }
   }
 
+  @SuppressWarnings("java:S2160")
   public static final class UnnamedColAdderTable extends AbstractColRowAdderTable
       implements Tab.UnnamedColAdder<UnnamedColAdderTable, RowAdderTable> {
+    private int colIndex = 1;
 
     @Override
     @NonNull
     public UnnamedColAdderTable col(@NonNull Typ typ) {
       Objects.requireNonNull(typ, "typ");
-      mutableCols().add(new SimpleCol(typ, false));
+      mutableCols().add(new SimpleCol(COL + (colIndex++), typ, false));
       return this;
     }
 
@@ -376,7 +328,7 @@ public final class TableUtils {
     @NonNull
     public UnnamedColAdderTable key(@NonNull Typ typ) {
       Objects.requireNonNull(typ, "typ");
-      mutableCols().add(new SimpleCol(typ, true));
+      mutableCols().add(new SimpleCol(COL + (colIndex++), typ, true));
       return this;
     }
 
@@ -387,6 +339,7 @@ public final class TableUtils {
     }
   }
 
+  @SuppressWarnings("java:S2160")
   public static final class NamedColAdderTable extends AbstractColRowAdderTable
       implements Tab.NamedColAdder<NamedColAdderTable, RowAdderTable> {
 
@@ -395,7 +348,7 @@ public final class TableUtils {
     public NamedColAdderTable col(@NonNull String name, @NonNull Typ typ) {
       Objects.requireNonNull(name, "name");
       Objects.requireNonNull(typ, "typ");
-      mutableCols().add(new SimpleNamedCol(name, typ, false));
+      mutableCols().add(new SimpleCol(name, typ, false));
       return this;
     }
 
@@ -404,7 +357,7 @@ public final class TableUtils {
     public NamedColAdderTable key(@NonNull String name, @NonNull Typ typ) {
       Objects.requireNonNull(name, "name");
       Objects.requireNonNull(typ, "typ");
-      mutableCols().add(new SimpleNamedCol(name, typ, true));
+      mutableCols().add(new SimpleCol(name, typ, true));
       return this;
     }
   }
@@ -464,47 +417,11 @@ public final class TableUtils {
     }
 
     @NonNull
-    public static UnnamedColBuilder unnamed() {
-      return new UnnamedColBuilder();
-    }
-
-    @NonNull
     public static RowBuilder rowBuilder() {
       return new RowBuilder(Collections.emptyList());
     }
 
     private Builder() {
-    }
-  }
-
-  public static final class UnnamedColBuilder implements Tab.UnnamedColAdder<UnnamedColBuilder,
-      RowBuilder> {
-    private final List<Tab.Col> cols;
-
-    public UnnamedColBuilder() {
-      cols = new ArrayList<>();
-    }
-
-    @NonNull
-    @Override
-    public UnnamedColBuilder col(@NonNull Typ typ) {
-      Objects.requireNonNull(typ);
-      cols.add(new SimpleCol(typ, false));
-      return this;
-    }
-
-    @NonNull
-    @Override
-    public UnnamedColBuilder key(@NonNull Typ typ) {
-      Objects.requireNonNull(typ);
-      cols.add(new SimpleCol(typ, true));
-      return this;
-    }
-
-    @NonNull
-    @Override
-    public RowBuilder rowAdder() {
-      return new RowBuilder(cols);
     }
   }
 
@@ -521,7 +438,7 @@ public final class TableUtils {
     public NamedColBuilder col(@NonNull String name, @NonNull Typ typ) {
       Objects.requireNonNull(name);
       Objects.requireNonNull(typ);
-      cols.add(new SimpleNamedCol(name, typ, false));
+      cols.add(new SimpleCol(name, typ, false));
       return this;
     }
 
@@ -530,7 +447,7 @@ public final class TableUtils {
     public NamedColBuilder key(@NonNull String name, @NonNull Typ typ) {
       Objects.requireNonNull(name);
       Objects.requireNonNull(typ);
-      cols.add(new SimpleNamedCol(name, typ, true));
+      cols.add(new SimpleCol(name, typ, true));
       return this;
     }
 
@@ -594,9 +511,10 @@ public final class TableUtils {
   @NonNull
   private static List<Tab.Col> makeCols(@NonNull Object[] objects) {
     List<Tab.Col> cols = new ArrayList<>();
+    int colIndex = 1;
     for (Object o : objects) {
       Typ typ = Utils.getTyp(o);
-      cols.add(new SimpleCol(typ, false));
+      cols.add(new SimpleCol(COL + (colIndex++), typ, false));
     }
     return cols;
   }
@@ -630,86 +548,22 @@ public final class TableUtils {
   }
 
   public static boolean hasNamedCols(@NonNull Tab tab) {
-    Objects.requireNonNull(tab, "tab is null");
-    List<Tab.Col> cols = Objects.requireNonNull(tab.cols(), "cols is null");
-    Iterator<Tab.Col> iter = Objects.requireNonNull(cols.iterator(), "iter is null");
-    boolean processedFirstCol = false;
-    boolean hasNamedCols = false;
-    while (iter.hasNext()) {
-      Tab.Col col = Objects.requireNonNull(iter.next(), "col is null");
-      if (processedFirstCol) {
-        if (hasNamedCols != col instanceof Tab.NamedCol) {
-          throw new IllegalStateException("Mixture of named and unnamed cols!");
-        }
-      } else {
-        hasNamedCols = col instanceof Tab.NamedCol;
+    List<Tab.Col> cols = tab.cols();
+    for (int i = 0; i < cols.size(); i++) {
+      if (!(COL + (i + 1)).equals(cols.get(i).name())) {
+        return true;
       }
-      processedFirstCol = true;
     }
-    return hasNamedCols;
-  }
-
-  @NonNull
-  public static Tab.NamedColTab wrapWithNamedCols(@NonNull Tab tab) {
-    Objects.requireNonNull(tab, "tab is null");
-    if (tab instanceof Tab.NamedColTab) {
-      return (Tab.NamedColTab) tab;
-    } else {
-      return new NamedColWrapper(tab);
-    }
+    return false;
   }
 
   @NonNull
   public static List<String> colNames(Tab tab) {
     List<String> colNames = new ArrayList<>();
-    if (tab instanceof Tab.NamedColTab) {
-      for (Tab.NamedCol c: ((Tab.NamedColTab) tab).namedCols()) {
-        colNames.add(c.name());
-      }
-    } else {
-      int i = 1;
-      for (Tab.Col c: tab.cols()) {
-        if (c instanceof Tab.NamedCol) {
-          colNames.add(((Tab.NamedCol) c).name());
-        } else {
-          colNames.add("col" + i++);
-        }
-      }
+    for (Tab.Col c: tab.cols()) {
+      colNames.add(c.name());
     }
     return Collections.unmodifiableList(colNames);
-  }
-
-  public interface NamedColsMixin extends Tab.NamedColTab {
-    @NonNull
-    @Override
-    default List<Tab.NamedCol> namedCols() {
-      int i = 1;
-      List<Tab.NamedCol> result = new ArrayList<>();
-      for (Col c: cols()) {
-        if (c instanceof Tab.NamedCol) {
-          result.add((Tab.NamedCol) c);
-        } else {
-          result.add(new TableUtils.SimpleNamedCol("col" + i++, c.typ(), c.isKey()));
-        }
-      }
-      return Collections.unmodifiableList(result);
-    }
-  }
-
-  public static class NamedColWrapper extends AbstractTab implements NamedColsMixin {
-    @NonNull
-    private final Tab tab;
-
-    private NamedColWrapper(Tab tab) {
-      super(tab.cols());
-      this.tab = tab;
-    }
-
-    @NonNull
-    @Override
-    public List<Row> rows() {
-      return tab.rows();
-    }
   }
 
   private TableUtils() {

@@ -4,7 +4,6 @@ import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.exception.StructureException;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
@@ -15,15 +14,15 @@ class NamedColAsserter implements ColAsserter {
   private final OrderedColAsserter colAsserter = new OrderedColAsserter();
 
   @NonNull
-  private static List<Tab.NamedCol> orderedByName(@NonNull List<Tab.NamedCol> cols) {
+  private static List<Tab.Col> orderedByName(@NonNull List<Tab.Col> cols) {
     return cols.stream()
-        .sorted(Comparator.comparing(Tab.NamedCol::name))
+        .sorted(Comparator.comparing(Tab.Col::name))
         .collect(Collectors.toList());
   }
 
-  private static void checkForDuplicates(@NonNull List<Tab.NamedCol> names, @NonNull String tab) {
-    List<String> duplicates = names.stream()
-        .map(Tab.NamedCol::name)
+  private static void checkForDuplicates(@NonNull List<Tab.Col> cols, @NonNull String tab) {
+    List<String> duplicates = cols.stream()
+        .map(Tab.Col::name)
         .collect(Collectors.groupingBy(Function.identity()))
         .values()
         .stream()
@@ -38,27 +37,9 @@ class NamedColAsserter implements ColAsserter {
     }
   }
 
-  @NonNull
-  private static List<Tab.NamedCol> namedColList(@NonNull List<Tab.Col> unnamed) {
-    List<Tab.NamedCol> res = new ArrayList<>();
-    for (Tab.Col c: unnamed) {
-      res.add(namedCol(c));
-    }
-    return Collections.unmodifiableList(res);
-  }
-
-  @NonNull
-  private static Tab.NamedCol namedCol(@NonNull Tab.Col col) {
-    if (col instanceof Tab.NamedCol) {
-      return (Tab.NamedCol) col;
-    } else {
-      throw new IllegalArgumentException("Cannot match unnamed cols by name!");
-    }
-  }
-
   @Override
   public boolean match(@NonNull List<Tab.Col> expected, @NonNull List<Tab.Col> actual) {
-    return matchNamed(namedColList(expected), namedColList(actual));
+    return matchNamed(expected, actual);
   }
 
   @Override
@@ -70,16 +51,15 @@ class NamedColAsserter implements ColAsserter {
 
   private static List<String> names(List<Tab.Col> namedCols) {
     return namedCols.stream()
-        .map(NamedColAsserter::namedCol)
         .filter(Tab.Col::isKey)
-        .map(Tab.NamedCol::name)
+        .map(Tab.Col::name)
         .collect(Collectors.toList());
   }
 
-  private boolean matchNamed(@NonNull List<Tab.NamedCol> expected,
-                             @NonNull List<Tab.NamedCol> actual) {
-    List<Tab.NamedCol> expOrdered = orderedByName(expected);
-    List<Tab.NamedCol> actOrdered = orderedByName(actual);
+  private boolean matchNamed(@NonNull List<Tab.Col> expected,
+                             @NonNull List<Tab.Col> actual) {
+    List<Tab.Col> expOrdered = orderedByName(expected);
+    List<Tab.Col> actOrdered = orderedByName(actual);
     checkForDuplicates(expOrdered, "expected");
     checkForDuplicates(actOrdered, "actual");
     if (!colAsserter.match(new ArrayList<>(expOrdered), new ArrayList<>(actOrdered))) {
