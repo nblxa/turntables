@@ -128,7 +128,7 @@ public final class TableUtils {
 
     @Override
     public String toString() {
-      return YamlUtils.renderVal(this);
+      return renderer().renderVal(this);
     }
   }
 
@@ -246,7 +246,7 @@ public final class TableUtils {
 
     @Override
     public String toString() {
-      return YamlUtils.renderVal(this);
+      return renderer().renderVal(this);
     }
   }
 

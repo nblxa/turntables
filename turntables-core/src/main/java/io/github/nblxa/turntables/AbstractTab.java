@@ -73,11 +73,15 @@ public abstract class AbstractTab implements Tab {
 
   @Override
   public String toString() {
-    return YamlUtils.renderTab(this, 0);
+    return renderer().renderTab(this, 0);
   }
 
   public boolean canEqual(Object other) {
     return other instanceof AbstractTab;
+  }
+
+  protected Renderer renderer() {
+    return YamlRenderer.DEFAULT_SIMPLE;
   }
 
   public abstract static class AbstractRow implements Row {
@@ -119,13 +123,21 @@ public abstract class AbstractTab implements Tab {
 
     @Override
     public String toString() {
-      return YamlUtils.renderRow(this, 0);
+      return renderer().renderRow(this, 0);
+    }
+
+    protected Renderer renderer() {
+      return YamlRenderer.DEFAULT_SIMPLE;
     }
   }
 
   public abstract static class AbstractVal implements Tab.Val {
     public boolean canEqual(Object o) {
       return o instanceof AbstractVal;
+    }
+
+    protected Renderer renderer() {
+      return YamlRenderer.DEFAULT_SIMPLE;
     }
   }
 

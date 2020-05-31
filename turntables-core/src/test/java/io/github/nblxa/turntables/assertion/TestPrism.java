@@ -59,7 +59,7 @@ public class TestPrism {
   public void prismRowEqualsTabRow() {
     Tab exp = Turntables.tab().row(1);
     Tab act = Turntables.tab().row(2);
-    Prism prism = AssertionValPrism.ofExpected(exp, act);
+    Prism prism = AssertionValPrism.createFromExpected(exp, act);
     Tab.Row prismRow = prism.rows().iterator().next();
     Tab.Row tabRow = act.rows().iterator().next();
     Throwable t = catchThrowable(() -> prismRow.equals(tabRow));
@@ -72,7 +72,7 @@ public class TestPrism {
   public void tabRowEqualsPrismRow() {
     Tab exp = Turntables.tab().row(1);
     Tab act = Turntables.tab().row(2);
-    Prism prism = AssertionValPrism.ofExpected(exp, act);
+    Prism prism = AssertionValPrism.createFromExpected(exp, act);
     Tab.Row prismRow = prism.rows().iterator().next();
     Tab.Row tabRow = act.rows().iterator().next();
     Throwable t = catchThrowable(() -> tabRow.equals(prismRow));
@@ -85,7 +85,7 @@ public class TestPrism {
   public void prismRowHashCode() {
     Tab exp = Turntables.tab().row(1);
     Tab act = Turntables.tab().row(2);
-    Prism prism = AssertionValPrism.ofExpected(exp, act);
+    Prism prism = AssertionValPrism.createFromExpected(exp, act);
     Tab.Row prismRow = prism.rows().iterator().next();
     Throwable t = catchThrowable(() -> prismRow.hashCode());
     Assertions.assertThat(t)

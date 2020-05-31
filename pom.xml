@@ -37,6 +37,7 @@
         <module>turntables-hamcrest</module>
         <module>turntables-test-concurrency</module>
         <module>turntables-test-mysql</module>
+        <module>assert-assertj</module>
         <module>turntables-coverage</module>
     </modules>
 
@@ -169,6 +170,11 @@
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>${slf4j.log4j12.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.github.nblxa</groupId>
+                <artifactId>assert-assertj</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

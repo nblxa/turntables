@@ -218,8 +218,9 @@ public abstract class AssertionProxy extends AbstractTab {
       Prism rowOrderExp = RowPrismFactory.createFromExpected(asserter, tab);
       Prism rowOrderAct = RowPrismFactory.createFromActual(asserter, asserter.getConf().actual);
       Prism colNameRowOrdExp = ColPrismFactory.createFromExpected(asserter, rowOrderExp, rowOrderAct);
-      Prism assertValExp = AssertionValPrism.ofExpected(colNameRowOrdExp, rowOrderAct);
-      return assertValExp.representation();
+      Prism assertValExp = AssertionValPrism.createFromExpected(colNameRowOrdExp, rowOrderAct);
+      Prism render = RenderPrism.createFrom(assertValExp, asserter);
+      return render.representation();
     }
   }
 
@@ -238,7 +239,23 @@ public abstract class AssertionProxy extends AbstractTab {
       Prism rowOrderExp = RowPrismFactory.createFromExpected(asserter, asserter.getConf().expected);
       Prism rowOrderAct = RowPrismFactory.createFromActual(asserter, tab);
       Prism colOrderAct = ColPrismFactory.createFromActual(asserter, rowOrderExp, rowOrderAct);
-      return colOrderAct.representation();
+      Prism render = RenderPrism.createFrom(colOrderAct, asserter);
+      return render.representation();
+    }
+  }
+
+  public static class Representation {
+    @NonNull
+    private final AssertionProxy assertionProxy;
+
+    public Representation(@NonNull AssertionProxy assertionProxy) {
+      this.assertionProxy = Objects.requireNonNull(assertionProxy, "assertionProxy");
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+      return assertionProxy.representation();
     }
   }
 }

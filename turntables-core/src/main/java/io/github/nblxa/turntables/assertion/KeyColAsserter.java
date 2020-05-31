@@ -20,8 +20,16 @@ class KeyColAsserter implements ColAsserter {
 
   @Override
   public boolean match(@NonNull List<Tab.Col> expected, @NonNull List<Tab.Col> actual) {
+    if (!checkKey(expected, actual)) {
+      return false;
+    }
     List<Tab.Col> expKeyCols = keyCols(expected);
     List<Tab.Col> actKeyCols = keyCols(actual);
     return colAsserter.match(expKeyCols, actKeyCols) && colAsserter.match(expected, actual);
+  }
+
+  @Override
+  public boolean checkKey(@NonNull List<Tab.Col> expected, @NonNull List<Tab.Col> actual) {
+    return colAsserter.checkKey(expected, actual);
   }
 }

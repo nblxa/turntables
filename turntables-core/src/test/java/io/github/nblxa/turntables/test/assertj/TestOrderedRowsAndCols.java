@@ -3,7 +3,7 @@ package io.github.nblxa.turntables.test.assertj;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.assertj.TabAssert;
-import org.assertj.core.api.Assertions;
+import io.github.nblxa.turntables.assertj.assertj.AssertAssertJ;
 import org.junit.Test;
 
 import static io.github.nblxa.turntables.Turntables.assertThat;
@@ -46,21 +46,39 @@ public class TestOrderedRowsAndCols {
       tabAssert(exp, act);
       // comment next line to check in the IDE:
     });
-    Assertions.assertThat(t)
-        .isInstanceOf(AssertionError.class)
-        .hasMessage(new StringBuilder(LS)
-            .append("Expected: <\"Table:").append(LS)
-            .append("    - col1 : 1").append(LS)
-            .append("      col2 : 2").append(LS)
-            .append("    - col1 : 3").append(LS)
-            .append("      col2 : 4\">").append(LS)
-            .append("but was: <\"Table:").append(LS)
-            .append("    - col1 : 1").append(LS)
-            .append("      col2 : 5").append(LS)
-            .append("      col3 : 2").append(LS)
-            .append("    - col1 : 3").append(LS)
-            .append("      col2 : 6").append(LS)
-            .append("      col3 : 4\">").append(LS).toString());
+    AssertAssertJ.assertThat(t)
+        .isAssertionErrorWithMessage(new StringBuilder(LS)
+            .append("EXPECTED: Table:").append(LS)
+            .append("  cols:").append(LS)
+            .append("      - name : col1").append(LS)
+            .append("        type : integer").append(LS)
+            .append("        key  : false").append(LS)
+            .append("      - name : col2").append(LS)
+            .append("        type : integer").append(LS)
+            .append("        key  : false").append(LS)
+            .append("  rows:").append(LS)
+            .append("      - col1 : 1").append(LS)
+            .append("        col2 : 2").append(LS)
+            .append("      - col1 : 3").append(LS)
+            .append("        col2 : 4").append(LS)
+            .append("BUT: WAS Table:").append(LS)
+            .append("  cols:").append(LS)
+            .append("      - name : col1").append(LS)
+            .append("        type : integer").append(LS)
+            .append("        key  : false").append(LS)
+            .append("      - name : col2").append(LS)
+            .append("        type : integer").append(LS)
+            .append("        key  : false").append(LS)
+            .append("      - name : col3").append(LS)
+            .append("        type : integer").append(LS)
+            .append("        key  : false").append(LS)
+            .append("  rows:").append(LS)
+            .append("      - col1 : 1").append(LS)
+            .append("        col2 : 5").append(LS)
+            .append("        col3 : 2").append(LS)
+            .append("      - col1 : 3").append(LS)
+            .append("        col2 : 6").append(LS)
+            .append("        col3 : 4").append(LS).toString());
   }
 
   @Test
@@ -78,17 +96,29 @@ public class TestOrderedRowsAndCols {
       tabAssert(exp, act);
       // comment next line to check in the IDE:
     });
-    Assertions.assertThat(t)
-        .isInstanceOf(AssertionError.class)
-        .hasMessage(new StringBuilder(LS)
-            .append("Expected: <\"Table:").append(LS)
-            .append("    - col1 : 1").append(LS)
-            .append("      col2 : 2").append(LS)
-            .append("    - col1 : 3").append(LS)
-            .append("      col2 : 4\">").append(LS)
-            .append("but was: <\"Table:").append(LS)
-            .append("    - col1 : 2").append(LS)
-            .append("    - col1 : 4\">").append(LS).toString());
+    AssertAssertJ.assertThat(t)
+        .isAssertionErrorWithMessage(new StringBuilder(LS)
+            .append("EXPECTED: Table:").append(LS)
+            .append("  cols:").append(LS)
+            .append("      - name : col1").append(LS)
+            .append("        type : integer").append(LS)
+            .append("        key  : false").append(LS)
+            .append("      - name : col2").append(LS)
+            .append("        type : integer").append(LS)
+            .append("        key  : false").append(LS)
+            .append("  rows:").append(LS)
+            .append("      - col1 : 1").append(LS)
+            .append("        col2 : 2").append(LS)
+            .append("      - col1 : 3").append(LS)
+            .append("        col2 : 4").append(LS)
+            .append("BUT: WAS Table:").append(LS)
+            .append("  cols:").append(LS)
+            .append("      - name : col1").append(LS)
+            .append("        type : integer").append(LS)
+            .append("        key  : false").append(LS)
+            .append("  rows:").append(LS)
+            .append("      - col1 : 2").append(LS)
+            .append("      - col1 : 4").append(LS).toString());
   }
 
   @Test
@@ -107,21 +137,20 @@ public class TestOrderedRowsAndCols {
       tabAssert(exp, act);
       // comment next line to check in the IDE:
     });
-    Assertions.assertThat(t)
-        .isInstanceOf(AssertionError.class)
-        .hasMessage(new StringBuilder(LS)
-            .append("Expected: <\"Table:").append(LS)
+    AssertAssertJ.assertThat(t)
+        .isAssertionErrorWithMessage(new StringBuilder(LS)
+            .append("EXPECTED: Table:").append(LS)
             .append("    - col1 : 1").append(LS)
             .append("      col2 : 2").append(LS)
             .append("    - col1 : 3").append(LS)
-            .append("      col2 : 4\">").append(LS)
-            .append("but was: <\"Table:").append(LS)
+            .append("      col2 : 4").append(LS)
+            .append("BUT: WAS Table:").append(LS)
             .append("    - col1 : 1").append(LS)
             .append("      col2 : 2").append(LS)
             .append("    - col1 : 5").append(LS)
             .append("      col2 : 6").append(LS)
             .append("    - col1 : 3").append(LS)
-            .append("      col2 : 4\">").append(LS).toString());
+            .append("      col2 : 4").append(LS).toString());
   }
 
   @Test
@@ -138,16 +167,15 @@ public class TestOrderedRowsAndCols {
       tabAssert(exp, act);
       // comment next line to check in the IDE:
     });
-    Assertions.assertThat(t)
-        .isInstanceOf(AssertionError.class)
-        .hasMessage(new StringBuilder(LS)
-            .append("Expected: <\"Table:").append(LS)
+    AssertAssertJ.assertThat(t)
+        .isAssertionErrorWithMessage(new StringBuilder(LS)
+            .append("EXPECTED: Table:").append(LS)
             .append("    - col1 : 1").append(LS)
             .append("      col2 : 2").append(LS)
             .append("    - col1 : 3").append(LS)
-            .append("      col2 : 4\">").append(LS)
-            .append("but was: <\"Table:").append(LS)
+            .append("      col2 : 4").append(LS)
+            .append("BUT: WAS Table:").append(LS)
             .append("    - col1 : 3").append(LS)
-            .append("      col2 : 4\">").append(LS).toString());
+            .append("      col2 : 4").append(LS).toString());
   }
 }

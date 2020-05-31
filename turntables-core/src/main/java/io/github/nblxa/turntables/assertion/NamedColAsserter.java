@@ -39,21 +39,41 @@ class NamedColAsserter implements ColAsserter {
   }
 
   @NonNull
-  private static List<Tab.NamedCol> named(@NonNull List<Tab.Col> unnamed) {
+  private static List<Tab.NamedCol> namedColList(@NonNull List<Tab.Col> unnamed) {
     List<Tab.NamedCol> res = new ArrayList<>();
     for (Tab.Col c: unnamed) {
-      if (c instanceof Tab.NamedCol) {
-        res.add((Tab.NamedCol) c);
-      } else {
-        throw new IllegalArgumentException("Cannot match unnamed cols by name!");
-      }
+      res.add(namedCol(c));
     }
     return Collections.unmodifiableList(res);
   }
 
+  @NonNull
+  private static Tab.NamedCol namedCol(@NonNull Tab.Col col) {
+    if (col instanceof Tab.NamedCol) {
+      return (Tab.NamedCol) col;
+    } else {
+      throw new IllegalArgumentException("Cannot match unnamed cols by name!");
+    }
+  }
+
   @Override
   public boolean match(@NonNull List<Tab.Col> expected, @NonNull List<Tab.Col> actual) {
-    return matchNamed(named(expected), named(actual));
+    return matchNamed(namedColList(expected), namedColList(actual));
+  }
+
+  @Override
+  public boolean checkKey(@NonNull List<Tab.Col> expected, @NonNull List<Tab.Col> actual) {
+    List<String> expKeyNames = names(expected);
+    List<String> actKeyNames = names(actual);
+    return expKeyNames.equals(actKeyNames);
+  }
+
+  private static List<String> names(List<Tab.Col> namedCols) {
+    return namedCols.stream()
+        .map(NamedColAsserter::namedCol)
+        .filter(Tab.Col::isKey)
+        .map(Tab.NamedCol::name)
+        .collect(Collectors.toList());
   }
 
   private boolean matchNamed(@NonNull List<Tab.NamedCol> expected,

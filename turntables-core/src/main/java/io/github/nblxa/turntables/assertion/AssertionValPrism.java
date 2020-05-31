@@ -15,7 +15,7 @@ import java.util.function.Function;
 class AssertionValPrism extends Prism {
   private final List<Row> augmentedRows;
 
-  static Prism ofExpected(@NonNull Tab expected, @NonNull Tab actual) {
+  static Prism createFromExpected(@NonNull Tab expected, @NonNull Tab actual) {
     return new AssertionValPrism(expected, actual);
   }
 
