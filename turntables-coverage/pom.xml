@@ -29,11 +29,6 @@
         </dependency>
         <dependency>
             <groupId>io.github.nblxa</groupId>
-            <artifactId>turntables-hamcrest</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.nblxa</groupId>
             <artifactId>turntables-test-mysql</artifactId>
             <version>${project.version}</version>
         </dependency>
