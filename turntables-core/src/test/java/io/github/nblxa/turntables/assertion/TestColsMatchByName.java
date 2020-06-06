@@ -95,5 +95,4 @@ public class TestColsMatchByName {
     boolean res = matchByName(expected, actual);
     assertThat(res).isFalse();
   }
-
 }

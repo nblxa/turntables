@@ -1,14 +1,10 @@
 package io.github.nblxa.turntables;
 
-import io.github.nblxa.turntables.exception.AssertionEvaluationException;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public abstract class AbstractTab implements Tab {
   @NonNull
@@ -203,66 +199,6 @@ public abstract class AbstractTab implements Tab {
       } else {
         return String.format("[%s %s]", name(), typ());
       }
-    }
-  }
-
-  public abstract static class AbstractAssertionVal extends AbstractVal {
-    @NonNull
-    private final Predicate<Object> assertionPredicate;
-    @NonNull
-    private final Supplier<String> toStringSupplier;
-
-    AbstractAssertionVal(Predicate<Object> assertionPredicate, Supplier<String> toStringSupplier) {
-      this.assertionPredicate =
-          Objects.requireNonNull(assertionPredicate, "assertionPredicate");
-      this.toStringSupplier =
-          Objects.requireNonNull(toStringSupplier, "toStringSupplier");
-    }
-
-    @Override
-    @NonNull
-    public Typ typ() {
-      return Typ.ANY;
-    }
-
-    @Override
-    @Nullable
-    public Object eval() {
-      throw new AssertionEvaluationException();
-    }
-
-    @Override
-    public boolean matchesActual(@NonNull Val actual) {
-      Objects.requireNonNull(actual, "other");
-      return assertionPredicate.test(actual.eval());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (!(o instanceof AbstractAssertionVal)) {
-        return false;
-      }
-      AbstractAssertionVal that = (AbstractAssertionVal) o;
-      return that.canEqual(this) && assertionPredicate.equals(that.assertionPredicate)
-          && toStringSupplier.equals(that.toStringSupplier);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(assertionPredicate, toStringSupplier);
-    }
-
-    @Override
-    public boolean canEqual(Object o) {
-      return o instanceof AbstractAssertionVal;
-    }
-
-    @Override
-    public String toString() {
-      return toStringSupplier.get();
     }
   }
 }

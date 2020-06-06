@@ -148,7 +148,7 @@ public class TestTurntables {
     assertThat(row.vals()).hasSize(1);
 
     Tab.Val val = row.vals().iterator().next();
-    assertThat(val).isInstanceOf(AbstractTab.AbstractAssertionVal.class);
+    assertThat(val).isInstanceOf(TableUtils.AssertionVal.class);
   }
 
   @Test

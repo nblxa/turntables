@@ -1,6 +1,5 @@
 package io.github.nblxa.turntables;
 
-import io.github.nblxa.turntables.assertion.AssertionValProvider;
 import io.github.nblxa.turntables.exception.StructureException;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
@@ -14,7 +13,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ServiceLoader;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoublePredicate;
@@ -24,6 +22,7 @@ import java.util.function.IntSupplier;
 import java.util.function.LongPredicate;
 import java.util.function.LongSupplier;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 public final class Utils {
   @NonNull
@@ -70,14 +69,6 @@ public final class Utils {
     if (typ != null) {
       return typ;
     }
-    try {
-      typ = assertion(o);
-      if (typ != null) {
-        return typ;
-      }
-    } catch (Exception e) {
-      throw new IllegalArgumentException(illegalTypeMessage(o), e);
-    }
     throw new IllegalArgumentException(illegalTypeMessage(o));
   }
 
@@ -97,13 +88,6 @@ public final class Utils {
     }
     if (val == null) {
       val = valPredicate(o);
-    }
-    if (val == null) {
-      try {
-        val = valAssertion(o);
-      } catch (Exception e) {
-        throw new IllegalArgumentException(illegalTypeMessage(o), e);
-      }
     }
     if (val == null) {
       throw new IllegalArgumentException(illegalTypeMessage(o));
@@ -146,9 +130,6 @@ public final class Utils {
 
   @Nullable
   private static Tab.Val valStandard(Object o) {
-    if (o == null) {
-      return Typ.ANY.nullVal();
-    }
     Typ typ = standard(o);
     if (typ == null) {
       return null;
@@ -205,6 +186,9 @@ public final class Utils {
     if (o instanceof DoublePredicate) {
       return Typ.DOUBLE;
     }
+    if (o instanceof Pattern) {
+      return Typ.STRING;
+    }
     return null;
   }
 
@@ -212,61 +196,32 @@ public final class Utils {
   @SuppressWarnings("unchecked")
   private static Tab.Val valPredicate(Object o) {
     if (o instanceof Predicate<?>) {
-      return new TableUtils.SimpleAssertionVal(Typ.ANY, ((Predicate<Object>) o),
+      return new TableUtils.AssertionVal(Typ.ANY, ((Predicate<Object>) o),
           Predicate.class::getCanonicalName);
     }
-        /* Boxing and unboxing primitives is not nice but performance is not deemed critical
-           here, at a benefit of having a simple implementation of the assertion value class. */
+    /* Boxing and unboxing primitives is not nice but performance is not deemed critical
+       here, at a benefit of having a simple implementation of the assertion value class. */
     if (o instanceof IntPredicate) {
-      return new TableUtils.SimpleAssertionVal(Typ.INTEGER,
+      return new TableUtils.AssertionVal(Typ.INTEGER,
           (Object i) -> ((IntPredicate) o).test((Integer) i),
           IntPredicate.class::getCanonicalName);
     }
     if (o instanceof LongPredicate) {
-      return new TableUtils.SimpleAssertionVal(Typ.LONG,
+      return new TableUtils.AssertionVal(Typ.LONG,
           (Object l) -> ((LongPredicate) o).test((Long) l),
           LongPredicate.class::getCanonicalName);
     }
     if (o instanceof DoublePredicate) {
-      return new TableUtils.SimpleAssertionVal(Typ.DOUBLE,
+      return new TableUtils.AssertionVal(Typ.DOUBLE,
           (Object d) -> ((DoublePredicate) o).test((Double) d),
           LongPredicate.class::getCanonicalName);
     }
-    return null;
-  }
-
-  @Nullable
-  private static Typ assertion(@NonNull Object o) {
-    Tab.Val val = valAssertion(o);
-    if (val != null) {
-      return val.typ();
+    if (o instanceof Pattern) {
+      return new TableUtils.AssertionVal(Typ.STRING,
+          (Object cs) -> ((Pattern) o).matcher((CharSequence) cs).matches(),
+          o::toString);
     }
     return null;
-  }
-
-  @Nullable
-  private static Tab.Val valAssertion(@NonNull Object o) {
-    return assertionValProviderForClass(o.getClass())
-        .map(op -> op.assertionVal(o))
-        .orElse(null);
-  }
-
-  @NonNull
-  private static Optional<AssertionValProvider> assertionValProviderForClass(
-      @NonNull Class<?> klass) {
-    ServiceLoader<AssertionValProvider> loader = ServiceLoader.load(AssertionValProvider.class);
-    AssertionValProvider res = null;
-    for (AssertionValProvider prov : loader) {
-      if (prov != null && prov.getAssertionClass().isAssignableFrom(klass)) {
-        if (res == null) {
-          res = prov;
-        } else {
-          throw new IllegalStateException("More than one provider found for class: "
-              + klass.getCanonicalName());
-        }
-      }
-    }
-    return Optional.ofNullable(res);
   }
 
   static void checkCols(@NonNull List<? extends Tab.Col> cols) {

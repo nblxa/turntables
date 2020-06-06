@@ -2,6 +2,7 @@ package io.github.nblxa.turntables.assertion;
 
 import io.github.nblxa.turntables.Tab;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import io.github.nblxa.turntables.Typ;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,7 +23,8 @@ class OrderedColAsserter implements ColAsserter {
       return false;
     }
     for (int i = 0; i < expected.size(); i++) {
-      if (!expected.get(i).typ().equals(actual.get(i).typ())) {
+      Typ expTyp = expected.get(i).typ();
+      if (expTyp != Typ.ANY && !actual.get(i).typ().equals(expTyp)) {
         return false;
       }
     }

@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestRowsMatchingInAnyOrder {
@@ -369,36 +368,6 @@ public class TestRowsMatchingInAnyOrder {
 
     assertThat(actualProxy.representation())
         .isEqualTo(actualStringRepresentation);
-  }
-
-  @Ignore // partial matching of assertion rows is not yet supported
-  @Test
-  public void expectedRepresentation_whenPartialMatch_containsActualValuesWhereMatched() {
-    Tab expected = Turntables.tab()
-        .row(testInt(i -> i == 1), 2)
-        .row(3, testInt(i -> i == 4));
-
-    Tab actual = Turntables.tab()
-        .row(3, 5)
-        .row(1, 2);
-
-    AssertionProxy.Builder proxyBuilder = matchInAnyOrder(expected, actual);
-    boolean res = proxyBuilder.buildOrGetActualProxy()
-        .matchesExpected();
-    assertThat(res).isFalse();
-
-    AssertionProxy.Expected expectedProxy = proxyBuilder.buildOrGetExpectedProxy();
-
-    String expectedStringRepresentation = new StringBuilder()
-        .append("Table:").append(LS)
-        .append("    - col1 : 1").append(LS)
-        .append("      col2 : 2").append(LS)
-        .append("    - col1 : 3").append(LS)
-        .append("      col2 : java.util.function.IntPredicate")
-        .toString();
-
-    assertThat(expectedProxy.representation())
-        .isEqualTo(expectedStringRepresentation);
   }
 
   @Test

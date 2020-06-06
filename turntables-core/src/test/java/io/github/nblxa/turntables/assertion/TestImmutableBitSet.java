@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.BitSet;
 import java.util.Iterator;
 import org.junit.Test;
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 public class TestImmutableBitSet {
 
@@ -101,5 +102,11 @@ public class TestImmutableBitSet {
 
     assertThat(immutableBitSet.get(Integer.MAX_VALUE))
         .isTrue();
+  }
+
+  @Test
+  public void test_equalsHashCode() {
+    EqualsVerifier.forClass(ImmutableBitSet.class)
+        .verify();
   }
 }

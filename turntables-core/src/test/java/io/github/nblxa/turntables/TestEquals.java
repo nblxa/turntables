@@ -45,7 +45,7 @@ public class TestEquals {
 
   @Test
   public void testSimpleAssertionVal_equalsContract() {
-    EqualsVerifier.forClass(TableUtils.SimpleAssertionVal.class)
+    EqualsVerifier.forClass(TableUtils.AssertionVal.class)
         .withRedefinedSuperclass()
         .verify();
   }
