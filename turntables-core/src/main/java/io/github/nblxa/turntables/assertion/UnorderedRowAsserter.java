@@ -1,8 +1,8 @@
 package io.github.nblxa.turntables.assertion;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import io.github.nblxa.turntables.AbstractTab;
 import io.github.nblxa.turntables.Tab;
+import io.github.nblxa.turntables.TableUtils;
 import io.github.nblxa.turntables.Utils;
 import io.github.nblxa.turntables.exception.TooManyPermutationsException;
 
@@ -174,7 +174,7 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
     for (int i = 0; i < expected.size(); i++) {
       Tab.Row r = expected.get(i);
       boolean hasMatcher = r.vals().stream()
-          .anyMatch(v -> v instanceof AbstractTab.AbstractAssertionVal);
+          .anyMatch(v -> v instanceof TableUtils.AssertionVal);
       if (hasMatcher) {
         expectedAssertionRows.add(Utils.entry(i, r));
       } else {

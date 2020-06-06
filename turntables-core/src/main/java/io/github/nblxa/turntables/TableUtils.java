@@ -2,6 +2,7 @@ package io.github.nblxa.turntables;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import io.github.nblxa.turntables.exception.AssertionEvaluationException;
 import io.github.nblxa.turntables.exception.StructureException;
 
 import java.util.ArrayList;
@@ -200,20 +201,39 @@ public final class TableUtils {
     }
   }
 
-  static final class SimpleAssertionVal extends AbstractTab.AbstractAssertionVal {
+  public static final class AssertionVal extends AbstractTab.AbstractVal {
     @NonNull
     private final Typ typ;
+    @NonNull
+    private final Predicate<Object> assertionPredicate;
+    @NonNull
+    private final Supplier<? extends CharSequence> toStringSupplier;
 
-    SimpleAssertionVal(Typ typ, Predicate<Object> assertionPredicate,
-                       Supplier<String> toStringSupplier) {
-      super(assertionPredicate, toStringSupplier);
+    AssertionVal(@NonNull Typ typ, @NonNull Predicate<Object> assertionPredicate,
+                 @NonNull Supplier<? extends CharSequence> toStringSupplier) {
       this.typ = Objects.requireNonNull(typ, "typ");
+      this.assertionPredicate =
+          Objects.requireNonNull(assertionPredicate, "assertionPredicate");
+      this.toStringSupplier =
+          Objects.requireNonNull(toStringSupplier, "toStringSupplier");
     }
 
     @Override
     @NonNull
     public Typ typ() {
-      return typ;
+      return Typ.ANY;
+    }
+
+    @Override
+    @Nullable
+    public Object eval() {
+      throw new AssertionEvaluationException();
+    }
+
+    @Override
+    public boolean matchesActual(@NonNull Tab.Val actual) {
+      Objects.requireNonNull(actual, "other");
+      return assertionPredicate.test(actual.eval());
     }
 
     @Override
@@ -221,24 +241,29 @@ public final class TableUtils {
       if (this == o) {
         return true;
       }
-      if (!(o instanceof SimpleAssertionVal)) {
+      if (!(o instanceof AssertionVal)) {
         return false;
       }
-      if (!super.equals(o)) {
-        return false;
-      }
-      SimpleAssertionVal that = (SimpleAssertionVal) o;
-      return that.canEqual(this) && typ == that.typ && super.equals(that);
+      AssertionVal that = (AssertionVal) o;
+      return that.canEqual(this) && typ.equals(that.typ)
+          && assertionPredicate.equals(that.assertionPredicate)
+          && toStringSupplier.equals(that.toStringSupplier);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(super.hashCode(), typ);
+      return Objects.hash(typ, assertionPredicate, toStringSupplier);
     }
 
     @Override
     public boolean canEqual(Object o) {
-      return o instanceof SimpleAssertionVal;
+      return o instanceof AssertionVal;
+    }
+
+    @Override
+    public String toString() {
+      return toStringSupplier.get()
+          .toString();
     }
   }
 
