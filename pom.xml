@@ -52,7 +52,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javac.version>9+181-r4173-1</javac.version>
         <junit.version>4.13</junit.version>
-        <equalsverifier.version>3.3</equalsverifier.version>
+        <equalsverifier.version>3.4</equalsverifier.version>
         <assertj.version>3.16.1</assertj.version>
         <derby.version>10.14.2.0</derby.version>
         <mysql.connector.java.version>8.0.20</mysql.connector.java.version>
