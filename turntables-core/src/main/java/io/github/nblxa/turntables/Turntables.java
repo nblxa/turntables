@@ -6,6 +6,7 @@ import io.github.nblxa.turntables.io.Ingestion;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.io.NameSanitizing;
 import io.github.nblxa.turntables.junit.TestTable;
+import java.util.Deque;
 import java.util.Objects;
 import java.util.function.DoublePredicate;
 import java.util.function.IntPredicate;
@@ -42,8 +43,8 @@ public final class Turntables {
    * if expected rows contain Matchers.
    */
   public static final long ROW_PERMUTATION_LIMIT = 10_000L;
-
   private static final Object[] ARRAY_WITH_NULL = new Object[]{null};
+  private static final SettingsThreadLocal SETTINGS_THREAD_LOCAL = new SettingsThreadLocal();
 
   /**
    * Start creating a new <code>Tab</code> using a fluent API.
@@ -161,6 +162,26 @@ public final class Turntables {
   @NonNull
   public static Object[] nul() {
     return ARRAY_WITH_NULL;
+  }
+
+  public static SettingsTransaction setSettings(@NonNull Settings settings) {
+    SETTINGS_THREAD_LOCAL.get().push(settings);
+    return Turntables::rollbackSettings;
+  }
+
+  public static void rollbackSettings() {
+    Deque<Settings> d = SETTINGS_THREAD_LOCAL.get();
+    if (!d.isEmpty()) {
+      d.pop();
+    }
+    if (d.isEmpty()) {
+      SETTINGS_THREAD_LOCAL.reset();
+    }
+  }
+
+  @NonNull
+  public static Settings getSettings() {
+    return SETTINGS_THREAD_LOCAL.get().peek();
   }
 
   /**

@@ -1,6 +1,7 @@
 package io.github.nblxa.turntables.assertion;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import io.github.nblxa.turntables.Settings;
 import io.github.nblxa.turntables.Tab;
 import java.util.Objects;
 
@@ -25,14 +26,21 @@ public class ColPrismFactory {
     Objects.requireNonNull(asserter, "asserter is null");
     Objects.requireNonNull(expected, "expected is null");
     Objects.requireNonNull(actual, "actual is null");
+    Prism res;
     switch (asserter.getConf().colMode) {
       case MATCHES_IN_GIVEN_ORDER:
-        return ColNamePrism.ofActual(asserter, expected, actual);
+        res = ColNamePrism.ofActual(asserter, expected, actual);
+        break;
       case MATCHES_BY_NAME:
-        return ColOrderPrism.ofActual(asserter, expected, actual);
+        res = ColOrderPrism.ofActual(asserter, expected, actual);
+        if (asserter.getConf().settings.colNamesMode == Settings.ColNamesMode.CASE_INSENSITIVE) {
+          res = ColNamePrism.ofActual(asserter, expected, res);
+        }
+        break;
       default:
         throw new UnsupportedOperationException();
     }
+    return res;
   }
 
   private ColPrismFactory() {

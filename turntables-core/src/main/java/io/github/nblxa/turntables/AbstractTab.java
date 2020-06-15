@@ -1,6 +1,7 @@
 package io.github.nblxa.turntables;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -134,6 +135,28 @@ public abstract class AbstractTab implements Tab {
 
     protected Renderer renderer() {
       return YamlRenderer.DEFAULT_SIMPLE;
+    }
+
+    @Nullable
+    @Override
+    public Object evaluateAs(@NonNull Typ typ) {
+      Object obj = evaluate();
+      if (typ == typ() || obj == null) {
+        return obj;
+      } else {
+        return typ.convert(obj);
+      }
+    }
+
+    @Override
+    public boolean matchesActual(@NonNull Tab.Val actual) {
+      Objects.requireNonNull(actual, "actual is null");
+      return Objects.equals(evaluate(), actual.evaluateAs(typ()));
+    }
+
+    @Override
+    public String toString() {
+      return renderer().renderVal(this);
     }
   }
 

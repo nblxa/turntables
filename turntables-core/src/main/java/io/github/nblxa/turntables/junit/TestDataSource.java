@@ -1,7 +1,9 @@
 package io.github.nblxa.turntables.junit;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import io.github.nblxa.turntables.Settings;
 import io.github.nblxa.turntables.Tab;
+import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
 import io.github.nblxa.turntables.io.rowstore.RowStore;
 import java.util.ArrayList;
@@ -13,16 +15,26 @@ import java.util.Objects;
 
 public class TestDataSource extends AbstractTestRule {
   @NonNull
-  private RowStore rowStore;
+  private final RowStore rowStore;
   @NonNull
-  private Map<String, TestTable> testRuleTables;
+  private final Map<String, TestTable> testRuleTables;
   @NonNull
-  private List<Table> testMethodTables;
+  private final List<Table> testMethodTables;
+  @NonNull
+  private final Settings settings;
 
   public TestDataSource(@NonNull RowStore rowStore) {
     this.rowStore = Objects.requireNonNull(rowStore, "rowStore is null");
     this.testRuleTables = new HashMap<>();
     this.testMethodTables = new ArrayList<>();
+    this.settings = Turntables.getSettings();
+  }
+
+  public TestDataSource(@NonNull RowStore rowStore, @NonNull Settings settings) {
+    this.rowStore = Objects.requireNonNull(rowStore, "rowStore is null");
+    this.testRuleTables = new HashMap<>();
+    this.testMethodTables = new ArrayList<>();
+    this.settings = Objects.requireNonNull(settings, "settings is null");
   }
 
   @NonNull
@@ -59,6 +71,11 @@ public class TestDataSource extends AbstractTestRule {
     rowStore.cleanUp(tableName, cleanUpAction);
   }
 
+  @NonNull
+  public TestDataSource settings(@NonNull Settings settings) {
+    return new TestDataSource(rowStore, settings);
+  }
+
   void feedInternal(@NonNull Table table, @NonNull Tab data) {
     rowStore.feed(table.getName(), data);
   }
@@ -73,18 +90,20 @@ public class TestDataSource extends AbstractTestRule {
   }
 
   @Override
-  void setUp() {
+  protected void setUp() {
+    Turntables.setSettings(settings);
     testRuleTables.clear();
     testMethodTables.clear();
   }
 
   @Override
-  void tearDown() {
+  protected void tearDown() {
     ListIterator<Table> iter = testMethodTables.listIterator();
     while (iter.hasNext()) {
       Table testTable = iter.next();
       cleanUp(testTable.getName(), testTable.getCleanUpAction());
       iter.remove();
     }
+    Turntables.rollbackSettings();
   }
 }

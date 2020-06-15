@@ -2,6 +2,8 @@ package io.github.nblxa.turntables;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -44,6 +46,11 @@ public enum Typ {
   DOUBLE(new TypDouble()),
 
   /**
+   * Decimal type corresponding to Java {@link java.math.BigDecimal}.
+   */
+  DECIMAL(new TypDecimal()),
+
+  /**
    * Date type.
    * <p>This corresponds to a date type without time component or time zone,
    * e.g. Java {@link java.time.LocalDate}.
@@ -65,10 +72,16 @@ public enum Typ {
     this.nullVal = new NullVal(this);
   }
 
-  boolean accepts(Typ typ) {
+  public boolean accepts(Typ typ) {
     return typ == this || internal.accepts(typ);
   }
 
+  @NonNull
+  Object convert(@NonNull Object obj) {
+    return internal.convert(obj);
+  }
+
+  @NonNull
   Tab.Val nullVal() {
     return nullVal;
   }
@@ -85,6 +98,16 @@ public enum Typ {
     boolean accepts(Typ typ) {
       return typ == ANY;
     }
+
+    @NonNull
+    Object convert(@NonNull Object obj) {
+      throw new UnsupportedOperationException("Type conversion is not supported for "
+          + getClass().getSimpleName());
+    }
+
+    boolean isDecimalConversionEnabled() {
+      return Turntables.getSettings().decimalMode == Settings.DecimalMode.ALLOW_BIG;
+    }
   }
 
   static class TypAny extends Internal {
@@ -92,12 +115,44 @@ public enum Typ {
     boolean accepts(Typ typ) {
       return true;
     }
+
+    @NonNull
+    @Override
+    Object convert(@NonNull Object obj) {
+      return obj;
+    }
   }
 
   static class TypInteger extends Internal {
+    @Override
+    boolean accepts(Typ typ) {
+      return (typ == Typ.DECIMAL && isDecimalConversionEnabled()) || super.accepts(typ);
+    }
+
+    @NonNull
+    @Override
+    Object convert(@NonNull Object obj) {
+      if (obj instanceof BigDecimal && isDecimalConversionEnabled()) {
+        return ((BigDecimal) obj).intValueExact();
+      }
+      return super.convert(obj);
+    }
   }
 
   static class TypLong extends Internal {
+    @Override
+    boolean accepts(Typ typ) {
+      return (typ == Typ.DECIMAL && isDecimalConversionEnabled()) || super.accepts(typ);
+    }
+
+    @NonNull
+    @Override
+    Object convert(@NonNull Object obj) {
+      if (obj instanceof BigDecimal && isDecimalConversionEnabled()) {
+        return ((BigDecimal) obj).longValueExact();
+      }
+      return super.convert(obj);
+    }
   }
 
   static class TypString extends Internal {
@@ -107,6 +162,43 @@ public enum Typ {
   }
 
   static class TypDouble extends Internal {
+    @Override
+    boolean accepts(Typ typ) {
+      return (typ == Typ.DECIMAL && isDecimalConversionEnabled()) || super.accepts(typ);
+    }
+
+    @NonNull
+    @Override
+    Object convert(@NonNull Object obj) {
+      if (obj instanceof BigDecimal && isDecimalConversionEnabled()) {
+        return ((BigDecimal) obj).doubleValue();
+      }
+      return super.convert(obj);
+    }
+  }
+
+  static class TypDecimal extends Internal {
+    @Override
+    boolean accepts(Typ typ) {
+      return ((typ == Typ.INTEGER || typ == Typ.LONG || typ == Typ.DOUBLE)
+          && isDecimalConversionEnabled())
+          || super.accepts(typ);
+    }
+
+    @NonNull
+    @Override
+    Object convert(@NonNull Object obj) {
+      if (obj instanceof Integer && isDecimalConversionEnabled()) {
+        return new BigDecimal(BigInteger.valueOf((Integer) obj));
+      }
+      if (obj instanceof Long && isDecimalConversionEnabled()) {
+        return BigDecimal.valueOf((Long) obj);
+      }
+      if (obj instanceof Double && isDecimalConversionEnabled()) {
+        return BigDecimal.valueOf((Double) obj);
+      }
+      return super.convert(obj);
+    }
   }
 
   static class TypDate extends Internal {
@@ -116,9 +208,10 @@ public enum Typ {
   }
 
   static final class NullVal extends AbstractTab.AbstractVal {
+    @NonNull
     private final Typ typ;
 
-    private NullVal(Typ typ) {
+    private NullVal(@NonNull Typ typ) {
       this.typ = typ;
     }
 
@@ -130,14 +223,8 @@ public enum Typ {
 
     @Override
     @Nullable
-    public Object eval() {
+    public Object evaluate() {
       return null;
-    }
-
-    @Override
-    public boolean matchesActual(@NonNull Tab.Val actual) {
-      Objects.requireNonNull(actual, "other");
-      return actual.eval() == null;
     }
 
     @Override

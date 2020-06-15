@@ -18,6 +18,7 @@
 
     <properties>
         <sonar.coverage.jacoco.xmlReportPaths>${basedir}/../${aggregate.report.dir}</sonar.coverage.jacoco.xmlReportPaths>
+        <mysql.connector.java.version>8.0.20</mysql.connector.java.version>
     </properties>
 
     <dependencies>
@@ -50,11 +51,13 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>mysql</artifactId>
+            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.connector.java.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -18,7 +18,7 @@ public class TestSupplier {
         .vals()
         .iterator()
         .next()
-        .eval()).isEqualTo(1);
+        .evaluate()).isEqualTo(1);
   }
 
   @Test
@@ -29,7 +29,7 @@ public class TestSupplier {
         .vals()
         .iterator()
         .next()
-        .eval()).isEqualTo(2L);
+        .evaluate()).isEqualTo(2L);
   }
 
   @Test
@@ -40,7 +40,7 @@ public class TestSupplier {
         .vals()
         .iterator()
         .next()
-        .eval()).isEqualTo(3.0d);
+        .evaluate()).isEqualTo(3.0d);
   }
 
   @Test
@@ -51,6 +51,6 @@ public class TestSupplier {
         .vals()
         .iterator()
         .next()
-        .eval()).isEqualTo(true);
+        .evaluate()).isEqualTo(true);
   }
 }

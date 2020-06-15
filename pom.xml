@@ -36,6 +36,7 @@
         <module>turntables-core</module>
         <module>turntables-test-concurrency</module>
         <module>turntables-test-mysql</module>
+        <module>turntables-test-oracle</module>
         <module>assert-assertj</module>
         <module>turntables-coverage</module>
     </modules>
@@ -55,9 +56,10 @@
         <equalsverifier.version>3.4.1</equalsverifier.version>
         <assertj.version>3.16.1</assertj.version>
         <derby.version>10.14.2.0</derby.version>
-        <mysql.connector.java.version>8.0.20</mysql.connector.java.version>
         <testcontainers.version>1.14.3</testcontainers.version>
         <slf4j.log4j12.version>1.7.30</slf4j.log4j12.version>
+        <jersey.version>2.31</jersey.version>
+        <commons.lang3.version>3.10</commons.lang3.version>
 
         <error.prone.core.version>2.3.4</error.prone.core.version>
         <checkstyle.version>8.33</checkstyle.version>
@@ -107,6 +109,11 @@
                 <artifactId>turntables-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.github.nblxa</groupId>
+                <artifactId>assert-assertj</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.github.spotbugs</groupId>
@@ -146,27 +153,34 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>mysql</artifactId>
-                <version>${testcontainers.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>${mysql.connector.java.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>${slf4j.log4j12.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>io.github.nblxa</groupId>
-                <artifactId>assert-assertj</artifactId>
-                <version>${project.version}</version>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>${jersey.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.inject</groupId>
+                <artifactId>jersey-hk2</artifactId>
+                <version>${jersey.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
+                <version>${jersey.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons.lang3.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

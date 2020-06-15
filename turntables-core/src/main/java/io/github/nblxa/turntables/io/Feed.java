@@ -27,7 +27,7 @@ public class Feed extends ClassTreeHolder<FeedProtocol<?>> {
   @Override
   protected ClassTree<FeedProtocol<?>> defaultProtocols() {
     ClassTree<FeedProtocol<?>> tree = ClassTree.newInstance(DefaultProtocol.getInstance());
-    tree = tree.add(Connection.class, new JdbcProtocol());
+    tree = tree.add(Connection.class, new JdbcProtocol<>());
     return tree;
   }
 

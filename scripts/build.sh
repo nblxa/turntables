@@ -18,4 +18,9 @@ fi
        sonar:sonar -Dsonar.projectKey=turntables \
        coveralls:report \
        -Derrorprone \
+       -DttOraHost="$ORA_HOST" \
+       -DttOraUrl="jdbc:oracle:thin:@${ORA_TNSNAME}?TNS_ADMIN=$(pwd)/turntables-test-oracle/wallet.local" \
+       -DttClientId="$OAUTH_CLIENT_ID" \
+       -DttClientSecret="$OAUTH_CLIENT_SECRET" \
+       -Doracle.jdbc.fanEnabled=false \
        -e -B -V $RELEASE_PROFILE

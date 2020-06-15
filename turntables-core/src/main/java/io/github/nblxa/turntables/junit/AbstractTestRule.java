@@ -33,7 +33,7 @@ public abstract class AbstractTestRule implements TestRule {
     };
   }
 
-  abstract void setUp();
+  protected abstract void setUp();
 
-  abstract void tearDown();
+  protected abstract void tearDown();
 }

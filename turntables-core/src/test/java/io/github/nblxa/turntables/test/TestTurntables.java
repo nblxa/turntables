@@ -2,7 +2,6 @@ package io.github.nblxa.turntables.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.nblxa.turntables.AbstractTab;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.TableUtils;
 import io.github.nblxa.turntables.Turntables;
@@ -104,7 +103,7 @@ public class TestTurntables {
 
     Tab.Val val = row.vals().iterator().next();
     assertThat(val).isNotNull();
-    assertThat(val.eval()).isEqualTo(1);
+    assertThat(val.evaluate()).isEqualTo(1);
 
     assertThat(rows).hasNext();
 
@@ -114,7 +113,7 @@ public class TestTurntables {
 
     val = row.vals().iterator().next();
     assertThat(val).isNotNull();
-    assertThat(val.eval()).isEqualTo(2);
+    assertThat(val.evaluate()).isEqualTo(2);
     assertThat(rows.hasNext()).isFalse();
   }
 
@@ -131,8 +130,8 @@ public class TestTurntables {
     assertThat(row.vals()).hasSize(2);
 
     Iterator<Tab.Val> vals = row.vals().iterator();
-    assertThat(vals.next().eval()).isEqualTo(1);
-    assertThat(vals.next().eval()).isEqualTo(2);
+    assertThat(vals.next().evaluate()).isEqualTo(1);
+    assertThat(vals.next().evaluate()).isEqualTo(2);
   }
 
   @Test

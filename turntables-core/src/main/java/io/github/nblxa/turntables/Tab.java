@@ -75,7 +75,10 @@ public interface Tab {
      * @return the actual value
      */
     @Nullable
-    Object eval();
+    Object evaluate();
+
+    @Nullable
+    Object evaluateAs(@NonNull Typ typ);
 
     /**
      * Assuming this value is <tt>expected</tt>, does the given <tt>actual</tt> value match?<p>

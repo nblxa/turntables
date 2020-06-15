@@ -1,8 +1,10 @@
 package io.github.nblxa.turntables.assertion;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.nblxa.turntables.AbstractTab;
+import io.github.nblxa.turntables.Settings;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Tab;
 
@@ -78,6 +80,20 @@ public abstract class AssertionProxy extends AbstractTab {
      */
     @NonNull
     S rowPermutationLimit(long rowPermutationLimit);
+
+    /**
+     * Specify a non-default {@link Settings} to use for the assertion.
+     *
+     * <p>The config is stored in an {@link InheritableThreadLocal}, so only one instance can be used
+     * in a single thread at a single moment.
+     *
+     * <p>If {@code null} is passed, the value will be set to the default.
+     *
+     * @param settings the config to the be used
+     * @return the assertion object
+     */
+    @NonNull
+    S settings(Settings settings);
   }
 
   public static class Builder
@@ -88,6 +104,7 @@ public abstract class AssertionProxy extends AbstractTab {
     private Turntables.RowMode rowMode = Turntables.RowMode.MATCHES_IN_GIVEN_ORDER;
     private Turntables.ColMode colMode = Turntables.ColMode.MATCHES_IN_GIVEN_ORDER;
     private long rowPermutationLimit = Turntables.ROW_PERMUTATION_LIMIT;
+    private Settings settings = Turntables.getSettings();
 
     // built state
     private Expected expectedProxy;
@@ -132,6 +149,13 @@ public abstract class AssertionProxy extends AbstractTab {
       return this;
     }
 
+    @NonNull
+    @Override
+    public Builder settings(@Nullable Settings settings) {
+      this.settings = settings;
+      return this;
+    }
+
     @Override
     @SuppressFBWarnings("EQ_UNUSUAL")
     public boolean equals(Object other) {
@@ -144,7 +168,7 @@ public abstract class AssertionProxy extends AbstractTab {
     }
 
     private void build() {
-      Conf conf = new Conf(expected, actual, rowMode, colMode, rowPermutationLimit);
+      Conf conf = new Conf(expected, actual, rowMode, colMode, rowPermutationLimit, settings);
       Asserter asserter = Asserter.createAsserter(conf);
       this.expectedProxy = new Expected(expected, asserter);
       this.actualProxy = new Actual(actual, asserter);
@@ -176,12 +200,6 @@ public abstract class AssertionProxy extends AbstractTab {
       builder.rowPermutationLimit = rowPermutationLimit;
       return builder;
     }
-
-    @NonNull
-    Tab getExpected() {
-      Objects.requireNonNull(expected, "expected");
-      return expected;
-    }
   }
 
   public static class Conf {
@@ -190,20 +208,23 @@ public abstract class AssertionProxy extends AbstractTab {
     final Turntables.RowMode rowMode;
     final Turntables.ColMode colMode;
     final long rowPermutationLimit;
+    final Settings settings;
 
     Conf(Tab expected, Tab actual, Turntables.RowMode rowMode, Turntables.ColMode colMode,
-         long rowPermutationLimit) {
+         long rowPermutationLimit, Settings settings) {
       this.expected = Objects.requireNonNull(expected, "expected");
       this.actual = Objects.requireNonNull(actual, "actual");
       this.rowMode = Objects.requireNonNull(rowMode, "rowMode");
       this.colMode = Objects.requireNonNull(colMode, "colMode");
       this.rowPermutationLimit = rowPermutationLimit;
+      this.settings = Objects.requireNonNull(settings, "settings");
     }
 
     @NonNull
     @Override
     public String toString() {
-      return String.format("Conf[rowMode=%s, colMode=%s, rowPermutationLimit=%s]", rowMode, colMode, rowPermutationLimit);
+      return String.format("Conf[rowMode=%s, colMode=%s, rowPermutationLimit=%s, settings=%s]",
+          rowMode, colMode, rowPermutationLimit, settings);
     }
   }
 

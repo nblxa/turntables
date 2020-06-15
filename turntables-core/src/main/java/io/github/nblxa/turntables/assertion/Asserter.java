@@ -14,6 +14,7 @@ class Asserter {
   @NonNull
   private AssertionResult assertionResult;
 
+
   private Asserter(@NonNull AssertionProxy.Conf conf, @NonNull RowAsserter rowAsserter,
                    @NonNull ColAsserter colAsserter) {
     this.conf = conf;

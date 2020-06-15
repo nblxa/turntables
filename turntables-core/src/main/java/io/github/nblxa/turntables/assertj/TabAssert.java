@@ -1,6 +1,7 @@
 package io.github.nblxa.turntables.assertj;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import io.github.nblxa.turntables.Settings;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.assertion.AssertionProxy;
@@ -85,6 +86,13 @@ public class TabAssert<T extends Tab> extends AbstractObjectAssert<TabAssert<T>,
   @NonNull
   public TabAssert<T> rowPermutationLimit(long rowPermutationLimit) {
     proxyBuilder.rowPermutationLimit(rowPermutationLimit);
+    return this;
+  }
+
+  @NonNull
+  @Override
+  public TabAssert<T> settings(Settings settings) {
+    proxyBuilder.settings(settings);
     return this;
   }
 }
