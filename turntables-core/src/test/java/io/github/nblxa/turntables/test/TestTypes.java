@@ -7,6 +7,7 @@ import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
 import io.github.nblxa.turntables.exception.StructureException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.function.BooleanSupplier;
@@ -206,6 +207,16 @@ public class TestTypes {
     assertHasSingleColOfTyp(Typ.DOUBLE, Turntables.tab().row(null).row(0.0));
     assertHasSingleColOfTyp(Typ.DOUBLE, Turntables.tab().row(Turntables.testDouble(d -> d > 3.14d)));
     assertHasSingleColOfTyp(Typ.DOUBLE, Turntables.tab().row(Turntables.test(o -> true)).row(0.0));
+  }
+
+  @Test
+  public void test_decimal() {
+    assertHasSingleColOfTyp(Typ.DECIMAL, Turntables.tab()
+        .row(BigDecimal.valueOf(100500L))
+        .row(null));
+    assertHasSingleColOfTyp(Typ.DECIMAL, Turntables.tab()
+        .row(null)
+        .row(BigDecimal.valueOf(100400L)));
   }
 
   private static class Banana {

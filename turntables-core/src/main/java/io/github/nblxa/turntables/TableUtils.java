@@ -36,22 +36,16 @@ public final class TableUtils {
       this.obj = Objects.requireNonNull(obj, "obj");
     }
 
-    @Override
     @NonNull
+    @Override
     public Typ typ() {
       return typ;
     }
 
-    @Override
     @NonNull
-    public Object eval() {
-      return obj;
-    }
-
     @Override
-    public boolean matchesActual(@NonNull Tab.Val actual) {
-      Objects.requireNonNull(actual, "other");
-      return eval().equals(actual.eval());
+    public Object evaluate() {
+      return obj;
     }
 
     @Override
@@ -75,11 +69,6 @@ public final class TableUtils {
     @Override
     public boolean canEqual(Object o) {
       return o instanceof SimpleVal;
-    }
-
-    @Override
-    public String toString() {
-      return renderer().renderVal(this);
     }
   }
 
@@ -108,7 +97,7 @@ public final class TableUtils {
     private Object obj;
     private volatile boolean inited;
 
-    SuppVal(Typ typ, Supplier<?> supp) {
+    SuppVal(@NonNull Typ typ, @NonNull Supplier<?> supp) {
       this.typ = Objects.requireNonNull(typ, "typ");
       this.supp = Objects.requireNonNull(supp, "supp");
       this.obj = null;
@@ -133,7 +122,7 @@ public final class TableUtils {
      */
     @Override
     @Nullable
-    public Object eval() {
+    public Object evaluate() {
       boolean tryAgain;
       Object val;
       do {
@@ -165,11 +154,6 @@ public final class TableUtils {
         }
       } while (tryAgain);
       return val;
-    }
-
-    @Override
-    public boolean matchesActual(@NonNull Tab.Val actual) {
-      return Objects.equals(eval(), actual.eval());
     }
 
     @Override
@@ -221,19 +205,19 @@ public final class TableUtils {
     @Override
     @NonNull
     public Typ typ() {
-      return Typ.ANY;
+      return typ;
     }
 
     @Override
     @Nullable
-    public Object eval() {
+    public Object evaluate() {
       throw new AssertionEvaluationException();
     }
 
     @Override
     public boolean matchesActual(@NonNull Tab.Val actual) {
       Objects.requireNonNull(actual, "other");
-      return assertionPredicate.test(actual.eval());
+      return assertionPredicate.test(actual.evaluateAs(typ));
     }
 
     @Override
@@ -267,7 +251,7 @@ public final class TableUtils {
     }
   }
 
-  public static abstract class AbstractColRowAdderTable extends AbstractTab
+  public abstract static class AbstractColRowAdderTable extends AbstractTab
       implements Tab.RowAdder<RowAdderTable>, Tab.ColAdderRowAdderPart<RowAdderTable> {
     @Override
     @NonNull
@@ -556,7 +540,7 @@ public final class TableUtils {
       Object o = iterObj.next();
       Tab.Val val;
       try {
-        val = Utils.getVal(o, col.typ());
+        val = o != null ? Utils.getVal(o) : col.typ().nullVal();
         Utils.inferTyp(col, val, iterCol);
       } catch (Exception e) {
         throw new StructureException("Error at position #" + i, e);

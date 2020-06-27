@@ -72,8 +72,8 @@ class AssertionValPrism extends Prism {
 
     @Nullable
     @Override
-    public Object eval() {
-      return apply(Val::eval);
+    public Object evaluate() {
+      return apply(Tab.Val::evaluate);
     }
 
     @Override

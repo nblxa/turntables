@@ -110,9 +110,9 @@ public final class YamlRenderer implements Renderer {
   @NonNull
   public String renderVal(@NonNull Tab.Val val) {
     if (val.typ() == Typ.STRING) {
-      return StringUtils.escape(String.valueOf(val.eval()));
+      return StringUtils.escape(String.valueOf(val.evaluate()));
     } else {
-      return String.valueOf(val.eval());
+      return String.valueOf(val.evaluate());
     }
   }
 

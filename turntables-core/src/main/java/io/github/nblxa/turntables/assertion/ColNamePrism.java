@@ -15,8 +15,7 @@ public class ColNamePrism extends Prism implements Tab {
   private final Tab tab;
 
   @NonNull
-  static Prism ofActual(@NonNull Asserter asserter, @NonNull Tab expected,
-                                  @NonNull Tab actual) {
+  static Prism ofActual(@NonNull Asserter asserter, @NonNull Tab expected, @NonNull Tab actual) {
     Objects.requireNonNull(asserter, "asserter is null");
     Objects.requireNonNull(expected, "expected is null");
     Objects.requireNonNull(actual, "actual is null");
@@ -52,8 +51,7 @@ public class ColNamePrism extends Prism implements Tab {
   }
 
   @NonNull
-  private static List<Tab.Col> renameFirstCols(@NonNull Tab tab,
-                                                    @NonNull List<String> colNames) {
+  private static List<Tab.Col> renameFirstCols(@NonNull Tab tab, @NonNull List<String> colNames) {
     List<Tab.Col> cols = new ArrayList<>(tab.cols());
     for (int i = 0; i < Math.min(cols.size(), colNames.size()); i++) {
       Tab.Col oldCol = cols.get(i);

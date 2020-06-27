@@ -77,7 +77,6 @@ public abstract class AbstractTestTable<SELF extends AbstractTestTable<SELF, T>,
 
   @NonNull
   @Override
-  @SuppressWarnings("unchecked")
   public SELF rowAdder() {
     getOrCreateRowAdderTable();
     return self;
@@ -100,7 +99,7 @@ public abstract class AbstractTestTable<SELF extends AbstractTestTable<SELF, T>,
   abstract TableUtils.AbstractColRowAdderTable colRowAdderTable();
 
   @Override
-  void setUp() {
+  protected void setUp() {
     if (rowAdder != null) {
       testDataSource.addTestRuleTable(this);
       testDataSource.feedInternal(this, rowAdder.tab());
@@ -110,7 +109,7 @@ public abstract class AbstractTestTable<SELF extends AbstractTestTable<SELF, T>,
   }
 
   @Override
-  void tearDown() {
+  protected void tearDown() {
     testDataSource.cleanUp(tableName, cleanUpAction);
   }
 }

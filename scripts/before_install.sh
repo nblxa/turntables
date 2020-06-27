@@ -23,3 +23,13 @@ if [ -f ~/.gnupg/gpg-agent.conf ]; then
 fi
 echo "allow-loopback-pinentry" | cat >> ~/.gnupg/gpg-agent.conf
 gpg-connect-agent reloadagent /bye
+
+# add Oracle Wallet
+
+echo "Decrypting Oracle Wallet"
+openssl aes-256-cbc -K $encrypted_6d9a2cafb883_key -iv $encrypted_6d9a2cafb883_iv \
+    -in turntables-test-oracle/wallet.local.zip.enc \
+    -out turntables-test-oracle/wallet.local.zip -d
+
+echo "Extracting Oracle Wallet"
+unzip turntables-test-oracle/wallet.local.zip -d turntables-test-oracle

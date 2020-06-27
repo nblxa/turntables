@@ -3,6 +3,8 @@ package io.github.nblxa.turntables;
 import io.github.nblxa.turntables.exception.StructureException;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.AbstractMap;
@@ -57,15 +59,15 @@ public final class Utils {
   @NonNull
   static Typ getTyp(Object o) {
     Typ typ;
-    typ = standard(o);
+    typ = typStandard(o);
     if (typ != null) {
       return typ;
     }
-    typ = supplier(o);
+    typ = typSupplier(o);
     if (typ != null) {
       return typ;
     }
-    typ = predicate(o);
+    typ = typPredicate(o);
     if (typ != null) {
       return typ;
     }
@@ -78,10 +80,7 @@ public final class Utils {
   }
 
   @NonNull
-  static Tab.Val getVal(@Nullable Object o, @NonNull Typ typ) {
-    if (o == null) {
-      return typ.nullVal();
-    }
+  static Tab.Val getVal(Object o) {
     Tab.Val val = valStandard(o);
     if (val == null) {
       val = valSupplier(o);
@@ -97,18 +96,24 @@ public final class Utils {
   }
 
   @Nullable
-  private static Typ standard(@Nullable Object o) {
+  private static Typ typStandard(@Nullable Object o) {
     if (o == null) {
       return Typ.ANY;
     }
     if (o instanceof Integer) {
       return Typ.INTEGER;
     }
+    if (o instanceof BigInteger) {
+      return Typ.DECIMAL;
+    }
     if (o instanceof Long) {
       return Typ.LONG;
     }
     if (o instanceof Double) {
       return Typ.DOUBLE;
+    }
+    if (o instanceof BigDecimal) {
+      return Typ.DECIMAL;
     }
     if (o instanceof Boolean) {
       return Typ.BOOLEAN;
@@ -119,10 +124,7 @@ public final class Utils {
     if (o instanceof LocalDate) {
       return Typ.DATE;
     }
-    if (o instanceof LocalDateTime) {
-      return Typ.DATETIME;
-    }
-    if (o instanceof java.util.Date) {
+    if (o instanceof LocalDateTime || o instanceof java.util.Date) {
       return Typ.DATETIME;
     }
     return null;
@@ -130,7 +132,7 @@ public final class Utils {
 
   @Nullable
   private static Tab.Val valStandard(Object o) {
-    Typ typ = standard(o);
+    Typ typ = typStandard(o);
     if (typ == null) {
       return null;
     } else {
@@ -139,7 +141,7 @@ public final class Utils {
   }
 
   @Nullable
-  private static Typ supplier(@NonNull Object o) {
+  private static Typ typSupplier(@NonNull Object o) {
     if (o instanceof IntSupplier) {
       return Typ.INTEGER;
     }
@@ -158,22 +160,30 @@ public final class Utils {
   @Nullable
   private static Tab.Val valSupplier(Object o) {
     if (o instanceof IntSupplier) {
-      return new TableUtils.SuppVal(Typ.INTEGER, ((IntSupplier) o)::getAsInt);
+      Typ typ = typSupplier(o);
+      assert typ != null;
+      return new TableUtils.SuppVal(typ, ((IntSupplier) o)::getAsInt);
     }
     if (o instanceof LongSupplier) {
-      return new TableUtils.SuppVal(Typ.LONG, ((LongSupplier) o)::getAsLong);
+      Typ typ = typSupplier(o);
+      assert typ != null;
+      return new TableUtils.SuppVal(typ, ((LongSupplier) o)::getAsLong);
     }
     if (o instanceof DoubleSupplier) {
-      return new TableUtils.SuppVal(Typ.DOUBLE, ((DoubleSupplier) o)::getAsDouble);
+      Typ typ = typSupplier(o);
+      assert typ != null;
+      return new TableUtils.SuppVal(typ, ((DoubleSupplier) o)::getAsDouble);
     }
     if (o instanceof BooleanSupplier) {
-      return new TableUtils.SuppVal(Typ.BOOLEAN, ((BooleanSupplier) o)::getAsBoolean);
+      Typ typ = typSupplier(o);
+      assert typ != null;
+      return new TableUtils.SuppVal(typ, ((BooleanSupplier) o)::getAsBoolean);
     }
     return null;
   }
 
   @Nullable
-  private static Typ predicate(@NonNull Object o) {
+  private static Typ typPredicate(@NonNull Object o) {
     if (o instanceof Predicate) {
       return Typ.ANY;
     }
@@ -196,28 +206,38 @@ public final class Utils {
   @SuppressWarnings("unchecked")
   private static Tab.Val valPredicate(Object o) {
     if (o instanceof Predicate<?>) {
-      return new TableUtils.AssertionVal(Typ.ANY, ((Predicate<Object>) o),
+      Typ typ = typPredicate(o);
+      assert typ != null;
+      return new TableUtils.AssertionVal(typ, ((Predicate<Object>) o),
           Predicate.class::getCanonicalName);
     }
     /* Boxing and unboxing primitives is not nice but performance is not deemed critical
        here, at a benefit of having a simple implementation of the assertion value class. */
     if (o instanceof IntPredicate) {
-      return new TableUtils.AssertionVal(Typ.INTEGER,
+      Typ typ = typPredicate(o);
+      assert typ != null;
+      return new TableUtils.AssertionVal(typ,
           (Object i) -> ((IntPredicate) o).test((Integer) i),
           IntPredicate.class::getCanonicalName);
     }
     if (o instanceof LongPredicate) {
-      return new TableUtils.AssertionVal(Typ.LONG,
+      Typ typ = typPredicate(o);
+      assert typ != null;
+      return new TableUtils.AssertionVal(typ,
           (Object l) -> ((LongPredicate) o).test((Long) l),
           LongPredicate.class::getCanonicalName);
     }
     if (o instanceof DoublePredicate) {
-      return new TableUtils.AssertionVal(Typ.DOUBLE,
+      Typ typ = typPredicate(o);
+      assert typ != null;
+      return new TableUtils.AssertionVal(typ,
           (Object d) -> ((DoublePredicate) o).test((Double) d),
           LongPredicate.class::getCanonicalName);
     }
     if (o instanceof Pattern) {
-      return new TableUtils.AssertionVal(Typ.STRING,
+      Typ typ = typPredicate(o);
+      assert typ != null;
+      return new TableUtils.AssertionVal(typ,
           (Object cs) -> ((Pattern) o).matcher((CharSequence) cs).matches(),
           o::toString);
     }

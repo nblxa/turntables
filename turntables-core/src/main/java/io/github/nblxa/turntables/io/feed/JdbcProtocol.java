@@ -17,13 +17,12 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class JdbcProtocol implements FeedProtocol<Connection> {
-  final static String[] TABLE_TYPES = new String[]{"TABLE"};
-  private static final Map<Typ, String> SQL_TYPE_MAP;
+public class JdbcProtocol<T extends Connection> implements FeedProtocol<T> {
+  static final String[] TABLE_TYPES = new String[]{"TABLE"};
+  private static final Map<Typ, String> SQL_TYPES;
   static {
     Map<Typ, String> m = new EnumMap<>(Typ.class);
     m.put(Typ.BOOLEAN, "BOOLEAN");
@@ -33,22 +32,34 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
     m.put(Typ.INTEGER, "INTEGER");
     m.put(Typ.LONG, "LONG");
     m.put(Typ.STRING, "VARCHAR(255)");
-    SQL_TYPE_MAP = Collections.unmodifiableMap(m);
+    SQL_TYPES = Collections.unmodifiableMap(m);
+  }
+
+  protected Map<Typ, String> getSqlTypes() {
+    return SQL_TYPES;
   }
 
   @NonNull
   @Override
-  public ThrowingConsumer<Connection> feed(@NonNull String name, @NonNull Tab tab) {
+  public ThrowingConsumer<T> feed(@NonNull String name, @NonNull Tab tab) {
     return conn -> new JdbcFeed(conn, name, tab).feed();
   }
 
   @NonNull
   @Override
-  public ThrowingConsumer<Connection> cleanUp(@NonNull String name, @NonNull CleanUpAction cleanUpAction) {
+  public ThrowingConsumer<T> cleanUp(@NonNull String name, @NonNull CleanUpAction cleanUpAction) {
     return conn -> new JdbcCleanUp(conn, name, cleanUpAction).cleanUp();
   }
 
-  private static class JdbcFeed {
+  protected boolean tableExists(@NonNull Connection connection,
+                                @NonNull String tableName) throws SQLException {
+    DatabaseMetaData metaData = connection.getMetaData();
+    try (ResultSet rs = metaData.getTables(null, null, tableName, TABLE_TYPES)) {
+      return rs.next();
+    }
+  }
+
+  private class JdbcFeed {
     @NonNull
     private final Connection connection;
     @NonNull
@@ -77,17 +88,10 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
     }
 
     private void createOrTruncateTable() throws SQLException {
-      if (tableExists()) {
+      if (tableExists(connection, sanitizedName)) {
         truncateTable();
       } else {
         createTable();
-      }
-    }
-
-    private boolean tableExists() throws SQLException {
-      DatabaseMetaData metaData = connection.getMetaData();
-      try (ResultSet rs = metaData.getTables(null, null, sanitizedName, TABLE_TYPES)) {
-        return rs.next();
       }
     }
 
@@ -175,7 +179,7 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
         throws SQLException {
       int i = 1;
       for (Tab.Val val: row.vals()) {
-        stmt.setObject(i, val.eval());
+        stmt.setObject(i, val.evaluate());
         i++;
       }
       stmt.execute();
@@ -183,15 +187,15 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
 
     @NonNull
     private String getSqlType(Typ typ) {
-      String sqlType = SQL_TYPE_MAP.get(typ);
+      String sqlType = getSqlTypes().get(typ);
       if (sqlType == null) {
-        throw new NoSuchElementException("SQL type not found for: " + typ);
+        throw new UnsupportedOperationException("Data type not supported: " + typ);
       }
       return sqlType;
     }
   }
 
-  private static class JdbcCleanUp {
+  private class JdbcCleanUp {
     @NonNull
     private final Connection connection;
     @NonNull
@@ -222,9 +226,11 @@ public class JdbcProtocol implements FeedProtocol<Connection> {
     @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
         justification = "Input is sanitized by NameSanitizing.")
     private void dropTable() throws SQLException {
-      String dropSql = "DROP TABLE " + sanitizedName;
-      try (Statement stmt = connection.createStatement()) {
-        stmt.execute(dropSql);
+      if (tableExists(connection, sanitizedName)) {
+        String dropSql = "DROP TABLE " + sanitizedName;
+        try (Statement stmt = connection.createStatement()) {
+          stmt.execute(dropSql);
+        }
       }
     }
   }

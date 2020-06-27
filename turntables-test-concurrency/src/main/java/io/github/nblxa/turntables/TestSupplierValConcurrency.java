@@ -63,7 +63,7 @@ public class TestSupplierValConcurrency {
 
   @Actor
   public void actor1(II_Result r) {
-    Object o = suppVal.eval();
+    Object o = suppVal.evaluate();
     if (o == null) {
       r.r1 = -1;
     } else {
@@ -73,7 +73,7 @@ public class TestSupplierValConcurrency {
 
   @Actor
   public void actor2(II_Result r) {
-    Object o = suppVal.eval();
+    Object o = suppVal.evaluate();
     if (o == null) {
       r.r2 = -1;
     } else {

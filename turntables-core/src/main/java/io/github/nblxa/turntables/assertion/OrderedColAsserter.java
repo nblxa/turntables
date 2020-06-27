@@ -24,7 +24,7 @@ class OrderedColAsserter implements ColAsserter {
     }
     for (int i = 0; i < expected.size(); i++) {
       Typ expTyp = expected.get(i).typ();
-      if (expTyp != Typ.ANY && !actual.get(i).typ().equals(expTyp)) {
+      if (!expTyp.accepts(actual.get(i).typ())) {
         return false;
       }
     }
