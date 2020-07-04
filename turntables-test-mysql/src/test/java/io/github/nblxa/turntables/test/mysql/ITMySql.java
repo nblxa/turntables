@@ -9,15 +9,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import io.github.nblxa.turntables.Typ;
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.MySQLContainerProvider;
 
 public class ITMySql {
 
-  @Rule
-  public JdbcDatabaseContainer<?> mysql = new MySQLContainerProvider()
+  @ClassRule
+  public static JdbcDatabaseContainer<?> MYSQL = new MySQLContainerProvider()
       .newInstance()
       .withDatabaseName("test")
       .withUsername("scott")
@@ -27,7 +27,7 @@ public class ITMySql {
 
   @Before
   public void setUp() throws SQLException {
-    conn = DriverManager.getConnection(mysql.getJdbcUrl(), "scott", "tiger");
+    conn = DriverManager.getConnection(MYSQL.getJdbcUrl(), "scott", "tiger");
     conn.setAutoCommit(true);
     try (PreparedStatement ps = conn.prepareStatement(
         "create table testtab (a integer, b varchar(10))")) {
@@ -45,7 +45,7 @@ public class ITMySql {
 
   @Test
   public void test() throws SQLException {
-    try (Connection conn = mysql.createConnection("");
+    try (Connection conn = MYSQL.createConnection("");
          PreparedStatement s = conn.prepareStatement("UPDATE testtab SET a = a / 10")) {
       s.execute();
     }

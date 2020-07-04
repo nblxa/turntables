@@ -58,41 +58,8 @@ and you'll need both dependencies.
 
 ### Test with Oracle
 
-Unfortunately, Oracle tests are not containerized.
+The Oracle test is containerized using the image `quillbuilduser/oracle-18-xe`.
+* Docker Hub: https://hub.docker.com/r/quillbuilduser/oracle-18-xe
+* Source: https://github.com/deusaquilus/docker-oracle-xe
 
-To run Oracle tests, you'll need an Oracle Cloud Autonomous Database (a
-[free one](https://docs.cloud.oracle.com/en-us/iaas/Content/FreeTier/resourceref.htm)
-will also work). Use [oracle-test-schemas](https://github.com/nblxa/oracle-test-schemas)
-to set up the temporary test schema provisioning.
-
-[Download the Oracle Wallet](https://docs.cloud.oracle.com/en-us/iaas/Content/Database/Tasks/adbconnecting.htm)
-for connecting to your Oracle Cloud database. Put the contents of the wallet into the directory
-[turntables-test-oracle/wallet.local](turntables-test-oracle/wallet.local) like this
-
-```
-turntables-test-oracle/wallet.local
-|-- README
-|-- cwallet.sso
-|-- ewallet.p12
-|-- keystore.jks
-|-- ojdbc.properties
-|-- sqlnet.ora
-|-- tnsnames.ora
-`-- truststore.jks
-```
-
-When building with Maven, provide additional options:
-* `-DttOraHost`: hostname of the Oracle Autonomous Database.
-* `-DttOraUrl`: the JDBC URL of the Oracle Autonomous Database for connecting using the Wallet.
-  Example: `jdbc:oracle:thin:@mytestdb_tp?TNS_ADMIN=C:/turntables/turntables-test-oracle/wallet.local`
-* `-DttClientId`: OAuth Client ID for the
-  [test schema provisioning REST API](https://github.com/nblxa/oracle-test-schemas).
-* `-DttClientSecret`: OAuth Client Secret.
-* `-Doracle.jdbc.fanEnabled=false` to suppress a warning from Oracle.
-
-### Oracle Wallet used in Travis
-
-The Oracle Wallet used in the Travis builds has the following lifetime:
-```
-The SSL certificates provided in this wallet will expire on 2023-03-19 21:43:22.0 UTC.
-```
+Image size is **13GB** at the time of writing this, so it's advisable to download it beforehand.
