@@ -1,0 +1,52 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk-stretch
+      - image: quillbuilduser/oracle-18-xe
+      - image: mysql:5.7.30
+        environment:
+          MYSQL_ROOT_PASSWORD: tiger
+          MYSQL_DATABASE: turntables
+
+    steps:
+      - checkout
+
+      - run:
+          name: Generate cumulative pom.xml checksum
+          command: |
+            find . -type f -name "pom.xml" -exec sh -c "sha256sum {} >> ~/pom-checksum.tmp" \;
+            sort -o ~/pom-checksum ~/pom-checksum.tmp
+          when: always
+      - restore_cache:
+          keys:
+            - maven_repo-{{ checksum "~/pom-checksum" }}
+            - maven_repo- # used if the precise cache lookup fails
+
+      - run:
+          name: Download dependencies
+          command: ./mvnw -B -T 1C de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: maven_repo-{{ checksum "pom.xml" }}
+
+      - run:
+          name: Build
+          command: scripts/build.sh
+
+      #- store_test_results: # uploads the test metadata from the `target/surefire-reports` directory so that it can show up in the CircleCI dashboard.
+      #      # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+      #      path: target/surefire-reports
+
+      #- store_artifacts: # store the uberjar as an artifact
+      #      # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
+      #      path: target/demo-java-spring-0.0.1-SNAPSHOT.jar
+      # See https://circleci.com/docs/2.0/deployment-integrations/ for deploy examples
+
+workflows:
+  main:
+    jobs:
+      - build:
+          context: SonarCloud

@@ -56,10 +56,10 @@
         <equalsverifier.version>3.4.1</equalsverifier.version>
         <assertj.version>3.16.1</assertj.version>
         <derby.version>10.14.2.0</derby.version>
-        <testcontainers.version>1.14.3</testcontainers.version>
-        <slf4j.log4j12.version>1.7.30</slf4j.log4j12.version>
         <jersey.version>2.31</jersey.version>
         <commons.lang3.version>3.10</commons.lang3.version>
+        <mysql.connector.java.version>8.0.20</mysql.connector.java.version>
+        <ojdbc.version>19.3.0.0</ojdbc.version>
 
         <error.prone.core.version>2.3.4</error.prone.core.version>
         <checkstyle.version>8.34</checkstyle.version>
@@ -91,8 +91,11 @@
         <versions.maven.plugin.version>2.7</versions.maven.plugin.version>
         <git.commit.id.plugin.version>4.0.0</git.commit.id.plugin.version>
         <reproducible.build.maven.plugin.version>0.12</reproducible.build.maven.plugin.version>
+        <go.offline.maven.plugin.version>1.2.5</go.offline.maven.plugin.version>
 
         <surefireArgLine/>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.organization>nblxa</sonar.organization>
     </properties>
 
     <distributionManagement>
@@ -144,18 +147,6 @@
                 <groupId>org.apache.derby</groupId>
                 <artifactId>derby</artifactId>
                 <version>${derby.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>testcontainers</artifactId>
-                <version>${testcontainers.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-                <version>${slf4j.log4j12.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -460,6 +451,46 @@
                     <groupId>org.sonarsource.scanner.maven</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>
                     <version>3.7.0.1746</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>de.qaware.maven</groupId>
+                    <artifactId>go-offline-maven-plugin</artifactId>
+                    <version>${go.offline.maven.plugin.version}</version>
+                    <configuration>
+                        <dynamicDependencies>
+                          <DynamicDependency>
+                            <groupId>org.apache.maven.surefire</groupId>
+                            <artifactId>surefire-junit4</artifactId>
+                            <version>${maven.surefire.plugin.version}</version>
+                            <repositoryType>PLUGIN</repositoryType>
+                          </DynamicDependency>
+                          <DynamicDependency>
+                            <groupId>com.google.errorprone</groupId>
+                            <artifactId>javac</artifactId>
+                            <version>${javac.version}</version>
+                            <repositoryType>PLUGIN</repositoryType>
+                          </DynamicDependency>
+                          <DynamicDependency>
+                            <groupId>com.google.errorprone</groupId>
+                            <artifactId>error_prone_core</artifactId>
+                            <version>${error.prone.core.version}</version>
+                            <repositoryType>PLUGIN</repositoryType>
+                          </DynamicDependency>
+                          <DynamicDependency>
+                            <groupId>com.google.guava</groupId>
+                            <artifactId>guava</artifactId>
+                            <version>27.0.1-jre</version>
+                            <repositoryType>PLUGIN</repositoryType>
+                          </DynamicDependency>
+                          <DynamicDependency>
+                            <groupId>com.google.protobuf</groupId>
+                            <artifactId>protobuf-java</artifactId>
+                            <version>3.4.0</version>
+                            <repositoryType>PLUGIN</repositoryType>
+                          </DynamicDependency>
+                        </dynamicDependencies>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
