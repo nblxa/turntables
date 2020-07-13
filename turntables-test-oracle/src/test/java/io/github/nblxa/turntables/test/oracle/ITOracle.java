@@ -16,8 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
-import org.testcontainers.containers.JdbcDatabaseContainer;
-import org.testcontainers.containers.OracleContainer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -25,12 +23,10 @@ import java.sql.SQLException;
 public class ITOracle {
 
   @ClassRule
-  public static JdbcDatabaseContainer<?> ORACLE = new OracleContainer("quillbuilduser/oracle-18-xe")
-      .withUsername("system")
-      .withPassword("Oracle18");
+  public static final OracleRule ORACLE = new OracleRule();
 
   private final TestDataSource testDataSource = new TestDataFactory()
-      .jdbc(ORACLE::getJdbcUrl, "system", "Oracle18")
+      .jdbc(ORACLE::getJdbcUrl, ORACLE.getUser(), ORACLE.getPassword())
       .settings(new Settings.Builder()
           .decimalMode(Settings.DecimalMode.ALLOW_BIG)
           .colNamesMode(Settings.ColNamesMode.CASE_INSENSITIVE)
@@ -52,7 +48,7 @@ public class ITOracle {
   @Test
   public void test() throws SQLException {
     // Simulate the application logic
-    try (Connection conn = ORACLE.createConnection("");
+    try (Connection conn = ORACLE.getConnection();
          PreparedStatement s = conn.prepareStatement("update employees set dept = 'QA'")) {
       s.execute();
     }
@@ -71,7 +67,7 @@ public class ITOracle {
   @Test
   public void testMismatch() throws SQLException {
     // Simulate the application logic
-    try (Connection conn = ORACLE.createConnection("");
+    try (Connection conn = ORACLE.getConnection();
          PreparedStatement s = conn.prepareStatement("update employees set dept = 'QA'")) {
       s.execute();
     }
@@ -130,7 +126,7 @@ public class ITOracle {
     testDataSource.feed("colors", initialData);
 
     // Simulate the application logic
-    try (Connection conn = ORACLE.createConnection("");
+    try (Connection conn = ORACLE.getConnection();
          PreparedStatement s = conn.prepareStatement(
              "delete from colors " +
                  "where red_id not between 0 and 255 " +
@@ -161,7 +157,7 @@ public class ITOracle {
     testDataSource.feed("writers", initialData);
 
     // Simulate the application logic
-    try (Connection conn = ORACLE.createConnection("");
+    try (Connection conn = ORACLE.getConnection();
          PreparedStatement s = conn.prepareStatement(
              "insert into writers (first_name, last_name) values ('Alexandre', 'Dumas')")) {
       s.execute();
@@ -189,7 +185,7 @@ public class ITOracle {
     testDataSource.feed("constants", initialData);
 
     // Simulate the application logic
-    try (Connection conn = ORACLE.createConnection("");
+    try (Connection conn = ORACLE.getConnection();
          PreparedStatement s = conn.prepareStatement(
              "update constants set value = value * 2")) {
       s.execute();
@@ -229,7 +225,7 @@ public class ITOracle {
         .row(2, "William", "Ops"));
 
     // Simulate the application logic
-    try (Connection conn = ORACLE.createConnection("");
+    try (Connection conn = ORACLE.getConnection();
          PreparedStatement s = conn.prepareStatement("update employees set dept = 'QA'")) {
       s.execute();
     }

@@ -1,10 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
+# shellcheck source=./func.sh
+source "$(dirname "$0")/func.sh"
+
 SCRPT="[scripts/deploy.sh]"
 
-if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [[ "$TRAVIS_BRANCH" == master ]]; then
+if [ "$PULL_REQUEST" == "false" ] && [[ "$BRANCH" == master ]]; then
   echo "$SCRPT Deploying a new release."
   ./mvnw -pl turntables-core \
          clean deploy \
@@ -13,7 +16,7 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [[ "$TRAVIS_BRANCH" == master ]]; th
   exit 0
 fi
 
-if [ "$TRAVIS_PULL_REQUEST" == "true" ]; then
+if [ "$PULL_REQUEST" == "true" ]; then
   echo "$SCRPT Not deploying a pull request."
   exit 0
 fi

@@ -14,8 +14,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
-import org.testcontainers.containers.JdbcDatabaseContainer;
-import org.testcontainers.containers.MySQLContainerProvider;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -24,18 +22,13 @@ import static io.github.nblxa.turntables.Turntables.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class ITMySqlTestData {
-
   @ClassRule
-  public static JdbcDatabaseContainer<?> mysql = new MySQLContainerProvider()
-      .newInstance()
-      .withDatabaseName("test")
-      .withUsername("scott")
-      .withPassword("tiger");
+  public static final MySqlRule MYSQL = new MySqlRule();
 
-  private TestDataSource testDataSource = new TestDataFactory()
-      .jdbc(mysql::getJdbcUrl, "scott", "tiger");
+  private final TestDataSource testDataSource = new TestDataFactory()
+      .jdbc(MYSQL::getJdbcUrl, MYSQL.getUser(), MYSQL.getPassword());
 
-  private TestTable testTab = testDataSource.table("employees")
+  private final TestTable testTab = testDataSource.table("employees")
       .col("id", Typ.INTEGER)
       .col("name", Typ.STRING)
       .col("dept", Typ.STRING)
@@ -51,7 +44,7 @@ public class ITMySqlTestData {
   @Test
   public void test() throws SQLException {
     // Simulate the application logic
-    try (Connection conn = mysql.createConnection("");
+    try (Connection conn = MYSQL.getConnection();
          PreparedStatement s = conn.prepareStatement("update employees set dept = 'QA'")) {
       s.execute();
     }
@@ -69,7 +62,7 @@ public class ITMySqlTestData {
   @Test
   public void testMismatch() throws SQLException {
     // Simulate the application logic
-    try (Connection conn = mysql.createConnection("");
+    try (Connection conn = MYSQL.getConnection();
          PreparedStatement s = conn.prepareStatement("update employees set dept = 'QA'")) {
       s.execute();
     }
@@ -125,7 +118,7 @@ public class ITMySqlTestData {
     testDataSource.feed("colors", initialData);
 
     // Simulate the application logic
-    try (Connection conn = mysql.createConnection("");
+    try (Connection conn = MYSQL.getConnection();
          PreparedStatement s = conn.prepareStatement(
              "delete from colors " +
                  "where red_id not between 0 and 255 " +
@@ -156,7 +149,7 @@ public class ITMySqlTestData {
     testDataSource.feed("writers", initialData);
 
     // Simulate the application logic
-    try (Connection conn = mysql.createConnection("");
+    try (Connection conn = MYSQL.getConnection();
          PreparedStatement s = conn.prepareStatement(
              "insert into writers (first_name, last_name) values ('Alexandre', 'Dumas')")) {
       s.execute();
@@ -184,7 +177,7 @@ public class ITMySqlTestData {
     testDataSource.feed("constants", initialData);
 
     // Simulate the application logic
-    try (Connection conn = mysql.createConnection("");
+    try (Connection conn = MYSQL.getConnection();
          PreparedStatement s = conn.prepareStatement(
              "update constants set value = value * 2")) {
       s.execute();
@@ -212,7 +205,7 @@ public class ITMySqlTestData {
     testDataSource.feed("constants", initialData);
 
     // Simulate the application logic
-    try (Connection conn = mysql.createConnection("");
+    try (Connection conn = MYSQL.getConnection();
          PreparedStatement s = conn.prepareStatement(
              "update constants set value = not value")) {
       s.execute();
@@ -236,7 +229,7 @@ public class ITMySqlTestData {
         .row(2, "William", "Ops"));
 
     // Simulate the application logic
-    try (Connection conn = mysql.createConnection("");
+    try (Connection conn = MYSQL.getConnection();
          PreparedStatement s = conn.prepareStatement("update employees set dept = 'QA'")) {
       s.execute();
     }

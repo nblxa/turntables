@@ -1,21 +1,25 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
+
+# shellcheck source=./func.sh
+source "$(dirname "$0")/func.sh"
 
 RELEASE_PROFILE=""
 SCRPT="[scripts/build.sh]"
 
-if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [[ "$TRAVIS_BRANCH" == master ]]; then
+if [ "$PULL_REQUEST" == "false" ] && [[ "$BRANCH" == master ]]; then
   echo "$SCRPT Building a new release."
   RELEASE_PROFILE="-Prelease --settings scripts/release-settings.xml"
 fi
 
-if [ "$TRAVIS_PULL_REQUEST" == "true" ]; then
+if [ "$PULL_REQUEST" == "true" ]; then
   echo "$SCRPT Building a pull request."
 fi
 
-./mvnw install \
-       sonar:sonar -Dsonar.projectKey=turntables \
+./mvnw verify \
+       sonar:sonar \
        coveralls:report \
        -Derrorprone \
-       -e -B -V $RELEASE_PROFILE
+       -DrepoToken="$COVERALLS_REPO_TOKEN" \
+       -T 1C -U -e -B -V $RELEASE_PROFILE

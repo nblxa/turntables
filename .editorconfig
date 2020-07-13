@@ -2,7 +2,7 @@
 charset = utf-8
 end_of_line = lf
 insert_final_newline = true
-indent_size = 4
+indent_size = 2
 indent_style = space
 max_line_length = 120
 tab_width = 4
@@ -14,7 +14,6 @@ ij_smart_tabs = false
 ij_wrap_on_typing = false
 
 [*.java]
-indent_size = 2
 max_line_length = 100
 ij_continuation_indent_size = 4
 ij_java_align_consecutive_assignments = false
@@ -237,19 +236,6 @@ ij_java_while_on_new_line = false
 ij_java_wrap_comments = false
 ij_java_wrap_first_method_in_call_chain = false
 ij_java_wrap_long_lines = false
-
-[*.json]
-indent_size = 2
-ij_json_keep_blank_lines_in_code = 0
-ij_json_keep_indents_on_empty_lines = false
-ij_json_keep_line_breaks = true
-ij_json_space_after_colon = true
-ij_json_space_after_comma = true
-ij_json_space_before_colon = true
-ij_json_space_before_comma = false
-ij_json_spaces_within_braces = false
-ij_json_spaces_within_brackets = false
-ij_json_wrap_long_lines = false
 
 [*.properties]
 ij_properties_align_group_field_declarations = false

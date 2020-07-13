@@ -11,23 +11,17 @@ import io.github.nblxa.turntables.Typ;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.testcontainers.containers.JdbcDatabaseContainer;
-import org.testcontainers.containers.MySQLContainerProvider;
 
 public class ITMySql {
 
   @ClassRule
-  public static JdbcDatabaseContainer<?> MYSQL = new MySQLContainerProvider()
-      .newInstance()
-      .withDatabaseName("test")
-      .withUsername("scott")
-      .withPassword("tiger");
+  public static final MySqlRule MYSQL = new MySqlRule();
 
   private Connection conn;
 
   @Before
   public void setUp() throws SQLException {
-    conn = DriverManager.getConnection(MYSQL.getJdbcUrl(), "scott", "tiger");
+    conn = DriverManager.getConnection(MYSQL.getJdbcUrl(), MYSQL.getUser(), MYSQL.getPassword());
     conn.setAutoCommit(true);
     try (PreparedStatement ps = conn.prepareStatement(
         "create table testtab (a integer, b varchar(10))")) {
@@ -45,7 +39,7 @@ public class ITMySql {
 
   @Test
   public void test() throws SQLException {
-    try (Connection conn = MYSQL.createConnection("");
+    try (Connection conn = MYSQL.getConnection();
          PreparedStatement s = conn.prepareStatement("UPDATE testtab SET a = a / 10")) {
       s.execute();
     }
