@@ -31,8 +31,7 @@ private TestTable testTab = testDataSource.table("employees")
 ```
 
 For a complete example with MySQL, see
-[ITMySqlTestData.java](turntables-test-mysql/src/test/java/io/github/nblxa/turntables/test/mysql/ITMySqlTestData.java)
-(Docker required).
+[ITMySqlTestData.java](turntables-test-mysql/src/test/java/io/github/nblxa/turntables/test/mysql/ITMySqlTestData.java).
 
 ## Maven
 

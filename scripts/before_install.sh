@@ -23,7 +23,3 @@ if [ -f ~/.gnupg/gpg-agent.conf ]; then
 fi
 echo "allow-loopback-pinentry" | cat >> ~/.gnupg/gpg-agent.conf
 gpg-connect-agent reloadagent /bye
-
-# pull the oracle image beforehand
-
-docker pull quillbuilduser/oracle-18-xe
