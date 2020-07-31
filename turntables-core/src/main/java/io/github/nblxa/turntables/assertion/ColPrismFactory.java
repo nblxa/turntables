@@ -40,7 +40,7 @@ public class ColPrismFactory {
       default:
         throw new UnsupportedOperationException();
     }
-    return res;
+    return ColTypPrism.ofActualPrism(asserter, expected, res);
   }
 
   private ColPrismFactory() {

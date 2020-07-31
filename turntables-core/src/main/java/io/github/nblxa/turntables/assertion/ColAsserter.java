@@ -23,4 +23,6 @@ public interface ColAsserter {
    * @return true if the actual key columns match the expected ones
    */
   boolean checkKey(@NonNull List<Tab.Col> expected, @NonNull List<Tab.Col> actual);
+
+  boolean matchCols(@NonNull Tab.Col expected, @NonNull Tab.Col actual);
 }

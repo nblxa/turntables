@@ -3,7 +3,6 @@ package io.github.nblxa.turntables.assertion;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.exception.StructureException;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
@@ -39,7 +38,19 @@ class NamedColAsserter implements ColAsserter {
 
   @Override
   public boolean match(@NonNull List<Tab.Col> expected, @NonNull List<Tab.Col> actual) {
-    return matchNamed(expected, actual);
+    List<Tab.Col> expOrdered = orderedByName(expected);
+    List<Tab.Col> actOrdered = orderedByName(actual);
+    if (expected.size() != actual.size()) {
+      return false;
+    }
+    checkForDuplicates(expOrdered, "expected");
+    checkForDuplicates(actOrdered, "actual");
+    for (int i = 0; i < expOrdered.size(); i++) {
+      if (!matchCols(expOrdered.get(i), actOrdered.get(i))) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @Override
@@ -56,22 +67,8 @@ class NamedColAsserter implements ColAsserter {
         .collect(Collectors.toList());
   }
 
-  private boolean matchNamed(@NonNull List<Tab.Col> expected,
-                             @NonNull List<Tab.Col> actual) {
-    List<Tab.Col> expOrdered = orderedByName(expected);
-    List<Tab.Col> actOrdered = orderedByName(actual);
-    checkForDuplicates(expOrdered, "expected");
-    checkForDuplicates(actOrdered, "actual");
-    if (!colAsserter.match(new ArrayList<>(expOrdered), new ArrayList<>(actOrdered))) {
-      return false;
-    }
-    for (int i = 0; i < expOrdered.size(); i++) {
-      String expName = expOrdered.get(i).name();
-      String actName = actOrdered.get(i).name();
-      if (!expName.equals(actName)) {
-        return false;
-      }
-    }
-    return true;
+  @Override
+  public boolean matchCols(@NonNull Tab.Col expected, @NonNull Tab.Col actual) {
+    return colAsserter.matchCols(expected, actual) && expected.name().equals(actual.name());
   }
 }
