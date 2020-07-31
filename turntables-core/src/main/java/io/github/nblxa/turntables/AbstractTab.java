@@ -2,6 +2,8 @@ package io.github.nblxa.turntables;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import io.github.nblxa.turntables.exception.UnsupportedTypConversionException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -151,12 +153,24 @@ public abstract class AbstractTab implements Tab {
     @Override
     public boolean matchesActual(@NonNull Tab.Val actual) {
       Objects.requireNonNull(actual, "actual is null");
-      return Objects.equals(evaluate(), actual.evaluateAs(typ()));
+      try {
+        return valuesAreEqual(evaluate(), actual.evaluateAs(typ()));
+      } catch (UnsupportedTypConversionException utce) {
+        return false;
+      }
     }
 
     @Override
     public String toString() {
       return renderer().renderVal(this);
+    }
+
+    private static boolean valuesAreEqual(Object expected, Object actual) {
+      if (expected instanceof BigDecimal && actual instanceof BigDecimal) {
+        return ((BigDecimal) expected).compareTo(((BigDecimal) actual)) == 0;
+      } else {
+        return Objects.equals(expected, actual);
+      }
     }
   }
 

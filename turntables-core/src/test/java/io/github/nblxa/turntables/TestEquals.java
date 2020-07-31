@@ -133,6 +133,12 @@ public class TestEquals {
         .verify();
   }
 
+  @Test
+  public void testSettings() {
+    EqualsVerifier.forClass(Settings.class)
+        .verify();
+  }
+
   static class NonAbstractTab implements Tab {
     @NonNull
     private final List<Col> cols;

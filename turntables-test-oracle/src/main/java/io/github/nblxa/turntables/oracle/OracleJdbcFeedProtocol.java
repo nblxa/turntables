@@ -31,7 +31,7 @@ public class OracleJdbcFeedProtocol<T extends OracleConnection> extends JdbcProt
   protected boolean tableExists(@NonNull Connection connection,
                                 @NonNull String tableName) throws SQLException {
     try (PreparedStatement ps = connection.prepareStatement(TABLE_EXISTS_SQL)) {
-      if (Turntables.getSettings().colNamesMode == Settings.ColNamesMode.CASE_INSENSITIVE) {
+      if (Turntables.getSettings().nameMode == Settings.NameMode.CASE_INSENSITIVE) {
         tableName = tableName.toUpperCase(Locale.ENGLISH);
       }
       ps.setString(1, tableName);

@@ -18,8 +18,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestTypConversion {
-  private static final Settings ALLOW_DECIMAL_CONVERSION = new Settings.Builder()
-      .decimalMode(Settings.DecimalMode.ALLOW_BIG)
+  private static final Settings ALLOW_DECIMAL_CONVERSION = Settings.builder()
+      .decimalMode(Settings.DecimalMode.CONVERT)
       .build();
 
   private static List<Typ> allTypesButAny;

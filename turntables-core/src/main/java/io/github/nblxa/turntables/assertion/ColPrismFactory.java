@@ -33,7 +33,7 @@ public class ColPrismFactory {
         break;
       case MATCHES_BY_NAME:
         res = ColOrderPrism.ofActual(asserter, expected, actual);
-        if (asserter.getConf().settings.colNamesMode == Settings.ColNamesMode.CASE_INSENSITIVE) {
+        if (asserter.getConf().settings.nameMode == Settings.NameMode.CASE_INSENSITIVE) {
           res = ColNamePrism.ofActual(asserter, expected, res);
         }
         break;

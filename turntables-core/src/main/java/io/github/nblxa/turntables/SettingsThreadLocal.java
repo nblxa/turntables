@@ -4,7 +4,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class SettingsThreadLocal extends InheritableThreadLocal<Deque<Settings>> {
-  private static final Settings DEFAULT_SETTINGS = new Settings.Builder().build();
+  private static final Settings DEFAULT_SETTINGS = Settings.builder().build();
 
   @Override
   protected Deque<Settings> initialValue() {

@@ -27,9 +27,9 @@ public class ITOracle {
 
   private final TestDataSource testDataSource = new TestDataFactory()
       .jdbc(ORACLE::getJdbcUrl, ORACLE.getUser(), ORACLE.getPassword())
-      .settings(new Settings.Builder()
-          .decimalMode(Settings.DecimalMode.ALLOW_BIG)
-          .colNamesMode(Settings.ColNamesMode.CASE_INSENSITIVE)
+      .settings(Settings.builder()
+          .decimalMode(Settings.DecimalMode.CONVERT)
+          .nameMode(Settings.NameMode.CASE_INSENSITIVE)
           .build());
 
   private final TestTable testTab = testDataSource.table("employees")
@@ -57,7 +57,7 @@ public class ITOracle {
 
     Turntables.assertThat(actual)
         .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
-        .settings(new Settings.Builder().decimalMode(Settings.DecimalMode.ALLOW_BIG).build())
+        .settings(Settings.builder().decimalMode(Settings.DecimalMode.CONVERT).build())
         .matches()
         .row(1, "Alice", "QA")
         .row(2, "Bob", "QA")

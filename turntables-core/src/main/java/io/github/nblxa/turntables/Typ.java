@@ -2,8 +2,11 @@ package io.github.nblxa.turntables;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import io.github.nblxa.turntables.exception.UnsupportedTypConversionException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -64,10 +67,10 @@ public enum Typ {
    */
   DATETIME(new TypDatetime());
 
-  private final Internal internal;
+  private final Internal<?> internal;
   private final Tab.Val nullVal;
 
-  Typ(Internal internal) {
+  Typ(Internal<?> internal) {
     this.internal = internal;
     this.nullVal = new NullVal(this);
   }
@@ -91,7 +94,7 @@ public enum Typ {
     return super.toString().toLowerCase(Locale.getDefault());
   }
 
-  abstract static class Internal {
+  abstract static class Internal<T> {
     private Internal() {
     }
 
@@ -100,17 +103,17 @@ public enum Typ {
     }
 
     @NonNull
-    Object convert(@NonNull Object obj) {
-      throw new UnsupportedOperationException("Type conversion is not supported for "
+    T convert(@NonNull Object obj) {
+      throw new UnsupportedTypConversionException("Type conversion is not supported for "
           + getClass().getSimpleName());
     }
 
     boolean isDecimalConversionEnabled() {
-      return Turntables.getSettings().decimalMode == Settings.DecimalMode.ALLOW_BIG;
+      return Turntables.getSettings().decimalMode == Settings.DecimalMode.CONVERT;
     }
   }
 
-  static class TypAny extends Internal {
+  static class TypAny extends Internal<Object> {
     @Override
     boolean accepts(Typ typ) {
       return true;
@@ -123,7 +126,7 @@ public enum Typ {
     }
   }
 
-  static class TypInteger extends Internal {
+  static class TypInteger extends Internal<Integer> {
     @Override
     boolean accepts(Typ typ) {
       return (typ == Typ.DECIMAL && isDecimalConversionEnabled()) || super.accepts(typ);
@@ -131,7 +134,7 @@ public enum Typ {
 
     @NonNull
     @Override
-    Object convert(@NonNull Object obj) {
+    Integer convert(@NonNull Object obj) {
       if (obj instanceof BigDecimal && isDecimalConversionEnabled()) {
         return ((BigDecimal) obj).intValueExact();
       }
@@ -139,7 +142,7 @@ public enum Typ {
     }
   }
 
-  static class TypLong extends Internal {
+  static class TypLong extends Internal<Long> {
     @Override
     boolean accepts(Typ typ) {
       return (typ == Typ.DECIMAL && isDecimalConversionEnabled()) || super.accepts(typ);
@@ -147,7 +150,7 @@ public enum Typ {
 
     @NonNull
     @Override
-    Object convert(@NonNull Object obj) {
+    Long convert(@NonNull Object obj) {
       if (obj instanceof BigDecimal && isDecimalConversionEnabled()) {
         return ((BigDecimal) obj).longValueExact();
       }
@@ -155,13 +158,13 @@ public enum Typ {
     }
   }
 
-  static class TypString extends Internal {
+  static class TypString extends Internal<String> {
   }
 
-  static class TypBoolean extends Internal {
+  static class TypBoolean extends Internal<Boolean> {
   }
 
-  static class TypDouble extends Internal {
+  static class TypDouble extends Internal<Double> {
     @Override
     boolean accepts(Typ typ) {
       return (typ == Typ.DECIMAL && isDecimalConversionEnabled()) || super.accepts(typ);
@@ -169,7 +172,7 @@ public enum Typ {
 
     @NonNull
     @Override
-    Object convert(@NonNull Object obj) {
+    Double convert(@NonNull Object obj) {
       if (obj instanceof BigDecimal && isDecimalConversionEnabled()) {
         return ((BigDecimal) obj).doubleValue();
       }
@@ -177,7 +180,7 @@ public enum Typ {
     }
   }
 
-  static class TypDecimal extends Internal {
+  static class TypDecimal extends Internal<BigDecimal> {
     @Override
     boolean accepts(Typ typ) {
       return ((typ == Typ.INTEGER || typ == Typ.LONG || typ == Typ.DOUBLE)
@@ -187,7 +190,7 @@ public enum Typ {
 
     @NonNull
     @Override
-    Object convert(@NonNull Object obj) {
+    BigDecimal convert(@NonNull Object obj) {
       if (obj instanceof Integer && isDecimalConversionEnabled()) {
         return new BigDecimal(BigInteger.valueOf((Integer) obj));
       }
@@ -201,10 +204,10 @@ public enum Typ {
     }
   }
 
-  static class TypDate extends Internal {
+  static class TypDate extends Internal<LocalDate> {
   }
 
-  static class TypDatetime extends Internal {
+  static class TypDatetime extends Internal<LocalDateTime> {
   }
 
   static final class NullVal extends AbstractTab.AbstractVal {
