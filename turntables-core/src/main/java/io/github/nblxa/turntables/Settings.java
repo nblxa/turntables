@@ -9,9 +9,10 @@ public final class Settings {
    */
   public enum DecimalMode {
     /**
-     * Default mode ({@link DecimalMode#EXACT}).
+     * Default mode (equivalent to {@link DecimalMode#EXACT}).
+     * <p>Reserved for automated mode determination.
      */
-    DEFAULT,
+    AUTO,
 
     /**
      * Match numbers by exact type and value.
@@ -50,9 +51,10 @@ public final class Settings {
    */
   public enum NameMode {
     /**
-     * Default mode ({@link NameMode#CASE_SENSITIVE}).
+     * Default mode (equivalent to {@link NameMode#CASE_SENSITIVE}).
+     * <p>Reserved for automated mode determination.
      */
-    DEFAULT,
+    AUTO,
 
     /**
      * Table and column names are case-sensitive.
@@ -68,12 +70,17 @@ public final class Settings {
     CASE_INSENSITIVE
   }
 
-
   /**
    * Row matching modes allow the test developer to tell Turntables how it should decide
    * which rows to match against each other in the expected and the actual tables.
    */
   public enum RowMode {
+    /**
+     * Default mode (equivalent to {@link RowMode#MATCH_IN_GIVEN_ORDER}).
+     * <p>Reserved for automated mode determination.
+     */
+    AUTO,
+
     /**
      * Default row matching mode: match rows in the exact order of their appearance in both
      * the expected and the actual table. Every row of expected must have a single matching row
@@ -103,6 +110,12 @@ public final class Settings {
    */
   public enum ColMode {
     /**
+     * Default mode (equivalent to {@link ColMode#MATCH_IN_GIVEN_ORDER}).
+     * <p>Reserved for automated mode determination.
+     */
+    AUTO,
+
+    /**
      * Columns and values are matched in the order they are provided in the expected and the actual
      * tables. First column of actual must match the first column of expected, and so on.
      * Column names if provided, will be ignored for the purpose of matching.
@@ -126,7 +139,7 @@ public final class Settings {
   public final ColMode colMode;
 
   private Settings(@NonNull DecimalMode decimalMode, @NonNull NameMode nameMode,
-                  @NonNull RowMode rowMode, @NonNull ColMode colMode) {
+                   @NonNull RowMode rowMode, @NonNull ColMode colMode) {
     this.decimalMode = decimalMode;
     this.nameMode = nameMode;
     this.rowMode = rowMode;
@@ -174,7 +187,7 @@ public final class Settings {
   public interface Builder<S extends Builder<S>> {
     /**
      * Specify whether to convert decimal to other numeric types or not.
-     * <p>Default is {@link Settings.DecimalMode#DEFAULT}.
+     * <p>Default is {@link Settings.DecimalMode#AUTO}.
      * @param decimalMode decimal mode
      * @return the builder object
      */
@@ -183,7 +196,7 @@ public final class Settings {
 
     /**
      * Specify whether to use case-insensitive mode for column and table names.
-     * <p>Default is {@link Settings.NameMode#DEFAULT}.
+     * <p>Default is {@link Settings.NameMode#AUTO}.
      * @param nameMode name mode
      * @return the builder object
      */
@@ -192,7 +205,7 @@ public final class Settings {
 
     /**
      * Specify the mode in which to match rows.
-     * <p>Default is {@link Settings.RowMode#MATCH_IN_GIVEN_ORDER}.
+     * <p>Default is {@link Settings.RowMode#AUTO}.
      * @param rowMode row mode
      * @return the builder object
      */
@@ -201,7 +214,7 @@ public final class Settings {
 
     /**
      * Specify the mode in which to match columns.
-     * <p>Default is {@link Settings.ColMode#MATCH_IN_GIVEN_ORDER}.
+     * <p>Default is {@link Settings.ColMode#AUTO}.
      * @param colMode column mode
      * @return the builder object
      */
@@ -211,13 +224,13 @@ public final class Settings {
 
   public static class BuilderImpl implements Builder<BuilderImpl> {
     @NonNull
-    private DecimalMode decimalMode = DecimalMode.DEFAULT;
+    private DecimalMode decimalMode = DecimalMode.AUTO;
     @NonNull
-    private NameMode nameMode = NameMode.DEFAULT;
+    private NameMode nameMode = NameMode.AUTO;
     @NonNull
-    private RowMode rowMode = RowMode.MATCH_IN_GIVEN_ORDER;
+    private RowMode rowMode = RowMode.AUTO;
     @NonNull
-    private ColMode colMode = ColMode.MATCH_IN_GIVEN_ORDER;
+    private ColMode colMode = ColMode.AUTO;
 
     private BuilderImpl() {
     }
