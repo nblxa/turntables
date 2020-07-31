@@ -3,7 +3,6 @@ package io.github.nblxa.turntables.assertion;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.TableUtils;
-import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +18,6 @@ public class ColNamePrism extends Prism implements Tab {
     Objects.requireNonNull(asserter, "asserter is null");
     Objects.requireNonNull(expected, "expected is null");
     Objects.requireNonNull(actual, "actual is null");
-    if (asserter.getConf().colMode != Turntables.ColMode.MATCHES_IN_GIVEN_ORDER) {
-      throw new UnsupportedOperationException();
-    }
     if (!TableUtils.hasNamedCols(expected) && TableUtils.hasNamedCols(actual)) {
       return NoOpPrism.of(actual);
     }

@@ -12,20 +12,21 @@ public class ColTypPrism extends Prism {
   private final Tab tab;
 
   @NonNull
-  static Prism ofActualPrism(@NonNull Asserter asserter, @NonNull Tab expected, @NonNull Prism actual) {
+  static Prism ofActualPrism(@NonNull Asserter asserter, @NonNull Tab expected, @NonNull Tab actual) {
     if (asserter.getOrCalculateResult().colsMatched() != AssertionResult.MatchResult.MATCH
         && asserter.getConf().settings.decimalMode == Settings.DecimalMode.CONVERT) {
       List<Tab.Col> updatedCols = createUpdatedCols(asserter.getColAsserter(), expected.cols(),
           actual.cols());
       return new ColTypPrism(actual, updatedCols);
     } else {
-      return actual;
+      return NoOpPrism.of(actual);
     }
   }
 
-  private static List<Tab.Col> createUpdatedCols(ColAsserter colAsserter,
-                                                 List<Tab.Col> expCols,
-                                                 List<Tab.Col> actCols) {
+  @NonNull
+  private static List<Tab.Col> createUpdatedCols(@NonNull ColAsserter colAsserter,
+                                                 @NonNull List<Tab.Col> expCols,
+                                                 @NonNull List<Tab.Col> actCols) {
     List<Tab.Col> updatedCols = new ArrayList<>();
     Iterator<Tab.Col> expIter = expCols.iterator();
     Iterator<Tab.Col> actIter = actCols.iterator();

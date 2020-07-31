@@ -1,7 +1,9 @@
 package io.github.nblxa.turntables.assertion;
 
+import io.github.nblxa.turntables.Settings;
 import io.github.nblxa.turntables.Tab;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import io.github.nblxa.turntables.Turntables;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,18 +16,11 @@ class NamedValAsserter extends AbstractMatchingValAsserter {
     List<String> actNames = names(actCols);
     actIndexes = new ArrayList<>(actNames.size());
     for (String expName : expNames) {
-      int actIndex = actNames.indexOf(expName);
+      int actIndex = indexOf(actNames, expName);
       if (actIndex != -1) {
         actIndexes.add(actIndex);
       }
     }
-  }
-
-  @NonNull
-  private static List<String> names(@NonNull List<Tab.Col> cols) {
-    return cols.stream()
-        .map(Tab.Col::name)
-        .collect(Collectors.toList());
   }
 
   @Override
@@ -39,5 +34,25 @@ class NamedValAsserter extends AbstractMatchingValAsserter {
       }
     }
     return true;
+  }
+
+  @NonNull
+  private static List<String> names(@NonNull List<Tab.Col> cols) {
+    return cols.stream()
+        .map(Tab.Col::name)
+        .collect(Collectors.toList());
+  }
+
+  private static int indexOf(List<String> actNames, String expName) {
+    if (Turntables.getSettings().nameMode == Settings.NameMode.CASE_INSENSITIVE) {
+      for (int i = 0; i < actNames.size(); i++) {
+        if (actNames.get(i).equalsIgnoreCase(expName)) {
+          return i;
+        }
+      }
+      return -1;
+    } else {
+      return actNames.indexOf(expName);
+    }
   }
 }

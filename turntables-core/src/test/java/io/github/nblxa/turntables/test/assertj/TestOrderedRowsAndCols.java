@@ -12,8 +12,6 @@ import org.junit.Test;
 import static io.github.nblxa.turntables.Turntables.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-import java.math.BigDecimal;
-
 public class TestOrderedRowsAndCols {
   private static final String LS = System.lineSeparator();
 
@@ -34,6 +32,35 @@ public class TestOrderedRowsAndCols {
         .row(3, 4);
 
     tabAssert(exp, act).matches();
+  }
+
+  @Test
+  public void mismatch() {
+    Tab exp = Turntables.tab()
+        .row(1, 2)
+        .row(3, 4);
+    Tab act = Turntables.tab()
+        .row(1, 2)
+        .row(5, 4);
+
+    Throwable t = null;
+    // comment next line to check in the IDE:
+    t = catchThrowable(() -> {
+      tabAssert(exp, act);
+      // comment next line to check in the IDE:
+    });
+    AssertAssertJ.assertThat(t)
+        .isAssertionErrorWithMessage(new StringBuilder(LS)
+            .append("EXPECTED: Table:").append(LS)
+            .append("    - col1 : 1").append(LS)
+            .append("      col2 : 2").append(LS)
+            .append("    - col1 : 3").append(LS)
+            .append("      col2 : 4").append(LS)
+            .append("BUT: WAS Table:").append(LS)
+            .append("    - col1 : 1").append(LS)
+            .append("      col2 : 2").append(LS)
+            .append("    - col1 : 5").append(LS)
+            .append("      col2 : 4").append(LS).toString());
   }
 
   @Test
@@ -190,8 +217,8 @@ public class TestOrderedRowsAndCols {
         .row(1, 2)
         .row(3, 4);
     Tab act = Turntables.tab()
-        .row(1, BigDecimal.valueOf(2L))
-        .row(3, BigDecimal.valueOf(4L));
+        .row(1, "2")
+        .row(3, "4");
 
     Throwable t = null;
     // comment next line to check in the IDE:
@@ -220,7 +247,7 @@ public class TestOrderedRowsAndCols {
             .append("        type : integer").append(LS)
             .append("        key  : false").append(LS)
             .append("      - name : col2").append(LS)
-            .append("        type : decimal").append(LS)
+            .append("        type : string").append(LS)
             .append("        key  : false").append(LS)
             .append("  rows:").append(LS)
             .append("      - col1 : 1").append(LS)
@@ -230,7 +257,7 @@ public class TestOrderedRowsAndCols {
   }
 
   @Test
-  public void mismatchCaseInsensitive() {
+  public void typeMismatchCaseInsensitive() {
     Tab exp = Turntables.tab()
         .col("A", Typ.INTEGER)
         .col("b", Typ.INTEGER)
@@ -240,7 +267,7 @@ public class TestOrderedRowsAndCols {
         .col("a", Typ.INTEGER)
         .col("B", Typ.STRING)
         .row(1, "2")
-        .row(3, "5");
+        .row(3, "4");
 
     Throwable t = null;
     // comment next line to check in the IDE:
@@ -279,6 +306,6 @@ public class TestOrderedRowsAndCols {
             .append("      - A : 1").append(LS)
             .append("        b : 2").append(LS)
             .append("      - A : 3").append(LS)
-            .append("        b : 5").append(LS).toString());
+            .append("        b : 4").append(LS).toString());
   }
 }
