@@ -26,8 +26,8 @@ import java.util.function.Predicate;
  *     .row(1, "Alice");
  *
  *   Turntables.assertThat(actual)
- *     .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
- *     .matches(expected);
+ *     .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
+ *     .matchesExpected(expected);
  * }</pre>
  *
  * The library is based on <a href="https://joel-costigliola.github.io/assertj/" target="_top">
@@ -182,53 +182,6 @@ public final class Turntables {
   @NonNull
   public static Settings getSettings() {
     return SETTINGS_THREAD_LOCAL.get().peek();
-  }
-
-  /**
-   * Row matching modes allow the test developer to tell Turntables how it should decide
-   * which rows to match against each other in the expected and the actual tables.
-   */
-  public enum RowMode {
-    /**
-     * Default row matching mode: match rows in the exact order of their appearance in both
-     * the expected and the actual table. Every row of expected must have a single matching row
-     * of actual, and vice versa.
-     */
-    MATCHES_IN_GIVEN_ORDER,
-
-    /**
-     * Match rows in any order. The order of the rows' appearance does not play a role for matching,
-     * what is important is that every row of expected must have a single matching row of actual,
-     * and vice versa.
-     */
-    MATCHES_IN_ANY_ORDER,
-
-    /**
-     * Match rows by key. The order of the rows' appearance does not play a role for matching.
-     * Every row of expected must have a single matching row of actual with equal values of key columns,
-     * and vice versa.
-     * @see Tab.Col#isKey
-     */
-    MATCHES_BY_KEY
-  }
-
-  /**
-   * Column matching modes allow the developer to tell Turntables how it should match actual
-   * and expected columns and values.
-   */
-  public enum ColMode {
-    /**
-     * Columns and values are matched in the order they are provided in the expected and the actual
-     * tables. First column of actual must match the first column of expected, and so on.
-     * Column names if provided, will be ignored for the purpose of matching.
-     */
-    MATCHES_IN_GIVEN_ORDER,
-
-    /**
-     * Columns and values are matched by column name. The order of columns in actual and expected
-     * does not matter for the purpose of matching.
-     */
-    MATCHES_BY_NAME
   }
 
   /**

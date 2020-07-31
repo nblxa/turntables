@@ -31,15 +31,15 @@ public class ColNamePrism extends Prism implements Tab {
     Objects.requireNonNull(asserter, "asserter is null");
     Objects.requireNonNull(expected, "expected is null");
     Objects.requireNonNull(actual, "actual is null");
-    switch (asserter.getConf().colMode) {
-      case MATCHES_IN_GIVEN_ORDER:
+    switch (asserter.getConf().settings.colMode) {
+      case MATCH_IN_GIVEN_ORDER:
         if (TableUtils.hasNamedCols(expected)) {
           return NoOpPrism.of(expected);
         }
         List<String> actualColNames = TableUtils.colNames(actual);
         List<Tab.Col> renamedCols = renameFirstCols(expected, actualColNames);
         return new ColNamePrism(expected, renamedCols);
-      case MATCHES_BY_NAME:
+      case MATCH_BY_NAME:
         return NoOpPrism.of(expected);
       default:
         throw new UnsupportedOperationException();

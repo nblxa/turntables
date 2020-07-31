@@ -54,24 +54,6 @@ public abstract class AssertionProxy extends AbstractTab {
 
   public interface AssertionBuilder<S extends AssertionBuilder<S>> {
     /**
-     * Specify the mode in which to match rows.
-     * <p>Default is {@link Turntables.RowMode#MATCHES_IN_GIVEN_ORDER}.
-     * @param rowMode row mode
-     * @return the assertion object
-     */
-    @NonNull
-    S rowMode(@NonNull Turntables.RowMode rowMode);
-
-    /**
-     * Specify the mode in which to match columns.
-     * <p>Default is {@link Turntables.ColMode#MATCHES_IN_GIVEN_ORDER}.
-     * @param colMode column mode
-     * @return the assertion object
-     */
-    @NonNull
-    S colMode(@NonNull Turntables.ColMode colMode);
-
-    /**
      * Specify the maximum number of row sequence permutations to check for
      * when matching rows in any order.
      * <p>Default is 10,000.
@@ -97,12 +79,10 @@ public abstract class AssertionProxy extends AbstractTab {
   }
 
   public static class Builder
-      implements AssertionBuilder<Builder> {
+      implements AssertionBuilder<Builder>, Settings.Builder<AssertionProxy.Builder> {
 
     private Tab expected;
     private Tab actual;
-    private Turntables.RowMode rowMode = Turntables.RowMode.MATCHES_IN_GIVEN_ORDER;
-    private Turntables.ColMode colMode = Turntables.ColMode.MATCHES_IN_GIVEN_ORDER;
     private long rowPermutationLimit = Turntables.ROW_PERMUTATION_LIMIT;
     private Settings settings = Turntables.getSettings();
 
@@ -127,20 +107,6 @@ public abstract class AssertionProxy extends AbstractTab {
 
     @Override
     @NonNull
-    public Builder rowMode(@NonNull Turntables.RowMode rowMode) {
-      this.rowMode = Objects.requireNonNull(rowMode, "rowMode");
-      return this;
-    }
-
-    @Override
-    @NonNull
-    public Builder colMode(@NonNull Turntables.ColMode colMode) {
-      this.colMode = Objects.requireNonNull(colMode, "colMode");
-      return this;
-    }
-
-    @Override
-    @NonNull
     public Builder rowPermutationLimit(long rowPermutationLimit) {
       if (rowPermutationLimit <= 0L) {
         throw new IllegalArgumentException("rowPermutationLimit must be > 0L");
@@ -156,6 +122,34 @@ public abstract class AssertionProxy extends AbstractTab {
       return this;
     }
 
+    @NonNull
+    @Override
+    public Builder decimalMode(@NonNull Settings.DecimalMode decimalMode) {
+      settings = settings.getBuilder().decimalMode(decimalMode).build();
+      return this;
+    }
+
+    @NonNull
+    @Override
+    public Builder nameMode(@NonNull Settings.NameMode nameMode) {
+      settings = settings.getBuilder().nameMode(nameMode).build();
+      return this;
+    }
+
+    @NonNull
+    @Override
+    public Builder rowMode(@NonNull Settings.RowMode rowMode) {
+      settings = settings.getBuilder().rowMode(rowMode).build();
+      return this;
+    }
+
+    @NonNull
+    @Override
+    public Builder colMode(@NonNull Settings.ColMode colMode) {
+      settings = settings.getBuilder().colMode(colMode).build();
+      return this;
+    }
+
     @Override
     @SuppressFBWarnings("EQ_UNUSUAL")
     public boolean equals(Object other) {
@@ -167,17 +161,10 @@ public abstract class AssertionProxy extends AbstractTab {
       throw new UnsupportedOperationException();
     }
 
-    private void build() {
-      Conf conf = new Conf(expected, actual, rowMode, colMode, rowPermutationLimit, settings);
-      Asserter asserter = Asserter.createAsserter(conf);
-      this.expectedProxy = new Expected(expected, asserter);
-      this.actualProxy = new Actual(actual, asserter);
-    }
-
     @NonNull
     public Expected buildOrGetExpectedProxy() {
       if (expectedProxy == null) {
-        build();
+        buildProxies();
       }
       return expectedProxy;
     }
@@ -185,7 +172,7 @@ public abstract class AssertionProxy extends AbstractTab {
     @NonNull
     public Actual buildOrGetActualProxy() {
       if (actualProxy == null) {
-        build();
+        buildProxies();
       }
       return actualProxy;
     }
@@ -195,27 +182,33 @@ public abstract class AssertionProxy extends AbstractTab {
       Builder builder = new Builder();
       builder.actual = actual;
       builder.expected = expected;
-      builder.rowMode = rowMode;
-      builder.colMode = colMode;
       builder.rowPermutationLimit = rowPermutationLimit;
+      builder.settings = settings;
       return builder;
+    }
+
+    @NonNull
+    public Settings getSettings() {
+      return settings;
+    }
+
+    private void buildProxies() {
+      Conf conf = new Conf(expected, actual, rowPermutationLimit, settings);
+      Asserter asserter = Asserter.createAsserter(conf);
+      this.expectedProxy = new Expected(expected, asserter);
+      this.actualProxy = new Actual(actual, asserter);
     }
   }
 
   public static class Conf {
     public final Tab expected;
     public final Tab actual;
-    final Turntables.RowMode rowMode;
-    final Turntables.ColMode colMode;
     final long rowPermutationLimit;
     final Settings settings;
 
-    Conf(Tab expected, Tab actual, Turntables.RowMode rowMode, Turntables.ColMode colMode,
-         long rowPermutationLimit, Settings settings) {
+    Conf(Tab expected, Tab actual, long rowPermutationLimit, Settings settings) {
       this.expected = Objects.requireNonNull(expected, "expected");
       this.actual = Objects.requireNonNull(actual, "actual");
-      this.rowMode = Objects.requireNonNull(rowMode, "rowMode");
-      this.colMode = Objects.requireNonNull(colMode, "colMode");
       this.rowPermutationLimit = rowPermutationLimit;
       this.settings = Objects.requireNonNull(settings, "settings");
     }
@@ -223,8 +216,8 @@ public abstract class AssertionProxy extends AbstractTab {
     @NonNull
     @Override
     public String toString() {
-      return String.format("Conf[rowMode=%s, colMode=%s, rowPermutationLimit=%s, settings=%s]",
-          rowMode, colMode, rowPermutationLimit, settings);
+      return String.format("Conf[rowPermutationLimit=%s, settings=%s]",
+          rowPermutationLimit, settings);
     }
   }
 

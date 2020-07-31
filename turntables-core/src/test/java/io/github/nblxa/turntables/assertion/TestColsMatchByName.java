@@ -3,6 +3,7 @@ package io.github.nblxa.turntables.assertion;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
+import io.github.nblxa.turntables.Settings;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
@@ -15,7 +16,7 @@ public class TestColsMatchByName {
     return AssertionProxy.builder()
         .expected(expected)
         .actual(actual)
-        .colMode(Turntables.ColMode.MATCHES_BY_NAME)
+        .colMode(Settings.ColMode.MATCH_BY_NAME)
         .buildOrGetActualProxy()
         .matchesExpected();
   }

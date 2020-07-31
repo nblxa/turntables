@@ -2,6 +2,7 @@ package io.github.nblxa.turntables.assertion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.nblxa.turntables.Settings;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
@@ -13,7 +14,7 @@ public class TestRowsMatchByKey {
     return AssertionProxy.builder()
         .expected(expected)
         .actual(actual)
-        .rowMode(Turntables.RowMode.MATCHES_BY_KEY);
+        .rowMode(Settings.RowMode.MATCH_BY_KEY);
   }
 
   @Test
@@ -178,7 +179,7 @@ public class TestRowsMatchByKey {
         .row(5, 6).row(1, 2);
 
     boolean res = matchByKey(expected, actual)
-        .colMode(Turntables.ColMode.MATCHES_BY_NAME)
+        .colMode(Settings.ColMode.MATCH_BY_NAME)
         .buildOrGetActualProxy()
         .matchesExpected();
     assertThat(res).isTrue();
@@ -196,7 +197,7 @@ public class TestRowsMatchByKey {
         .row(6, 5).row(2, 1);
 
     boolean res = matchByKey(expected, actual)
-        .colMode(Turntables.ColMode.MATCHES_BY_NAME)
+        .colMode(Settings.ColMode.MATCH_BY_NAME)
         .buildOrGetActualProxy()
         .matchesExpected();
     assertThat(res).isTrue();
@@ -214,7 +215,7 @@ public class TestRowsMatchByKey {
         .row(6, 5).row(2, 1);
 
     boolean res = matchByKey(expected, actual)
-        .colMode(Turntables.ColMode.MATCHES_BY_NAME)
+        .colMode(Settings.ColMode.MATCH_BY_NAME)
         .buildOrGetActualProxy()
         .matchesExpected();
     assertThat(res).isTrue();
@@ -232,7 +233,7 @@ public class TestRowsMatchByKey {
         .row(6, 5).row(2, 1);
 
     boolean res = matchByKey(expected, actual)
-        .colMode(Turntables.ColMode.MATCHES_BY_NAME)
+        .colMode(Settings.ColMode.MATCH_BY_NAME)
         .buildOrGetActualProxy()
         .matchesExpected();
     assertThat(res).isFalse();

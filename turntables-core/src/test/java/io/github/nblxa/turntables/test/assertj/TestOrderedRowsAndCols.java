@@ -1,7 +1,6 @@
 package io.github.nblxa.turntables.test.assertj;
 
 import io.github.nblxa.turntables.Settings;
-import io.github.nblxa.turntables.SettingsTransaction;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
@@ -16,10 +15,14 @@ public class TestOrderedRowsAndCols {
   private static final String LS = System.lineSeparator();
 
   private static <T extends Tab> TabAssert<T> tabAssert(T expected, T actual) {
-    return assertThat(actual)
-        .colMode(Turntables.ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(Turntables.RowMode.MATCHES_IN_GIVEN_ORDER)
+    return tabAsserter(actual)
         .matchesExpected(expected);
+  }
+
+  private static <T extends Tab> TabAssert<T> tabAsserter(T actual) {
+    return assertThat(actual)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER);
   }
 
   @Test
@@ -272,11 +275,9 @@ public class TestOrderedRowsAndCols {
     Throwable t = null;
     // comment next line to check in the IDE:
     t = catchThrowable(() -> {
-      try (SettingsTransaction ignored = Turntables.setSettings(Settings.builder()
+      tabAsserter(act)
           .nameMode(Settings.NameMode.CASE_INSENSITIVE)
-          .build())) {
-        tabAssert(exp, act);
-      }
+          .matchesExpected(exp);
       // comment next line to check in the IDE:
     });
     AssertAssertJ.assertThat(t)

@@ -2,6 +2,7 @@ package io.github.nblxa.turntables.assertion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.nblxa.turntables.Settings;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import org.junit.Test;
@@ -11,7 +12,7 @@ public class TestRowsMatchingInGivenOrder {
     return AssertionProxy.builder()
         .expected(expected)
         .actual(actual)
-        .rowMode(Turntables.RowMode.MATCHES_IN_GIVEN_ORDER);
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER);
   }
 
   @Test

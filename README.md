@@ -13,7 +13,7 @@ ResultSet rs = conn.executeQuery("select id, name from employees");
 Tab actual = Turntables.from(rs);
 
 Turntables.assertThat(actual)
-  .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+  .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
   .matches()
   .row(2, "Bob")
   .row(1, "Alice")

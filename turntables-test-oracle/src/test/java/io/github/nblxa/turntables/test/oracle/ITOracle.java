@@ -56,7 +56,7 @@ public class ITOracle {
     Tab actual = testTab.ingest();
 
     Turntables.assertThat(actual)
-        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
         .settings(Settings.builder().decimalMode(Settings.DecimalMode.CONVERT).build())
         .matches()
         .row(1, "Alice", "QA")
@@ -78,8 +78,8 @@ public class ITOracle {
     // comment next line to check in the IDE:
     t = Assertions.catchThrowable(() -> {
       Turntables.assertThat(actual)
-          .colMode(Turntables.ColMode.MATCHES_IN_GIVEN_ORDER)
-          .rowMode(Turntables.RowMode.MATCHES_IN_GIVEN_ORDER)
+          .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+          .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
           .matches()
           .col("id", Typ.INTEGER)
           .col("name", Typ.STRING)
@@ -138,7 +138,7 @@ public class ITOracle {
     Tab actualData = testDataSource.ingest("colors");
 
     Turntables.assertThat(actualData)
-        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
         .matches()
         .row(255, 0, 0)
         .row(40, 140, 25)
@@ -166,7 +166,7 @@ public class ITOracle {
     Tab actualData = testDataSource.ingest("writers");
 
     Turntables.assertThat(actualData)
-        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
         .matches()
         .row("Leo", "Tolstoy")
         .row("William", "Shakespeare")
@@ -194,7 +194,7 @@ public class ITOracle {
     Tab actualData = testDataSource.ingest("constants");
 
     Turntables.assertThat(actualData)
-        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
         .matches()
         .row("Pi", 3.1415926d * 2)
         .row("e", 2.71828182846d * 2)
@@ -233,7 +233,7 @@ public class ITOracle {
     Tab actual = testTab.ingest();
 
     Turntables.assertThat(actual)
-        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
         .matches()
         .row(1, "Leo", "QA")
         .row(2, "William", "QA")
