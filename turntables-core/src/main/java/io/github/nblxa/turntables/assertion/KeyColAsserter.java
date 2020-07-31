@@ -32,4 +32,9 @@ class KeyColAsserter implements ColAsserter {
   public boolean checkKey(@NonNull List<Tab.Col> expected, @NonNull List<Tab.Col> actual) {
     return colAsserter.checkKey(expected, actual);
   }
+
+  @Override
+  public boolean matchCols(@NonNull Tab.Col expected, @NonNull Tab.Col actual) {
+    return colAsserter.matchCols(expected, actual);
+  }
 }

@@ -13,7 +13,7 @@ import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
 
-public class TestSettingsDecimalMode {
+public class TestDecimalMode {
   private static AssertionProxy.Builder assertionProxy(Tab expected, Tab actual, Settings settings) {
     return AssertionProxy.builder()
         .expected(expected)

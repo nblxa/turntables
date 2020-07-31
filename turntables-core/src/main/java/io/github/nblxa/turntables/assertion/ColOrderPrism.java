@@ -1,6 +1,7 @@
 package io.github.nblxa.turntables.assertion;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import io.github.nblxa.turntables.Settings;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.TableUtils;
 import io.github.nblxa.turntables.Turntables;
@@ -43,7 +44,7 @@ public class ColOrderPrism extends Prism {
         Map.Entry<Integer, Tab.Col> entry = it.next();
         Tab.Col col = entry.getValue();
         String name = Objects.requireNonNull(col.name(), "name is required");
-        if (name.equals(newName)) {
+        if (nameEquals(name, newName)) {
           result.add(entry.getKey());
           it.remove();
           break;
@@ -78,6 +79,14 @@ public class ColOrderPrism extends Prism {
       result.add(new RowWithReorderedItems(originalRow, reorderSeq));
     }
     return Collections.unmodifiableList(result);
+  }
+
+  private static boolean nameEquals(String name, String newName) {
+    if (Turntables.getSettings().nameMode == Settings.NameMode.CASE_INSENSITIVE) {
+      return name.equalsIgnoreCase(newName);
+    } else {
+      return name.equals(newName);
+    }
   }
 
   @NonNull
