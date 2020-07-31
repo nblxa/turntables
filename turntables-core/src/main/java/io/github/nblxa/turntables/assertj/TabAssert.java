@@ -2,6 +2,7 @@ package io.github.nblxa.turntables.assertj;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.Settings;
+import io.github.nblxa.turntables.SettingsTransaction;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.assertion.AssertionProxy;
@@ -12,7 +13,7 @@ import org.assertj.core.internal.Failures;
 
 @SuppressWarnings("java:S2160")
 public class TabAssert<T extends Tab> extends AbstractObjectAssert<TabAssert<T>, T>
-    implements AssertionProxy.AssertionBuilder<TabAssert<T>> {
+    implements AssertionProxy.AssertionBuilder<TabAssert<T>>, Settings.Builder<TabAssert<T>> {
 
   /**
    * One of the patterns recognized by IntelliJ IDEA.
@@ -42,17 +43,19 @@ public class TabAssert<T extends Tab> extends AbstractObjectAssert<TabAssert<T>,
   public <U extends Tab> TabAssert<T> matchesExpected(@NonNull U expectedTab) {
     AssertionProxy.Builder builder = proxyBuilder.copy();
     builder.expected(expectedTab);
-    AssertionProxy.Actual actProxy = builder.buildOrGetActualProxy();
-    if (actProxy.matchesExpected()) {
-      return this;
-    }
-    AssertionProxy.Expected expProxy = builder.buildOrGetExpectedProxy();
-    // Use the Representation objects to prevent AssertJ from enclosing the String values in double quotes.
-    AssertionProxy.Representation actRep = new AssertionProxy.Representation(actProxy);
-    AssertionProxy.Representation expRep = new AssertionProxy.Representation(expProxy);
-    ErrorMessageFactory errorMessages = new BasicErrorMessageFactory(MSG_FORMAT, expRep, actRep);
+    try (SettingsTransaction ignored = Turntables.setSettings(builder.getSettings())) {
+      AssertionProxy.Actual actProxy = builder.buildOrGetActualProxy();
+      if (actProxy.matchesExpected()) {
+        return this;
+      }
+      AssertionProxy.Expected expProxy = builder.buildOrGetExpectedProxy();
+      // Use the Representation objects to prevent AssertJ from enclosing the String values in double quotes.
+      AssertionProxy.Representation actRep = new AssertionProxy.Representation(actProxy);
+      AssertionProxy.Representation expRep = new AssertionProxy.Representation(expProxy);
+      ErrorMessageFactory errorMessages = new BasicErrorMessageFactory(MSG_FORMAT, expRep, actRep);
 
-    throw failures.failure(info, errorMessages);
+      throw failures.failure(info, errorMessages);
+    }
   }
 
   /**
@@ -70,14 +73,28 @@ public class TabAssert<T extends Tab> extends AbstractObjectAssert<TabAssert<T>,
 
   @Override
   @NonNull
-  public TabAssert<T> rowMode(@NonNull Turntables.RowMode rowMode) {
+  public TabAssert<T> decimalMode(@NonNull Settings.DecimalMode decimalMode) {
+    proxyBuilder.decimalMode(decimalMode);
+    return this;
+  }
+
+  @Override
+  @NonNull
+  public TabAssert<T> nameMode(@NonNull Settings.NameMode nameMode) {
+    proxyBuilder.nameMode(nameMode);
+    return this;
+  }
+
+  @Override
+  @NonNull
+  public TabAssert<T> rowMode(@NonNull Settings.RowMode rowMode) {
     proxyBuilder.rowMode(rowMode);
     return this;
   }
 
   @Override
   @NonNull
-  public TabAssert<T> colMode(@NonNull Turntables.ColMode colMode) {
+  public TabAssert<T> colMode(@NonNull Settings.ColMode colMode) {
     proxyBuilder.colMode(colMode);
     return this;
   }

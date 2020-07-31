@@ -4,14 +4,14 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.AbstractTab;
 import java.util.List;
 
-import io.github.nblxa.turntables.Turntables;
+import io.github.nblxa.turntables.Settings;
 import io.github.nblxa.turntables.Tab;
 
 /**
  * A prism augments the Tab's representation as expected or actual in an assertion so that
  * it produces a meaningful diff in the tests in case of a mismatch.
  *
- * For example, if matching rows in the {@link Turntables.RowMode#MATCHES_IN_ANY_ORDER} mode,
+ * For example, if matching rows in the {@link Settings.RowMode#MATCH_IN_ANY_ORDER} mode,
  * a prism will align the order of rows in actual with the one in expected, where they match,
  * so that the diff of two {@link Tab}s shows only mismatching rows, not the rows
  * that are out of order.

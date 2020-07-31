@@ -22,7 +22,7 @@ public class ColOrderPrism extends Prism {
     Objects.requireNonNull(asserter, "asserter is null");
     Objects.requireNonNull(expected, "expected is null");
     Objects.requireNonNull(actual, "actual is null");
-    if (asserter.getConf().colMode != Turntables.ColMode.MATCHES_BY_NAME) {
+    if (asserter.getConf().settings.colMode != Settings.ColMode.MATCH_BY_NAME) {
       throw new UnsupportedOperationException();
     }
     List<String> expectedColNames = TableUtils.colNames(expected);

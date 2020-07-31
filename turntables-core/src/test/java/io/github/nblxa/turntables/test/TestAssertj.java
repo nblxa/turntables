@@ -3,6 +3,7 @@ package io.github.nblxa.turntables.test;
 import static io.github.nblxa.turntables.Turntables.*;
 import static org.assertj.core.api.Assertions.*;
 
+import io.github.nblxa.turntables.Settings;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
@@ -26,8 +27,8 @@ public class TestAssertj {
     // comment next line to check in the IDE:
     t = catchThrowable(() -> {
       assertThat(act)
-          .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-          .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+          .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+          .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
           .matchesExpected(exp);
       // comment next line to check in the IDE:
     });
@@ -59,8 +60,8 @@ public class TestAssertj {
     // comment next line to check in the IDE:
     t = catchThrowable(() -> {
       assertThat(act)
-          .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-          .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+          .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+          .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
           .matchesExpected(exp);
       // comment next line to check in the IDE:
     });
@@ -96,8 +97,8 @@ public class TestAssertj {
     // comment next line to check in the IDE:
     t = catchThrowable(() -> {
       assertThat(act)
-          .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-          .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+          .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+          .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
           .matchesExpected(exp);
       // comment next line to check in the IDE:
     });
@@ -134,8 +135,8 @@ public class TestAssertj {
     // comment next line to check in the IDE:
     t = catchThrowable(() -> {
       assertThat(act)
-          .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-          .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+          .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+          .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
           .matchesExpected(exp);
       // comment next line to check in the IDE:
     });
@@ -167,8 +168,8 @@ public class TestAssertj {
         .row(3, 4);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matchesExpected(exp)
         .isNotEqualTo(exp);
   }
@@ -180,8 +181,8 @@ public class TestAssertj {
         .row(3, 4);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .row(testInt(i -> i <= 10), 2)
         .row(3, 4)
@@ -196,8 +197,8 @@ public class TestAssertj {
         .row(3, 4);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .col(Typ.INTEGER)
         .col(Typ.INTEGER)
@@ -214,8 +215,8 @@ public class TestAssertj {
         .row(3, 4);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .col("a", Typ.INTEGER)
         .col("b", Typ.INTEGER)
@@ -232,8 +233,8 @@ public class TestAssertj {
         .col(Typ.INTEGER);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .col(Typ.INTEGER)
         .col(Typ.INTEGER)
@@ -248,8 +249,8 @@ public class TestAssertj {
         .col("b", Typ.INTEGER);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .col("a", Typ.INTEGER)
         .col("b", Typ.INTEGER)
@@ -264,8 +265,8 @@ public class TestAssertj {
         .row(3, 4, "y");
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .key(Typ.INTEGER)
         .key(Typ.INTEGER)
@@ -283,8 +284,8 @@ public class TestAssertj {
         .row("y", 3, 4);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .col(Typ.STRING)
         .key(Typ.INTEGER)
@@ -302,8 +303,8 @@ public class TestAssertj {
         .row(3, 4, "y");
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .key("a", Typ.INTEGER)
         .key("b", Typ.INTEGER)
@@ -321,8 +322,8 @@ public class TestAssertj {
         .row("y", 3, 4);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .col("c", Typ.STRING)
         .key("a", Typ.INTEGER)
@@ -341,8 +342,8 @@ public class TestAssertj {
         .col(Typ.STRING);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .key(Typ.INTEGER)
         .key(Typ.INTEGER)
@@ -359,8 +360,8 @@ public class TestAssertj {
         .col("c", Typ.STRING);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .key("a", Typ.INTEGER)
         .key("b", Typ.INTEGER)
@@ -448,8 +449,8 @@ public class TestAssertj {
         .row(3, 4);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .rowAdder()
         .row(1, 2)
@@ -465,8 +466,8 @@ public class TestAssertj {
         .row(3, 4);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .col(Typ.INTEGER)
         .col(Typ.INTEGER)
@@ -484,8 +485,8 @@ public class TestAssertj {
         .row(3, 4);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .col("a", Typ.INTEGER)
         .col("b", Typ.INTEGER)
@@ -501,8 +502,8 @@ public class TestAssertj {
     Tab act = Turntables.tab();
     
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .asExpected()
         .isNotEqualTo(SOME_RANDOM_OBJECT);
@@ -514,8 +515,8 @@ public class TestAssertj {
         .col(Typ.DATE);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .col(Typ.DATE)
         .asExpected()
@@ -528,8 +529,8 @@ public class TestAssertj {
         .col("Wow", Typ.DATE);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .col("Wow", Typ.DATE)
         .asExpected()
@@ -542,8 +543,8 @@ public class TestAssertj {
         .key(Typ.DATE);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .key(Typ.DATE)
         .asExpected()
@@ -556,8 +557,8 @@ public class TestAssertj {
         .key("Wow", Typ.DATE);
 
     assertThat(act)
-        .colMode(ColMode.MATCHES_IN_GIVEN_ORDER)
-        .rowMode(RowMode.MATCHES_IN_GIVEN_ORDER)
+        .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
         .matches()
         .key("Wow", Typ.DATE)
         .asExpected()

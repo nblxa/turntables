@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.regex.Pattern;
 import org.junit.Test;
+
+import io.github.nblxa.turntables.Settings;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 
@@ -12,7 +14,7 @@ public class TestAssertions {
     return AssertionProxy.builder()
         .expected(expected)
         .actual(actual)
-        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER);
+        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER);
   }
 
   @Test

@@ -7,7 +7,6 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import org.junit.Test;
 import io.github.nblxa.turntables.Settings;
-import io.github.nblxa.turntables.SettingsTransaction;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
@@ -141,12 +140,9 @@ public class TestAssertionErrorDecimalMode {
     Throwable t = null;
     // comment next line to check in the IDE:
     t = catchThrowable(() -> {
-      try (SettingsTransaction ignored = Turntables.setSettings(Settings.builder()
+      Turntables.assertThat(act)
           .decimalMode(Settings.DecimalMode.CONVERT)
-          .build())) {
-        Turntables.assertThat(act)
-            .matchesExpected(exp);
-      }
+          .matchesExpected(exp);
       // comment next line to check in the IDE:
     });
     AssertAssertJ.assertThat(t)
@@ -170,12 +166,9 @@ public class TestAssertionErrorDecimalMode {
     Throwable t = null;
     // comment next line to check in the IDE:
     t = catchThrowable(() -> {
-      try (SettingsTransaction ignored = Turntables.setSettings(Settings.builder()
+      Turntables.assertThat(act)
           .decimalMode(Settings.DecimalMode.CONVERT)
-          .build())) {
-        Turntables.assertThat(act)
-            .matchesExpected(exp);
-      }
+          .matchesExpected(exp);
       // comment next line to check in the IDE:
     });
     AssertAssertJ.assertThat(t)
@@ -202,12 +195,9 @@ public class TestAssertionErrorDecimalMode {
     Throwable t = null;
     // comment next line to check in the IDE:
     t = catchThrowable(() -> {
-      try (SettingsTransaction ignored = Turntables.setSettings(Settings.builder()
+      Turntables.assertThat(act)
           .decimalMode(Settings.DecimalMode.CONVERT)
-          .build())) {
-        Turntables.assertThat(act)
-            .matchesExpected(exp);
-      }
+          .matchesExpected(exp);
       // comment next line to check in the IDE:
     });
     AssertAssertJ.assertThat(t)
@@ -244,12 +234,9 @@ public class TestAssertionErrorDecimalMode {
     Throwable t = null;
     // comment next line to check in the IDE:
     t = catchThrowable(() -> {
-      try (SettingsTransaction ignored = Turntables.setSettings(Settings.builder()
+      Turntables.assertThat(act)
           .decimalMode(Settings.DecimalMode.CONVERT)
-          .build())) {
-        Turntables.assertThat(act)
-            .matchesExpected(exp);
-      }
+          .matchesExpected(exp);
       // comment next line to check in the IDE:
     });
     AssertAssertJ.assertThat(t)
@@ -286,12 +273,9 @@ public class TestAssertionErrorDecimalMode {
     Throwable t = null;
     // comment next line to check in the IDE:
     t = catchThrowable(() -> {
-      try (SettingsTransaction ignored = Turntables.setSettings(Settings.builder()
+      Turntables.assertThat(act)
           .decimalMode(Settings.DecimalMode.CONVERT)
-          .build())) {
-        Turntables.assertThat(act)
-            .matchesExpected(exp);
-      }
+          .matchesExpected(exp);
       // comment next line to check in the IDE:
     });
     AssertAssertJ.assertThat(t)
@@ -356,12 +340,9 @@ public class TestAssertionErrorDecimalMode {
     Throwable t = null;
     // comment next line to check in the IDE:
     t = catchThrowable(() -> {
-      try (SettingsTransaction ignored = Turntables.setSettings(Settings.builder()
+      Turntables.assertThat(act)
           .decimalMode(Settings.DecimalMode.CONVERT)
-          .build())) {
-        Turntables.assertThat(act)
-            .matchesExpected(exp);
-      }
+          .matchesExpected(exp);
       // comment next line to check in the IDE:
     });
     AssertAssertJ.assertThat(t)

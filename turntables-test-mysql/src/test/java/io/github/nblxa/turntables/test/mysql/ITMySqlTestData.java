@@ -1,5 +1,6 @@
 package io.github.nblxa.turntables.test.mysql;
 
+import io.github.nblxa.turntables.Settings;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 
@@ -52,7 +53,7 @@ public class ITMySqlTestData {
     Tab actual = testTab.ingest();
 
     Turntables.assertThat(actual)
-        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
         .matches()
         .row(1, "Alice", "QA")
         .row(2, "Bob", "QA")
@@ -73,8 +74,8 @@ public class ITMySqlTestData {
     // comment next line to check in the IDE:
     t = catchThrowable(() -> {
       assertThat(actual)
-          .colMode(Turntables.ColMode.MATCHES_IN_GIVEN_ORDER)
-          .rowMode(Turntables.RowMode.MATCHES_IN_GIVEN_ORDER)
+          .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
+          .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
           .matches()
           .row(1, "Hugh", "QA")
           .row(2, "Mary", "QA")
@@ -130,7 +131,7 @@ public class ITMySqlTestData {
     Tab actualData = testDataSource.ingest("colors");
 
     Turntables.assertThat(actualData)
-        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
         .matches()
         .row(255, 0, 0)
         .row(40, 140, 25)
@@ -158,7 +159,7 @@ public class ITMySqlTestData {
     Tab actualData = testDataSource.ingest("writers");
 
     Turntables.assertThat(actualData)
-        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
         .matches()
         .row("Leo", "Tolstoy")
         .row("William", "Shakespeare")
@@ -186,7 +187,7 @@ public class ITMySqlTestData {
     Tab actualData = testDataSource.ingest("constants");
 
     Turntables.assertThat(actualData)
-        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
         .matches()
         .row("Pi", 3.1415926d * 2)
         .row("e", 2.71828182846d * 2)
@@ -214,7 +215,7 @@ public class ITMySqlTestData {
     Tab actualData = testDataSource.ingest("constants");
 
     Turntables.assertThat(actualData)
-        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
         .matches()
         .row("null", Turntables.nul())
         .row("true", false)
@@ -237,7 +238,7 @@ public class ITMySqlTestData {
     Tab actual = testTab.ingest();
 
     Turntables.assertThat(actual)
-        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER)
+        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
         .matches()
         .row(1, "Leo", "QA")
         .row(2, "William", "QA")

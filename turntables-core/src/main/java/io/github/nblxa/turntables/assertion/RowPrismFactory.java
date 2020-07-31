@@ -24,11 +24,11 @@ public class RowPrismFactory {
                     ? extends Optional<Tab.Row>> rowFunction) {
     Objects.requireNonNull(asserter, "asserter is null");
     Objects.requireNonNull(tab, "tab is null");
-    switch (asserter.getConf().rowMode) {
-      case MATCHES_IN_ANY_ORDER:
-      case MATCHES_BY_KEY:
+    switch (asserter.getConf().settings.rowMode) {
+      case MATCH_IN_ANY_ORDER:
+      case MATCH_BY_KEY:
         return new RowOrderPrism(asserter.getRowAsserter(), tab, rowFunction);
-      case MATCHES_IN_GIVEN_ORDER:
+      case MATCH_IN_GIVEN_ORDER:
         return NoOpPrism.of(tab);
       default:
         throw new UnsupportedOperationException();

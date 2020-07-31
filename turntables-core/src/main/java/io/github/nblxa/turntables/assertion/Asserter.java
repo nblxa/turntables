@@ -1,6 +1,6 @@
 package io.github.nblxa.turntables.assertion;
 
-import io.github.nblxa.turntables.Turntables;
+import io.github.nblxa.turntables.Settings;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.util.Objects;
 
@@ -33,14 +33,14 @@ class Asserter {
 
   private static RowAsserter createRowAsserter(@NonNull AssertionProxy.Conf conf,
                                                @NonNull ValAsserter valAsserter) {
-    switch (conf.rowMode) {
-      case MATCHES_IN_GIVEN_ORDER:
+    switch (conf.settings.rowMode) {
+      case MATCH_IN_GIVEN_ORDER:
         return new OrderedRowAsserter(conf.expected.rows(), conf.actual.rows(),
             valAsserter);
-      case MATCHES_IN_ANY_ORDER:
+      case MATCH_IN_ANY_ORDER:
         return new UnorderedRowAsserter(conf.expected.rows(), conf.actual.rows(),
             conf.rowPermutationLimit, valAsserter);
-      case MATCHES_BY_KEY:
+      case MATCH_BY_KEY:
         return new KeyBasedRowAsserter(conf.expected.rows(), conf.actual.rows(),
             conf.expected.cols(), conf.actual.cols(), conf.rowPermutationLimit,
             valAsserter);
@@ -51,17 +51,17 @@ class Asserter {
 
   private static ColAsserter createColAsserter(@NonNull AssertionProxy.Conf conf) {
     final ColAsserter colAsserter;
-    switch (conf.colMode) {
-      case MATCHES_IN_GIVEN_ORDER:
+    switch (conf.settings.colMode) {
+      case MATCH_IN_GIVEN_ORDER:
         colAsserter = new OrderedColAsserter();
         break;
-      case MATCHES_BY_NAME:
+      case MATCH_BY_NAME:
         colAsserter = new NamedColAsserter();
         break;
       default:
         throw new UnsupportedOperationException();
     }
-    if (conf.rowMode == Turntables.RowMode.MATCHES_BY_KEY) {
+    if (conf.settings.rowMode == Settings.RowMode.MATCH_BY_KEY) {
       return new KeyColAsserter(colAsserter);
     } else {
       return colAsserter;
@@ -69,10 +69,10 @@ class Asserter {
   }
 
   private static ValAsserter createValAsserter(@NonNull AssertionProxy.Conf conf) {
-    switch (conf.colMode) {
-      case MATCHES_IN_GIVEN_ORDER:
+    switch (conf.settings.colMode) {
+      case MATCH_IN_GIVEN_ORDER:
         return new OrderedValAsserter();
-      case MATCHES_BY_NAME:
+      case MATCH_BY_NAME:
         return new NamedValAsserter(conf.expected.cols(), conf.actual.cols());
       default:
         throw new UnsupportedOperationException();

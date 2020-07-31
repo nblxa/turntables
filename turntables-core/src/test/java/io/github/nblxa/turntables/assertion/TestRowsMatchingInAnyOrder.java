@@ -4,6 +4,7 @@ import static io.github.nblxa.turntables.Turntables.test;
 import static io.github.nblxa.turntables.Turntables.testInt;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.nblxa.turntables.Settings;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import java.util.HashSet;
@@ -19,7 +20,7 @@ public class TestRowsMatchingInAnyOrder {
     return AssertionProxy.builder()
         .expected(expected)
         .actual(actual)
-        .rowMode(Turntables.RowMode.MATCHES_IN_ANY_ORDER);
+        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER);
   }
 
   @Test
