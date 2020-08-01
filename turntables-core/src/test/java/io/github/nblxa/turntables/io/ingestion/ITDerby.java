@@ -1,65 +1,46 @@
 package io.github.nblxa.turntables.io.ingestion;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
+import io.github.nblxa.turntables.junit.TestDataFactory;
+import io.github.nblxa.turntables.junit.TestDataSource;
+import io.github.nblxa.turntables.junit.TestTable;
 import java.time.LocalDate;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 
 public class ITDerby {
-  private Connection connection;
+  @ClassRule
+  public static final DerbyRule DERBY = new DerbyRule();
 
-  @Before
-  public void setUp() throws Exception {
-    String dbUrl = "jdbc:derby:memory:testdb;create=true";
-    connection = DriverManager.getConnection(dbUrl);
-    String ddl = "CREATE TABLE testtab (a int, b varchar(100), c date)";
-    try (PreparedStatement psDdl = connection.prepareStatement(ddl)) {
-      psDdl.execute();
-    }
-    String insert = "INSERT INTO testtab (a, b, c) VALUES (?, ?, ?)";
-    try (PreparedStatement psInsert = connection.prepareStatement(insert)) {
-      psInsert.setInt(1, 10);
-      psInsert.setString(2, "qwerty");
-      java.sql.Date date = java.sql.Date.valueOf(LocalDate.of(2019, 1, 9));
-      psInsert.setDate(3, date);
-      psInsert.execute();
-      psInsert.setInt(1, 20);
-      psInsert.setString(2, "text");
-      psInsert.setDate(3, null);
-      psInsert.execute();
-    }
-  }
+  private final TestDataSource testDataSource = new TestDataFactory()
+      .jdbc(DERBY::getJdbcUrl, "", "");
 
-  @After
-  public void tearDown() throws SQLException {
-    try {
-      DriverManager.getConnection("jdbc:derby:memory:testdb;drop=true");
-    } catch (SQLException se) {
-      if (se.getSQLState().equals("08006")) {
-        System.out.println("Derby database dropped.");
-      } else {
-        throw se;
-      }
-    }
-  }
+  private final TestTable testTab = testDataSource.table("testtab")
+      .col("a", Typ.INTEGER)
+      .col("b", Typ.STRING)
+      .col("c", Typ.DATE)
+      .row(10, "qwerty", LocalDate.of(2019, 1, 9))
+      .row(20, "text", null)
+      .cleanUpAfterTest(CleanUpAction.DROP);
+
+  @Rule
+  public TestRule chain = RuleChain
+      .outerRule(testDataSource)
+      .around(testTab);
 
   @Test
-  public void testDerby() throws SQLException {
-    try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM testtab");
-         ResultSet rs = ps.executeQuery()) {
-
-      Tab actual = Turntables.from(rs);
-      assertThat(actual.rows()).hasSize(2);
-    }
+  public void testDerby() {
+    Tab actual = testTab.ingest();
+    Turntables.assertThat(actual)
+        .matches()
+        .row(10, "qwerty", LocalDate.of(2019, 1, 9))
+        .row(20, "text", null)
+        .asExpected();
   }
 }

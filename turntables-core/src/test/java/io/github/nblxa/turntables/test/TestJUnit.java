@@ -1,5 +1,6 @@
 package io.github.nblxa.turntables.test;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
@@ -30,17 +31,18 @@ public class TestJUnit {
     private final Map<String, Tab> tabs = new HashMap<>();
 
     @Override
-    public void feed(String name, Tab tab) {
+    public void feed(@NonNull String name, @NonNull Tab tab) {
       tabs.put(name, tab);
     }
 
     @Override
-    public Tab ingest(String name) {
+    @NonNull
+    public Tab ingest(@NonNull String name) {
       return tabs.get(name);
     }
 
     @Override
-    public void cleanUp(String name, CleanUpAction cleanUpAction) {
+    public void cleanUp(@NonNull String name, @NonNull CleanUpAction cleanUpAction) {
       if (cleanUpAction == CleanUpAction.DELETE) {
         throw new UnsupportedOperationException("simulated error during clean-up");
       }

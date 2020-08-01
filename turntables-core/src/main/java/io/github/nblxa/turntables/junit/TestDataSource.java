@@ -27,7 +27,7 @@ public class TestDataSource extends AbstractTestRule {
     this.rowStore = Objects.requireNonNull(rowStore, "rowStore is null");
     this.testRuleTables = new HashMap<>();
     this.testMethodTables = new ArrayList<>();
-    this.settings = Turntables.getSettings();
+    this.settings = rowStore.defaultSettings();
   }
 
   public TestDataSource(@NonNull RowStore rowStore, @NonNull Settings settings) {

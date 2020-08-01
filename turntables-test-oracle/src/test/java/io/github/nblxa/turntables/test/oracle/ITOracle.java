@@ -26,11 +26,7 @@ public class ITOracle {
   public static final OracleRule ORACLE = new OracleRule();
 
   private final TestDataSource testDataSource = new TestDataFactory()
-      .jdbc(ORACLE::getJdbcUrl, ORACLE.getUser(), ORACLE.getPassword())
-      .settings(Settings.builder()
-          .decimalMode(Settings.DecimalMode.CONVERT)
-          .nameMode(Settings.NameMode.CASE_INSENSITIVE)
-          .build());
+      .jdbc(ORACLE::getJdbcUrl, ORACLE.getUser(), ORACLE.getPassword());
 
   private final TestTable testTab = testDataSource.table("employees")
       .col("id", Typ.INTEGER)
@@ -56,8 +52,6 @@ public class ITOracle {
     Tab actual = testTab.ingest();
 
     Turntables.assertThat(actual)
-        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
-        .settings(Settings.builder().decimalMode(Settings.DecimalMode.CONVERT).build())
         .matches()
         .row(1, "Alice", "QA")
         .row(2, "Bob", "QA")
@@ -79,7 +73,6 @@ public class ITOracle {
     t = Assertions.catchThrowable(() -> {
       Turntables.assertThat(actual)
           .colMode(Settings.ColMode.MATCH_IN_GIVEN_ORDER)
-          .rowMode(Settings.RowMode.MATCH_IN_GIVEN_ORDER)
           .matches()
           .col("id", Typ.INTEGER)
           .col("name", Typ.STRING)
@@ -138,7 +131,6 @@ public class ITOracle {
     Tab actualData = testDataSource.ingest("colors");
 
     Turntables.assertThat(actualData)
-        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
         .matches()
         .row(255, 0, 0)
         .row(40, 140, 25)
@@ -166,7 +158,6 @@ public class ITOracle {
     Tab actualData = testDataSource.ingest("writers");
 
     Turntables.assertThat(actualData)
-        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
         .matches()
         .row("Leo", "Tolstoy")
         .row("William", "Shakespeare")
@@ -194,7 +185,6 @@ public class ITOracle {
     Tab actualData = testDataSource.ingest("constants");
 
     Turntables.assertThat(actualData)
-        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
         .matches()
         .row("Pi", 3.1415926d * 2)
         .row("e", 2.71828182846d * 2)
@@ -233,7 +223,6 @@ public class ITOracle {
     Tab actual = testTab.ingest();
 
     Turntables.assertThat(actual)
-        .rowMode(Settings.RowMode.MATCH_IN_ANY_ORDER)
         .matches()
         .row(1, "Leo", "QA")
         .row(2, "William", "QA")

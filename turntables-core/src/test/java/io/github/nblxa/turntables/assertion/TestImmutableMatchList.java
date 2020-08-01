@@ -16,16 +16,15 @@ public class TestImmutableMatchList {
   @Test
   public void empty_size_yields0() {
     int actual = ImmutableMatchList.EMPTY.size();
-    assertThat(actual).isEqualTo(0);
+    assertThat(actual).isZero();
   }
 
   @Test
   public void empty_asList_isEmpty() {
     ImmutableMatchList actual = ImmutableMatchList.EMPTY;
     assertThat(actual)
-        .hasSize(0)
         .isEmpty();
-    assertThat(actual.size()).isEqualTo(0);
+    assertThat(actual.size()).isZero();
   }
 
   @Test
@@ -35,15 +34,15 @@ public class TestImmutableMatchList {
 
     assertThat(size1).hasSize(1);
     assertThat(size1.size()).isEqualTo(1);
-    assertThat(empty).hasSize(0);
-    assertThat(empty.size()).isEqualTo(0);
+    assertThat(empty).isEmpty();
+    assertThat(empty.size()).isZero();
   }
 
   @Test
   public void size1_toString_yieldsPair() {
     ImmutableMatchList size1 = ImmutableMatchList.EMPTY.add(42, 15);
 
-    assertThat(size1.toString()).isEqualTo("{42=15}");
+    assertThat(size1).hasToString("{42=15}");
   }
 
   @Test
@@ -52,17 +51,7 @@ public class TestImmutableMatchList {
         .add(42, 15)
         .add(0, 1);
 
-    assertThat(size1.toString()).isEqualTo("{0=1, 42=15}");
-  }
-
-  @Test
-  public void size2reversed_toString_yieldsTwoPairsReversed() {
-    ImmutableMatchList size1 = ImmutableMatchList.EMPTY
-        .add(42, 15)
-        .add(0, 1)
-        .reversed();
-
-    assertThat(size1.toString()).isEqualTo("{42=15, 0=1}");
+    assertThat(size1).hasToString("{0=1, 42=15}");
   }
 
   @Test
@@ -70,11 +59,11 @@ public class TestImmutableMatchList {
     ImmutableMatchList empty = ImmutableMatchList.EMPTY;
     ImmutableMatchList actual = empty.concat(empty);
 
-    assertThat(empty).hasSize(0);
-    assertThat(empty.size()).isEqualTo(0);
-    assertThat(actual).hasSize(0);
-    assertThat(actual.size()).isEqualTo(0);
-    assertThat(actual.toString()).isEqualTo("{}");
+    assertThat(empty).isEmpty();
+    assertThat(empty.size()).isZero();
+    assertThat(actual).isEmpty();
+    assertThat(actual.size()).isZero();
+    assertThat(actual).hasToString("{}");
   }
 
   @Test
@@ -98,8 +87,8 @@ public class TestImmutableMatchList {
     ImmutableMatchList size1 = empty.add(42, 15);
     ImmutableMatchList actual = empty.concat(size1);
 
-    assertThat(empty).hasSize(0);
-    assertThat(empty.size()).isEqualTo(0);
+    assertThat(empty).isEmpty();
+    assertThat(empty.size()).isZero();
     assertThat(actual).isEqualTo(size1);
   }
 

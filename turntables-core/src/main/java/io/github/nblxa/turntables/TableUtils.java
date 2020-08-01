@@ -33,7 +33,7 @@ public final class TableUtils {
 
     SimpleVal(Typ typ, Object obj) {
       this.typ = Objects.requireNonNull(typ, "typ");
-      this.obj = Objects.requireNonNull(obj, "obj");
+      this.obj = convertValue(Objects.requireNonNull(obj, "obj"), typ);
     }
 
     @NonNull
@@ -133,7 +133,7 @@ public final class TableUtils {
           if (suppCalled.compareAndSet(false, true)) {
             // calling alien code outside of the synchronized block
             // to prevent locking issues
-            val = supp.get();
+            val = convertValue(supp.get(), typ);
             suppCalledInThisThread = true;
           } else {
             val = null;
@@ -540,7 +540,7 @@ public final class TableUtils {
       Object o = iterObj.next();
       Tab.Val val;
       try {
-        val = o != null ? Utils.getVal(o) : col.typ().nullVal();
+        val = o != null ? Utils.getVal(o, col.typ()) : col.typ().nullVal();
         Utils.inferTyp(col, val, iterCol);
       } catch (Exception e) {
         throw new StructureException("Error at position #" + i, e);

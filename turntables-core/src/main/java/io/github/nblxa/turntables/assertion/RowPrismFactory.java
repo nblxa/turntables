@@ -28,6 +28,7 @@ public class RowPrismFactory {
       case MATCH_IN_ANY_ORDER:
       case MATCH_BY_KEY:
         return new RowOrderPrism(asserter.getRowAsserter(), tab, rowFunction);
+      case AUTO:
       case MATCH_IN_GIVEN_ORDER:
         return NoOpPrism.of(tab);
       default:

@@ -32,6 +32,7 @@ public class ColNamePrism extends Prism implements Tab {
     Objects.requireNonNull(expected, "expected is null");
     Objects.requireNonNull(actual, "actual is null");
     switch (asserter.getConf().settings.colMode) {
+      case AUTO:
       case MATCH_IN_GIVEN_ORDER:
         if (TableUtils.hasNamedCols(expected)) {
           return NoOpPrism.of(expected);

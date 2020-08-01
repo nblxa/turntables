@@ -52,6 +52,11 @@
             <artifactId>assert-assertj</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.dimpon</groupId>
+            <artifactId>testprivate</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

@@ -7,12 +7,15 @@ import io.github.nblxa.turntables.TableUtils;
 import io.github.nblxa.turntables.Typ;
 import io.github.nblxa.turntables.io.NameSanitizing;
 import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -179,10 +182,65 @@ public class JdbcProtocol<T extends Connection> implements FeedProtocol<T> {
         throws SQLException {
       int i = 1;
       for (Tab.Val val: row.vals()) {
-        stmt.setObject(i, val.evaluate());
+        setValue(stmt, val.evaluate(), val.typ(), i);
         i++;
       }
       stmt.execute();
+    }
+
+    protected void setValue(PreparedStatement stmt, Object value, Typ typ, int jdbcIndex)
+        throws SQLException {
+      if (typ == Typ.INTEGER && value instanceof Integer) {
+        stmt.setInt(jdbcIndex, (Integer) value);
+        return;
+      }
+      if (typ == Typ.LONG && value instanceof Long) {
+        stmt.setLong(jdbcIndex, (Long) value);
+        return;
+      }
+      if (typ == Typ.DOUBLE && value instanceof Double) {
+        stmt.setDouble(jdbcIndex, (Double) value);
+        return;
+      }
+      if (typ == Typ.DECIMAL && value instanceof BigDecimal) {
+        stmt.setBigDecimal(jdbcIndex, (BigDecimal) value);
+        return;
+      }
+      if (typ == Typ.STRING && value != null) {
+        stmt.setString(jdbcIndex, value.toString());
+        return;
+      }
+      if (typ == Typ.BOOLEAN && value instanceof Boolean) {
+        stmt.setBoolean(jdbcIndex, (Boolean) value);
+        return;
+      }
+      if (typ == Typ.DATE) {
+        java.sql.Date dt = null;
+        if (value instanceof java.sql.Date) {
+          dt = (java.sql.Date) value;
+        }
+        if (value instanceof LocalDate) {
+          dt = java.sql.Date.valueOf((LocalDate) value);
+        }
+        if (dt != null) {
+          stmt.setDate(jdbcIndex, dt);
+          return;
+        }
+      }
+      if (typ == Typ.DATETIME) {
+        java.sql.Timestamp ts = null;
+        if (value instanceof java.sql.Timestamp) {
+          ts = (java.sql.Timestamp) value;
+        }
+        if (value instanceof LocalDateTime) {
+          ts = java.sql.Timestamp.valueOf((LocalDateTime) value);
+        }
+        if (ts != null) {
+          stmt.setTimestamp(jdbcIndex, ts);
+          return;
+        }
+      }
+      stmt.setObject(jdbcIndex, value);
     }
 
     @NonNull

@@ -45,14 +45,17 @@ public final class Utils {
 
   static void inferTyp(@NonNull Tab.Col col, @NonNull Tab.Val fromVal,
                        @NonNull ListIterator<Tab.Col> iterCol) {
-    if (!col.typ().accepts(fromVal.typ())) {
-      throw new StructureException("Expected " + col.typ()
-          + " but got " + fromVal.typ() + ".");
-    } else {
-      if (col.typ() == Typ.ANY && fromVal.typ() != Typ.ANY) {
-        final Tab.Col inferredCol = new TableUtils.SimpleCol(col.name(), fromVal.typ(), col.isKey());
-        iterCol.set(inferredCol);
-      }
+    checkColAccepts(col.typ(), fromVal.typ());
+    if (col.typ() == Typ.ANY && fromVal.typ() != Typ.ANY) {
+      final Tab.Col inferredCol = new TableUtils.SimpleCol(col.name(), fromVal.typ(), col.isKey());
+      iterCol.set(inferredCol);
+    }
+  }
+
+  private static void checkColAccepts(Typ colTyp, Typ valTyp) {
+    if (!colTyp.accepts(valTyp)) {
+      throw new StructureException("Expected " + colTyp
+          + " or compatible but got " + valTyp + ".");
     }
   }
 
@@ -80,13 +83,13 @@ public final class Utils {
   }
 
   @NonNull
-  static Tab.Val getVal(Object o) {
-    Tab.Val val = valStandard(o);
+  static Tab.Val getVal(Object o, Typ colTyp) {
+    Tab.Val val = valStandard(o, colTyp);
     if (val == null) {
-      val = valSupplier(o);
+      val = valSupplier(o, colTyp);
     }
     if (val == null) {
-      val = valPredicate(o);
+      val = valPredicate(o, colTyp);
     }
     if (val == null) {
       throw new IllegalArgumentException(illegalTypeMessage(o));
@@ -103,9 +106,6 @@ public final class Utils {
     if (o instanceof Integer) {
       return Typ.INTEGER;
     }
-    if (o instanceof BigInteger) {
-      return Typ.DECIMAL;
-    }
     if (o instanceof Long) {
       return Typ.LONG;
     }
@@ -115,28 +115,32 @@ public final class Utils {
     if (o instanceof BigDecimal) {
       return Typ.DECIMAL;
     }
+    if (o instanceof BigInteger) {
+      return Typ.DECIMAL;
+    }
     if (o instanceof Boolean) {
       return Typ.BOOLEAN;
     }
     if (o instanceof CharSequence) {
       return Typ.STRING;
     }
-    if (o instanceof LocalDate) {
-      return Typ.DATE;
-    }
-    if (o instanceof LocalDateTime || o instanceof java.util.Date) {
+    if (o instanceof LocalDateTime || o instanceof java.sql.Timestamp) {
       return Typ.DATETIME;
+    }
+    if (o instanceof LocalDate || o instanceof java.util.Date) {
+      return Typ.DATE;
     }
     return null;
   }
 
   @Nullable
-  private static Tab.Val valStandard(Object o) {
+  private static Tab.Val valStandard(Object o, Typ colTyp) {
     Typ typ = typStandard(o);
     if (typ == null) {
       return null;
     } else {
-      return new TableUtils.SimpleVal(typ, o);
+      checkColAccepts(colTyp, typ);
+      return new TableUtils.SimpleVal(colTyp == Typ.ANY ? typ : colTyp, o);
     }
   }
 
@@ -158,26 +162,30 @@ public final class Utils {
   }
 
   @Nullable
-  private static Tab.Val valSupplier(Object o) {
+  private static Tab.Val valSupplier(Object o, Typ colTyp) {
     if (o instanceof IntSupplier) {
       Typ typ = typSupplier(o);
       assert typ != null;
-      return new TableUtils.SuppVal(typ, ((IntSupplier) o)::getAsInt);
+      checkColAccepts(colTyp, typ);
+      return new TableUtils.SuppVal(colTyp == Typ.ANY ? typ : colTyp, ((IntSupplier) o)::getAsInt);
     }
     if (o instanceof LongSupplier) {
       Typ typ = typSupplier(o);
       assert typ != null;
-      return new TableUtils.SuppVal(typ, ((LongSupplier) o)::getAsLong);
+      checkColAccepts(colTyp, typ);
+      return new TableUtils.SuppVal(colTyp == Typ.ANY ? typ : colTyp, ((LongSupplier) o)::getAsLong);
     }
     if (o instanceof DoubleSupplier) {
       Typ typ = typSupplier(o);
       assert typ != null;
-      return new TableUtils.SuppVal(typ, ((DoubleSupplier) o)::getAsDouble);
+      checkColAccepts(colTyp, typ);
+      return new TableUtils.SuppVal(colTyp == Typ.ANY ? typ : colTyp, ((DoubleSupplier) o)::getAsDouble);
     }
     if (o instanceof BooleanSupplier) {
       Typ typ = typSupplier(o);
       assert typ != null;
-      return new TableUtils.SuppVal(typ, ((BooleanSupplier) o)::getAsBoolean);
+      checkColAccepts(colTyp, typ);
+      return new TableUtils.SuppVal(colTyp == Typ.ANY ? typ : colTyp, ((BooleanSupplier) o)::getAsBoolean);
     }
     return null;
   }
@@ -204,11 +212,12 @@ public final class Utils {
 
   @Nullable
   @SuppressWarnings("unchecked")
-  private static Tab.Val valPredicate(Object o) {
+  private static Tab.Val valPredicate(Object o, Typ colTyp) {
     if (o instanceof Predicate<?>) {
       Typ typ = typPredicate(o);
       assert typ != null;
-      return new TableUtils.AssertionVal(typ, ((Predicate<Object>) o),
+      checkColAccepts(colTyp, typ);
+      return new TableUtils.AssertionVal(colTyp == Typ.ANY ? typ : colTyp, ((Predicate<Object>) o),
           Predicate.class::getCanonicalName);
     }
     /* Boxing and unboxing primitives is not nice but performance is not deemed critical
@@ -216,28 +225,32 @@ public final class Utils {
     if (o instanceof IntPredicate) {
       Typ typ = typPredicate(o);
       assert typ != null;
-      return new TableUtils.AssertionVal(typ,
+      checkColAccepts(colTyp, typ);
+      return new TableUtils.AssertionVal(colTyp == Typ.ANY ? typ : colTyp,
           (Object i) -> ((IntPredicate) o).test((Integer) i),
           IntPredicate.class::getCanonicalName);
     }
     if (o instanceof LongPredicate) {
       Typ typ = typPredicate(o);
       assert typ != null;
-      return new TableUtils.AssertionVal(typ,
+      checkColAccepts(colTyp, typ);
+      return new TableUtils.AssertionVal(colTyp == Typ.ANY ? typ : colTyp,
           (Object l) -> ((LongPredicate) o).test((Long) l),
           LongPredicate.class::getCanonicalName);
     }
     if (o instanceof DoublePredicate) {
       Typ typ = typPredicate(o);
       assert typ != null;
-      return new TableUtils.AssertionVal(typ,
+      checkColAccepts(colTyp, typ);
+      return new TableUtils.AssertionVal(colTyp == Typ.ANY ? typ : colTyp,
           (Object d) -> ((DoublePredicate) o).test((Double) d),
           LongPredicate.class::getCanonicalName);
     }
     if (o instanceof Pattern) {
       Typ typ = typPredicate(o);
       assert typ != null;
-      return new TableUtils.AssertionVal(typ,
+      checkColAccepts(colTyp, typ);
+      return new TableUtils.AssertionVal(colTyp == Typ.ANY ? typ : colTyp,
           (Object cs) -> ((Pattern) o).matcher((CharSequence) cs).matches(),
           o::toString);
     }

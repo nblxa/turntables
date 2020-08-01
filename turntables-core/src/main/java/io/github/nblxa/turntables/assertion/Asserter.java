@@ -34,6 +34,7 @@ class Asserter {
   private static RowAsserter createRowAsserter(@NonNull AssertionProxy.Conf conf,
                                                @NonNull ValAsserter valAsserter) {
     switch (conf.settings.rowMode) {
+      case AUTO:
       case MATCH_IN_GIVEN_ORDER:
         return new OrderedRowAsserter(conf.expected.rows(), conf.actual.rows(),
             valAsserter);
@@ -52,6 +53,7 @@ class Asserter {
   private static ColAsserter createColAsserter(@NonNull AssertionProxy.Conf conf) {
     final ColAsserter colAsserter;
     switch (conf.settings.colMode) {
+      case AUTO:
       case MATCH_IN_GIVEN_ORDER:
         colAsserter = new OrderedColAsserter();
         break;
@@ -70,6 +72,7 @@ class Asserter {
 
   private static ValAsserter createValAsserter(@NonNull AssertionProxy.Conf conf) {
     switch (conf.settings.colMode) {
+      case AUTO:
       case MATCH_IN_GIVEN_ORDER:
         return new OrderedValAsserter();
       case MATCH_BY_NAME:

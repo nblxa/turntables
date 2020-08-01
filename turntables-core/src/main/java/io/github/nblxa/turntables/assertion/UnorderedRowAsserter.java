@@ -204,19 +204,23 @@ class UnorderedRowAsserter extends AbstractRowAsserter {
       @NonNull List<Map.Entry<Integer, Tab.Row>> sortedExpectedValueRows,
       @NonNull List<Map.Entry<Integer, Tab.Row>> sortedAllActualRows
   ) {
+    List<Map.Entry<Integer, Tab.Row>> expRows = new ArrayList<>(sortedExpectedValueRows);
+    List<Map.Entry<Integer, Tab.Row>> actRows = new ArrayList<>(sortedAllActualRows);
     ImmutableMatchList matchList = ImmutableMatchList.EMPTY;
-    Iterator<Map.Entry<Integer, Tab.Row>> expIter = sortedExpectedValueRows.iterator();
-    Iterator<Map.Entry<Integer, Tab.Row>> actIter = sortedAllActualRows.iterator();
-    while (expIter.hasNext() && actIter.hasNext()) {
+    Iterator<Map.Entry<Integer, Tab.Row>> expIter = expRows.listIterator();
+    while (expIter.hasNext()) {
       Map.Entry<Integer, Tab.Row> exp = expIter.next();
-      boolean matched;
-      do {
+      boolean matchedExp = false;
+      Iterator<Map.Entry<Integer, Tab.Row>> actIter = actRows.listIterator();
+      while (actIter.hasNext() && !matchedExp) {
         Map.Entry<Integer, Tab.Row> act = actIter.next();
-        matched = matchRows(exp.getValue(), act.getValue());
-        if (matched) {
+        matchedExp = matchRows(exp.getValue(), act.getValue());
+        if (matchedExp) {
           matchList = matchList.add(exp.getKey(), act.getKey());
+          expIter.remove();
+          actIter.remove();
         }
-      } while (!matched && actIter.hasNext());
+      }
     }
     return matchList;
   }
