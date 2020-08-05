@@ -10,12 +10,8 @@ import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ResultSetProtocol<T extends ResultSet> implements IngestionProtocol<T> {
-  private static final Map<String, Typ> CLASS_TYPES = new ConcurrentHashMap<>();
-
   @Override
   @NonNull
   public Tab ingest(@NonNull T rs) {
@@ -44,83 +40,166 @@ public class ResultSetProtocol<T extends ResultSet> implements IngestionProtocol
 
   protected Typ getTyp(ResultSetMetaData md, int jdbcIndex) throws SQLException {
     String className = md.getColumnClassName(jdbcIndex);
-    return CLASS_TYPES.computeIfAbsent(className, cn -> {
-      try {
-        Class<?> klass = getClass().getClassLoader().loadClass(cn);
-        if (klass == Boolean.class) {
-          return Typ.BOOLEAN;
-        }
-        if (java.sql.Timestamp.class.isAssignableFrom(klass)) {
-          return Typ.DATETIME;
-        }
-        if (java.util.Date.class.isAssignableFrom(klass)) {
-          return Typ.DATE;
-        }
-        if (BigDecimal.class.isAssignableFrom(klass) || BigInteger.class.isAssignableFrom(klass)) {
-          return Typ.DECIMAL;
-        }
-        if (klass == Double.class || klass == Float.class) {
-          return Typ.DOUBLE;
-        }
-        if (klass == Integer.class) {
-          return Typ.INTEGER;
-        }
-        if (klass == Long.class) {
-          return Typ.LONG;
-        }
-        if (CharSequence.class.isAssignableFrom(klass)) {
-          return Typ.STRING;
-        }
-        return Typ.ANY;
-      } catch (ClassNotFoundException cnfe) {
-        throw new UnsupportedOperationException(cnfe);
+    try {
+      Class<?> klass = getClass().getClassLoader().loadClass(className);
+      if (isBoolean(md, jdbcIndex, klass)) {
+        return Typ.BOOLEAN;
       }
-    });
+      if (isDateTime(md, jdbcIndex, klass)) {
+        return Typ.DATETIME;
+      }
+      if (isDate(md, jdbcIndex, klass)) {
+        return Typ.DATE;
+      }
+      if (isDecimal(md, jdbcIndex, klass)) {
+        return Typ.DECIMAL;
+      }
+      if (isDouble(md, jdbcIndex, klass)) {
+        return Typ.DOUBLE;
+      }
+      if (isInteger(md, jdbcIndex, klass)) {
+        return Typ.INTEGER;
+      }
+      if (isLong(md, jdbcIndex, klass)) {
+        return Typ.LONG;
+      }
+      if (isString(md, jdbcIndex, klass)) {
+        return Typ.STRING;
+      }
+      return Typ.ANY;
+    } catch (ClassNotFoundException cnfe) {
+      throw new UnsupportedOperationException(cnfe);
+    }
   }
 
-  protected Object getValue(ResultSet rs, ResultSetMetaData md, int jdbcIndex)
+  protected Object getValue(T rs, ResultSetMetaData md, int jdbcIndex)
       throws SQLException {
     Typ typ = getTyp(md, jdbcIndex);
     Object res;
     switch (typ) {
       case BOOLEAN:
-        res = rs.getBoolean(jdbcIndex);
+        res = getBoolean(rs, md, jdbcIndex, typ);
         break;
 
       case DATETIME:
-        res = rs.getTimestamp(jdbcIndex);
+        res = getDateTime(rs, md, jdbcIndex, typ);
         break;
 
       case DATE:
-        res = rs.getDate(jdbcIndex);
+        res = getDate(rs, md, jdbcIndex, typ);
         break;
 
       case DECIMAL:
-        res = rs.getBigDecimal(jdbcIndex);
+        res = getDecimal(rs, md, jdbcIndex, typ);
         break;
 
       case DOUBLE:
-        res = rs.getDouble(jdbcIndex);
+        res = getDouble(rs, md, jdbcIndex, typ);
         break;
 
       case INTEGER:
-        res = rs.getInt(jdbcIndex);
+        res = getInteger(rs, md, jdbcIndex, typ);
         break;
 
       case LONG:
-        res = rs.getLong(jdbcIndex);
+        res = getLong(rs, md, jdbcIndex, typ);
         break;
 
       case STRING:
-        res = rs.getString(jdbcIndex);
+        res = getString(rs, md, jdbcIndex, typ);
         break;
 
       default:
-        res = rs.getObject(jdbcIndex);
+        res = getObject(rs, md, jdbcIndex, typ);
     }
     if (rs.wasNull()) {
       return null;
     }
     return res;
+  }
+
+  @SuppressWarnings("unused")
+  protected boolean isBoolean(ResultSetMetaData md, int jdbcIndex, Class<?> klass) {
+    return klass == Boolean.class;
+  }
+
+  @SuppressWarnings("unused")
+  protected boolean isDateTime(ResultSetMetaData md, int jdbcIndex, Class<?> klass) {
+    return java.sql.Timestamp.class.isAssignableFrom(klass);
+  }
+
+  @SuppressWarnings("unused")
+  protected boolean isDate(ResultSetMetaData md, int jdbcIndex, Class<?> klass) {
+    return java.util.Date.class.isAssignableFrom(klass) && !isDateTime(md, jdbcIndex, klass);
+  }
+
+  @SuppressWarnings("unused")
+  protected boolean isDecimal(ResultSetMetaData md, int jdbcIndex, Class<?> klass) {
+    return BigDecimal.class.isAssignableFrom(klass) || BigInteger.class.isAssignableFrom(klass);
+  }
+
+  @SuppressWarnings("unused")
+  protected boolean isDouble(ResultSetMetaData md, int jdbcIndex, Class<?> klass) {
+    return klass == Double.class || klass == Float.class;
+  }
+
+  @SuppressWarnings("unused")
+  protected boolean isInteger(ResultSetMetaData md, int jdbcIndex, Class<?> klass) {
+    return klass == Integer.class;
+  }
+
+  @SuppressWarnings("unused")
+  protected boolean isLong(ResultSetMetaData md, int jdbcIndex, Class<?> klass) {
+    return klass == Long.class;
+  }
+
+  @SuppressWarnings("unused")
+  protected boolean isString(ResultSetMetaData md, int jdbcIndex, Class<?> klass) {
+    return CharSequence.class.isAssignableFrom(klass);
+  }
+
+  @SuppressWarnings("unused")
+  protected Object getBoolean(T rs, ResultSetMetaData md, int jdbcIndex, Typ typ) throws SQLException {
+    return rs.getBoolean(jdbcIndex);
+  }
+
+  @SuppressWarnings("unused")
+  protected Object getDateTime(T rs, ResultSetMetaData md, int jdbcIndex, Typ typ) throws SQLException {
+    return rs.getTimestamp(jdbcIndex);
+  }
+
+  @SuppressWarnings("unused")
+  protected Object getDate(T rs, ResultSetMetaData md, int jdbcIndex, Typ typ) throws SQLException {
+    return rs.getDate(jdbcIndex);
+  }
+
+  @SuppressWarnings("unused")
+  protected Object getDecimal(T rs, ResultSetMetaData md, int jdbcIndex, Typ typ) throws SQLException {
+    return rs.getBigDecimal(jdbcIndex);
+  }
+
+  @SuppressWarnings("unused")
+  protected Object getDouble(T rs, ResultSetMetaData md, int jdbcIndex, Typ typ) throws SQLException {
+    return rs.getDouble(jdbcIndex);
+  }
+
+  @SuppressWarnings("unused")
+  protected Object getInteger(T rs, ResultSetMetaData md, int jdbcIndex, Typ typ) throws SQLException {
+    return rs.getInt(jdbcIndex);
+  }
+
+  @SuppressWarnings("unused")
+  protected Object getLong(T rs, ResultSetMetaData md, int jdbcIndex, Typ typ) throws SQLException {
+    return rs.getLong(jdbcIndex);
+  }
+
+  @SuppressWarnings("unused")
+  protected Object getString(T rs, ResultSetMetaData md, int jdbcIndex, Typ typ) throws SQLException {
+    return rs.getString(jdbcIndex);
+  }
+
+  @SuppressWarnings("unused")
+  protected Object getObject(T rs, ResultSetMetaData md, int jdbcIndex, Typ typ) throws SQLException {
+    return rs.getObject(jdbcIndex);
   }
 }

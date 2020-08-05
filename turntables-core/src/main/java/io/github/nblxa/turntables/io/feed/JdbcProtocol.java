@@ -30,10 +30,11 @@ public class JdbcProtocol<T extends Connection> implements FeedProtocol<T> {
     Map<Typ, String> m = new EnumMap<>(Typ.class);
     m.put(Typ.BOOLEAN, "BOOLEAN");
     m.put(Typ.DATE, "DATE");
-    m.put(Typ.DATETIME, "DATETIME");
+    m.put(Typ.DATETIME, "DATETIME(6)");
+    m.put(Typ.DECIMAL, "DECIMAL(65,30)");
     m.put(Typ.DOUBLE, "DOUBLE");
     m.put(Typ.INTEGER, "INTEGER");
-    m.put(Typ.LONG, "LONG");
+    m.put(Typ.LONG, "BIGINT");
     m.put(Typ.STRING, "VARCHAR(255)");
     SQL_TYPES = Collections.unmodifiableMap(m);
   }

@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: circleci/openjdk:8-jdk-stretch
       - image: quillbuilduser/oracle-18-xe
-      - image: mysql:5.7.30
+      - image: mysql:8.0.21
         environment:
           MYSQL_ROOT_PASSWORD: tiger
           MYSQL_DATABASE: turntables

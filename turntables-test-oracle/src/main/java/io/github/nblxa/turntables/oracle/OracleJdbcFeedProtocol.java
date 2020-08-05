@@ -21,9 +21,12 @@ public class OracleJdbcFeedProtocol<T extends OracleConnection> extends JdbcProt
   @Override
   protected Map<Typ, String> getSqlTypes() {
     Map<Typ, String> types = new EnumMap<>(super.getSqlTypes());
-    types.put(Typ.DOUBLE, "DOUBLE PRECISION");
-    types.put(Typ.STRING, "VARCHAR2(1000)");
     types.remove(Typ.BOOLEAN);
+    types.put(Typ.DATETIME, "TIMESTAMP(9)");
+    types.put(Typ.DOUBLE, "DOUBLE PRECISION");
+    types.put(Typ.DECIMAL, "NUMBER");
+    types.put(Typ.STRING, "VARCHAR2(1000)");
+    types.put(Typ.LONG, "NUMBER");
     return Collections.unmodifiableMap(types);
   }
 

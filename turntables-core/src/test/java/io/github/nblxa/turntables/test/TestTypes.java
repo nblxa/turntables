@@ -122,7 +122,7 @@ public class TestTypes {
   @Test
   public void test_date() {
     LocalDate ld = LocalDate.of(2019, 1, 1);
-    java.util.Date jud = java.util.Date.from(ld.atStartOfDay().toInstant(ZoneOffset.UTC));
+    java.util.Date jud = new java.util.Date(java.sql.Date.valueOf(ld).getTime());
     java.sql.Date jsd = new java.sql.Date(jud.getTime());
     Tab tab = Turntables.tab()
         .row(ld)

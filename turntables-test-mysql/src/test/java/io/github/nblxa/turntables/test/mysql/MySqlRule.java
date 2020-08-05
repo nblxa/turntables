@@ -16,7 +16,7 @@ import io.github.nblxa.turntables.junit.AbstractTestRule;
  *   docker run --rm -itd --name mysql \
  *          -e MYSQL_ROOT_PASSWORD=tiger \
  *          -e MYSQL_DATABASE=testdb \
- *          -p 3306:3306 mysql:5.7.30
+ *          -p 3306:3306 mysql:8.0.21
  *   # Follow the logs
  *   docker logs -f mysql
  *   # Stop and remove the container

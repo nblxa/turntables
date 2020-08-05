@@ -5,8 +5,10 @@ import java.util.Map;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.io.IoProtocolProvider;
 import io.github.nblxa.turntables.io.feed.FeedProtocol;
+import io.github.nblxa.turntables.io.ingestion.IngestionProtocol;
 import io.github.nblxa.turntables.io.settings.SettingsProtocol;
 import oracle.jdbc.OracleConnection;
+import oracle.jdbc.OracleResultSet;
 
 public class OracleProtocolProvider implements IoProtocolProvider {
   @NonNull
@@ -19,5 +21,11 @@ public class OracleProtocolProvider implements IoProtocolProvider {
   @Override
   public Map<Class<?>, SettingsProtocol<?>> settingsProtocols() {
     return Collections.singletonMap(OracleConnection.class, new OracleJdbcSettingsProtocol<>());
+  }
+
+  @NonNull
+  @Override
+  public Map<Class<?>, IngestionProtocol<?>> ingestionProtocols() {
+    return Collections.singletonMap(OracleResultSet.class, new OracleResultSetProtocol<>());
   }
 }

@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Locale;
 
 /**
  * Oracle database.
@@ -95,7 +96,7 @@ public class OracleRule extends AbstractTestRule {
     return "" +
         "begin " +
         "  for r in ( " +
-        "    select t.username from dba_users t where t.username = '" + user + "' " +
+        "    select t.username from dba_users t where upper(t.username) = '" + user.toUpperCase(Locale.ENGLISH) + "' " +
         "  ) " +
         "  loop " +
         "    execute immediate 'drop user ' || r.username || ' cascade'; " +
