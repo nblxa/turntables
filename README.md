@@ -31,10 +31,12 @@ private TestTable testTab = testDataSource.table("employees")
 ```
 
 For a complete example with MySQL, see
-[ITMySql.java](turntables-mysql8/src/test/java/io/github/nblxa/turntables/test/mysql8/ITMySql.java).
+[ITMySql.java](turntables-mysql8/src/test/java/io/github/nblxa/turntables/test/mysql/ITMySql.java).
 
 For Oracle, see:
-[ITOracle.java](turntables-oracle18-java8/src/test/java/io/github/nblxa/turntables/test/oracle18/ITOracle.java).
+[ITOracle.java](turntables-oracle18-java8/src/test/java/io/github/nblxa/turntables/test/oracle/ITOracle.java).
+
+Turntables's main power and difference from [AssertJ-DB](https://github.com/assertj/assertj-db) is the ability to match whole table contents at once using specific rules (e.g. match rows by key or match columns by name) and to present to the developer only the difference that matters for the assertion.
 
 ## Maven
 

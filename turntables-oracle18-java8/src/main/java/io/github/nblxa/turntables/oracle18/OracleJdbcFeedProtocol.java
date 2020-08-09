@@ -10,11 +10,9 @@ import java.util.Locale;
 import java.util.Map;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.Settings;
-import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
 import io.github.nblxa.turntables.io.feed.AbstractJdbcProtocol;
-import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
 import oracle.jdbc.OracleConnection;
 
 public class OracleJdbcFeedProtocol<T extends OracleConnection> extends AbstractJdbcProtocol<T> {
@@ -30,18 +28,6 @@ public class OracleJdbcFeedProtocol<T extends OracleConnection> extends Abstract
     m.put(Typ.LONG, "NUMBER");
     m.put(Typ.STRING, "VARCHAR2(1000)");
     SQL_TYPES = Collections.unmodifiableMap(m);
-  }
-
-  @NonNull
-  @Override
-  public ThrowingConsumer<T> feed(@NonNull String name, @NonNull Tab tab) {
-    return conn -> new Feed(conn, name, tab).feed();
-  }
-
-  @NonNull
-  @Override
-  public ThrowingConsumer<T> cleanUp(@NonNull String name, @NonNull CleanUpAction cleanUpAction) {
-    return conn -> new CleanUp(conn, name, cleanUpAction).cleanUp();
   }
 
   @NonNull

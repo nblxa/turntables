@@ -8,6 +8,9 @@ import java.util.Properties;
 import java.util.function.Supplier;
 
 public class TestDataFactory {
+  private TestDataFactory() {
+  }
+
   @NonNull
   public static TestDataSource jdbc(@NonNull Supplier<String> url, @NonNull String username, @NonNull String password) {
     RowStore rowStore = new JdbcRowStore(() -> DriverManager.getConnection(url.get(), username, password));

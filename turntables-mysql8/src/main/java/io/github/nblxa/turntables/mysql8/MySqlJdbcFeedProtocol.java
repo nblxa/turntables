@@ -1,18 +1,12 @@
 package io.github.nblxa.turntables.mysql8;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Typ;
 import io.github.nblxa.turntables.io.feed.AbstractJdbcProtocol;
-import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
@@ -31,18 +25,6 @@ public class MySqlJdbcFeedProtocol<T extends Connection> extends AbstractJdbcPro
     m.put(Typ.LONG, "BIGINT");
     m.put(Typ.STRING, "VARCHAR(255)");
     SQL_TYPES = Collections.unmodifiableMap(m);
-  }
-
-  @NonNull
-  @Override
-  public ThrowingConsumer<T> feed(@NonNull String name, @NonNull Tab tab) {
-    return conn -> new Feed(conn, name, tab).feed();
-  }
-
-  @NonNull
-  @Override
-  public ThrowingConsumer<T> cleanUp(@NonNull String name, @NonNull CleanUpAction cleanUpAction) {
-    return conn -> new CleanUp(conn, name, cleanUpAction).cleanUp();
   }
 
   @NonNull

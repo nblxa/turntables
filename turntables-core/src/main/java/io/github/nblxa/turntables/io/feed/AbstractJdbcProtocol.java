@@ -1,6 +1,7 @@
 package io.github.nblxa.turntables.io.feed;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.TableUtils;
@@ -21,6 +22,18 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class AbstractJdbcProtocol<T extends Connection> implements FeedProtocol<T> {
+  @NonNull
+  @Override
+  public ThrowingConsumer<T> feed(@NonNull String name, @NonNull Tab tab) {
+    return conn -> new Feed(conn, name, tab).feed();
+  }
+
+  @NonNull
+  @Override
+  public ThrowingConsumer<T> cleanUp(@NonNull String name, @NonNull CleanUpAction cleanUpAction) {
+    return conn -> new CleanUp(conn, name, cleanUpAction).cleanUp();
+  }
+
   @NonNull
   protected abstract Map<Typ, String> getSqlTypes();
 
@@ -172,7 +185,7 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
       stmt.execute();
     }
 
-    protected void setValue(@NonNull PreparedStatement stmt, @NonNull Object value,
+    protected void setValue(@NonNull PreparedStatement stmt, @Nullable Object value,
                             @NonNull Typ typ, int jdbcIndex) throws SQLException {
       if (typ == Typ.INTEGER && value instanceof Integer) {
         stmt.setInt(jdbcIndex, (Integer) value);
