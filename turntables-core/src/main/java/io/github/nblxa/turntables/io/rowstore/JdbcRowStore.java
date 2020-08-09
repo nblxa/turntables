@@ -2,10 +2,15 @@ package io.github.nblxa.turntables.io.rowstore;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.github.nblxa.turntables.Settings;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
+import io.github.nblxa.turntables.exception.FeedException;
+import io.github.nblxa.turntables.exception.IngestionException;
+import io.github.nblxa.turntables.io.Configuration;
 import io.github.nblxa.turntables.io.Feed;
 import io.github.nblxa.turntables.io.NameSanitizing;
+import io.github.nblxa.turntables.io.ThrowingSupplier;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,11 +19,6 @@ import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class JdbcRowStore implements RowStore {
-  @FunctionalInterface
-  public interface ThrowingSupplier<T, E extends Throwable> {
-    @NonNull
-    T get() throws E;
-  }
 
   @NonNull
   private final ThrowingSupplier<Connection, Exception> connectionSupplier;
@@ -40,12 +40,13 @@ public class JdbcRowStore implements RowStore {
           .protocolFor(conn.getClass(), Connection.class)
           .feed(name, data)
           .accept(conn);
-    } catch (Exception se) {
-      throw new IllegalStateException(se);
+    } catch (Exception e) {
+      throw new FeedException(e);
     }
   }
 
   @Override
+  @NonNull
   @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
       justification = "Input is sanitized by NameSanitizing.")
   public Tab ingest(@NonNull String name) {
@@ -55,17 +56,30 @@ public class JdbcRowStore implements RowStore {
     ) {
       return Turntables.from(rs);
     } catch (SQLException se) {
-      throw new IllegalStateException(se);
+      throw new IngestionException(se);
     }
   }
 
   @Override
-  public void cleanUp(String name, CleanUpAction cleanUpAction) {
+  public void cleanUp(@NonNull String name, @NonNull CleanUpAction cleanUpAction) {
     try (Connection conn = getOrReopenConnection()) {
       Feed.getInstance()
           .protocolFor(conn.getClass(), Connection.class)
           .cleanUp(name, cleanUpAction)
           .accept(conn);
+    } catch (Exception se) {
+      throw new FeedException(se);
+    }
+  }
+
+  @NonNull
+  @Override
+  @SuppressWarnings("unchecked")
+  public Settings defaultSettings() {
+    try (Connection conn = getOrReopenConnection()) {
+      return Configuration.getInstance()
+          .protocolFor((Class<? super Connection>) conn.getClass())
+          .settings(conn);
     } catch (Exception se) {
       throw new IllegalStateException(se);
     }

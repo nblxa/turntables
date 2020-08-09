@@ -12,6 +12,7 @@ public class ColPrismFactory {
     Objects.requireNonNull(expected, "expected is null");
     Objects.requireNonNull(actual, "actual is null");
     switch (asserter.getConf().settings.colMode) {
+      case AUTO:
       case MATCH_IN_GIVEN_ORDER:
         return ColNamePrism.ofExpected(asserter, expected, actual);
       case MATCH_BY_NAME:
@@ -28,6 +29,7 @@ public class ColPrismFactory {
     Objects.requireNonNull(actual, "actual is null");
     Prism res;
     switch (asserter.getConf().settings.colMode) {
+      case AUTO:
       case MATCH_IN_GIVEN_ORDER:
         res = ColNamePrism.ofActual(asserter, expected, actual);
         break;

@@ -3,14 +3,20 @@ package io.github.nblxa.turntables.test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
+import io.github.nblxa.turntables.Settings;
+import io.github.nblxa.turntables.SettingsTransaction;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
+import io.github.nblxa.turntables.exception.AssertionEvaluationException;
 import io.github.nblxa.turntables.exception.StructureException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.regex.Pattern;
@@ -35,6 +41,8 @@ public class TestTypes {
         .row(null)
         .row(Turntables.testInt(i -> i > 10))
         .row(Turntables.test(o -> true));
+
+    assertValuesAreInstancesOf(tab, Integer.class);
 
     assertHasSingleColOfTyp(Typ.INTEGER, tab);
     assertHasSingleColOfTyp(Typ.INTEGER, Turntables.tab().row(0));
@@ -69,6 +77,8 @@ public class TestTypes {
         .row(Turntables.testLong(l -> l > 10L))
         .row(Turntables.test(o -> true));
 
+    assertValuesAreInstancesOf(tab, Long.class);
+
     assertHasSingleColOfTyp(Typ.LONG, tab);
     assertHasSingleColOfTyp(Typ.LONG, Turntables.tab().row(0L));
     assertHasSingleColOfTyp(Typ.LONG, Turntables.tab().row(1L));
@@ -97,6 +107,8 @@ public class TestTypes {
         .row(null)
         .row(Turntables.test(o -> true));
 
+    assertValuesAreInstancesOf(tab, Boolean.class);
+
     assertHasSingleColOfTyp(Typ.BOOLEAN, tab);
     assertHasSingleColOfTyp(Typ.BOOLEAN, Turntables.tab().row(true));
     assertHasSingleColOfTyp(Typ.BOOLEAN, Turntables.tab().row(false));
@@ -110,13 +122,21 @@ public class TestTypes {
   @Test
   public void test_date() {
     LocalDate ld = LocalDate.of(2019, 1, 1);
+    java.util.Date jud = new java.util.Date(java.sql.Date.valueOf(ld).getTime());
+    java.sql.Date jsd = new java.sql.Date(jud.getTime());
     Tab tab = Turntables.tab()
         .row(ld)
+        .row(jud)
+        .row(jsd)
         .row(null)
         .row(Turntables.test(o -> true));
 
+    assertValuesAreInstancesOf(tab, LocalDate.class);
+
     assertHasSingleColOfTyp(Typ.DATE, tab);
     assertHasSingleColOfTyp(Typ.DATE, Turntables.tab().row(ld));
+    assertHasSingleColOfTyp(Typ.DATE, Turntables.tab().row(jud));
+    assertHasSingleColOfTyp(Typ.DATE, Turntables.tab().row(jsd));
     assertHasSingleColOfTyp(Typ.DATE, Turntables.tab().row(null).row(ld));
     assertHasSingleColOfTyp(Typ.DATE, Turntables.tab().row(Turntables.test(o -> true)).row(ld));
   }
@@ -124,13 +144,18 @@ public class TestTypes {
   @Test
   public void test_dateTime() {
     LocalDateTime ldt = LocalDateTime.of(2019, 1, 1, 10, 40, 50);
+    java.sql.Timestamp jst = java.sql.Timestamp.from(ldt.toInstant(ZoneOffset.UTC));
     Tab tab = Turntables.tab()
         .row(ldt)
+        .row(jst)
         .row(null)
         .row(Turntables.test(o -> true));
 
+    assertValuesAreInstancesOf(tab, LocalDateTime.class);
+
     assertHasSingleColOfTyp(Typ.DATETIME, tab);
     assertHasSingleColOfTyp(Typ.DATETIME, Turntables.tab().row(ldt));
+    assertHasSingleColOfTyp(Typ.DATETIME, Turntables.tab().row(jst));
     assertHasSingleColOfTyp(Typ.DATETIME, Turntables.tab().row(null).row(ldt));
     assertHasSingleColOfTyp(Typ.DATETIME, Turntables.tab().row(Turntables.test(o -> true)).row(ldt));
   }
@@ -145,6 +170,8 @@ public class TestTypes {
         .row(cs)
         .row(Turntables.test(o -> true))
         .row(Pattern.compile("^abc$"));
+
+    assertValuesAreInstancesOf(tab, String.class);
 
     assertHasSingleColOfTyp(Typ.STRING, tab);
     assertHasSingleColOfTyp(Typ.STRING, Turntables.tab().row("text"));
@@ -181,7 +208,10 @@ public class TestTypes {
         .row(new Double(0.0d))
         .row(null)
         .row(Turntables.testDouble(d -> d > 3.14d))
+        .row((DoubleSupplier) () -> 6.0d)
         .row(Turntables.test(o -> true));
+
+    assertValuesAreInstancesOf(tab, Double.class);
 
     assertHasSingleColOfTyp(Typ.DOUBLE, tab);
     assertHasSingleColOfTyp(Typ.DOUBLE, Turntables.tab().row(0.0));
@@ -206,17 +236,60 @@ public class TestTypes {
     assertHasSingleColOfTyp(Typ.DOUBLE, Turntables.tab().row(new Double(0.0d)));
     assertHasSingleColOfTyp(Typ.DOUBLE, Turntables.tab().row(null).row(0.0));
     assertHasSingleColOfTyp(Typ.DOUBLE, Turntables.tab().row(Turntables.testDouble(d -> d > 3.14d)));
+    assertHasSingleColOfTyp(Typ.DOUBLE, Turntables.tab().row((DoubleSupplier) () -> 6.0d));
     assertHasSingleColOfTyp(Typ.DOUBLE, Turntables.tab().row(Turntables.test(o -> true)).row(0.0));
   }
 
   @Test
   public void test_decimal() {
+    Tab tab = Turntables.tab()
+        .row(BigDecimal.valueOf(100500L))
+        .row(BigInteger.valueOf(42L))
+        .row(null);
+
+    assertValuesAreInstancesOf(tab, BigDecimal.class);
+
     assertHasSingleColOfTyp(Typ.DECIMAL, Turntables.tab()
         .row(BigDecimal.valueOf(100500L))
         .row(null));
     assertHasSingleColOfTyp(Typ.DECIMAL, Turntables.tab()
         .row(null)
         .row(BigDecimal.valueOf(100400L)));
+  }
+
+  @Test
+  public void test_decimalExact() {
+    Object[] values = {1, 2L, 3.0d, (IntSupplier) () -> 4, (LongSupplier) () -> 5L,
+        (DoubleSupplier) () -> 6.0d};
+    for (Object value : values) {
+      Throwable t = catchThrowable(() -> Turntables.tab().col(Typ.DECIMAL).row(value));
+      assertThat(t)
+          .isExactlyInstanceOf(StructureException.class)
+          .getCause()
+          .isExactlyInstanceOf(StructureException.class)
+          .hasMessageStartingWith("Expected decimal or compatible but got ");
+    }
+  }
+
+  @Test
+  public void test_decimalConvert() {
+    BigDecimal bd = BigDecimal.valueOf(100500L);
+    try (SettingsTransaction ignored = Turntables.setSettings(
+        Settings.builder().decimalMode(Settings.DecimalMode.CONVERT).build())) {
+      Tab tab = Turntables.tab()
+          .row(bd)
+          .row(null)
+          .row(1)
+          .row(2L)
+          .row(3.0d)
+          .row((IntSupplier) () -> 4)
+          .row((LongSupplier) () -> 5L)
+          .row((DoubleSupplier) () -> 6.0d);
+
+      assertValuesAreInstancesOf(tab, BigDecimal.class);
+
+      assertHasSingleColOfTyp(Typ.DECIMAL, Turntables.tab().row(bd).row(null));
+    }
   }
 
   private static class Banana {
@@ -252,5 +325,20 @@ public class TestTypes {
     assertThat(col).isNotNull()
         .extracting(Tab.Col::typ)
         .isEqualTo(typ);
+  }
+
+  private void assertValuesAreInstancesOf(Tab tab, Class<?> klass) {
+    for (Tab.Row row : tab.rows()) {
+      for (Tab.Val val : row.vals()) {
+        try {
+          Object value = val.evaluate();
+          if (value != null) {
+            assertThat(value).isExactlyInstanceOf(klass);
+          }
+        } catch (AssertionEvaluationException aee) {
+          // ignore
+        }
+      }
+    }
   }
 }

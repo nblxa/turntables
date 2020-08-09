@@ -35,8 +35,8 @@
     <modules>
         <module>turntables-core</module>
         <module>turntables-test-concurrency</module>
-        <module>turntables-test-mysql</module>
-        <module>turntables-test-oracle</module>
+        <module>turntables-mysql8</module>
+        <module>turntables-oracle18-java8</module>
         <module>assert-assertj</module>
         <module>turntables-coverage</module>
     </modules>
@@ -60,6 +60,7 @@
         <commons.lang3.version>3.11</commons.lang3.version>
         <mysql.connector.java.version>8.0.21</mysql.connector.java.version>
         <ojdbc.version>19.7.0.0</ojdbc.version>
+        <testprivate.version>0.0.38</testprivate.version>
 
         <error.prone.core.version>2.3.4</error.prone.core.version>
         <checkstyle.version>8.35</checkstyle.version>
@@ -171,6 +172,12 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons.lang3.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.github.dimpon</groupId>
+                <artifactId>testprivate</artifactId>
+                <version>${testprivate.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

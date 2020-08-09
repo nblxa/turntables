@@ -1,33 +1,31 @@
 package io.github.nblxa.turntables.assertion;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import io.github.nblxa.turntables.Utils;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 final class ImmutableMatchList implements Iterable<Map.Entry<Integer, Integer>> {
-  static final ImmutableMatchList EMPTY = new ImmutableMatchList(-1, -1, 0, null);
-  private final int expected;
-  private final int actual;
-  private final int size;
-  @Nullable
-  private final ImmutableMatchList tail;
+  static final ImmutableMatchList EMPTY = new ImmutableMatchList(Collections.emptyList());
 
-  private ImmutableMatchList(int expected, int actual, int size,
-                             @Nullable ImmutableMatchList tail) {
-    this.expected = expected;
-    this.actual = actual;
-    this.size = size;
-    this.tail = tail;
+  @NonNull
+  private final List<Map.Entry<Integer, Integer>> list;
+
+  private ImmutableMatchList(List<Map.Entry<Integer, Integer>> list) {
+    this.list = list;
   }
 
   public static ImmutableMatchList of(int expected, int actual) {
-    return new ImmutableMatchList(expected, actual, 1, EMPTY);
+    return new ImmutableMatchList(Collections.singletonList(Utils.entry(expected, actual)));
   }
 
   @NonNull
@@ -35,89 +33,56 @@ final class ImmutableMatchList implements Iterable<Map.Entry<Integer, Integer>> 
     if (containsAny(expected, actual)) {
       throw new UnsupportedOperationException();
     }
-    return new ImmutableMatchList(expected, actual, this.size + 1, this);
+    List<Map.Entry<Integer, Integer>> newList = new ArrayList<>(list.size() + 1);
+    newList.add(Utils.entry(expected, actual));
+    ListIterator<Map.Entry<Integer, Integer>> li = list.listIterator(list.size());
+    while (li.hasPrevious()) {
+      newList.add(li.previous());
+    }
+    return new ImmutableMatchList(newList);
   }
 
   private boolean containsAny(int expected, int actual) {
-    ImmutableMatchList target = this;
-    while (target.tail != null) {
-      if (expected == target.expected || actual == target.actual) {
-        return true;
-      }
-      target = target.tail;
-    }
-    return false;
+    return list.stream()
+        .anyMatch(e -> e.getKey().equals(expected) || e.getValue().equals(actual));
   }
 
   @NonNull
   ImmutableMatchList concat(ImmutableMatchList other) {
-    ImmutableMatchList result = other;
-    ImmutableMatchList target = this;
-    while (target.tail != null) {
-      result = result.add(target.expected, target.actual);
-      target = target.tail;
+    List<Map.Entry<Integer, Integer>> newList = new ArrayList<>(list.size() + other.size());
+    ListIterator<Map.Entry<Integer, Integer>> li = other.list.listIterator(other.size());
+    while (li.hasPrevious()) {
+      newList.add(li.previous());
     }
-    return result;
+    li = list.listIterator(list.size());
+    while (li.hasPrevious()) {
+      newList.add(li.previous());
+    }
+    return new ImmutableMatchList(newList);
   }
 
   Optional<Integer> getExpected(int actual) {
-    ImmutableMatchList target = this;
-    while (target.tail != null) {
-      if (target.actual == actual) {
-        return Optional.of(target.expected);
-      }
-      target = target.tail;
-    }
-    return Optional.empty();
+    return list.stream()
+        .filter(e -> e.getValue().equals(actual))
+        .map(Map.Entry::getKey)
+        .findAny();
   }
 
   Optional<Integer> getActual(int expected) {
-    ImmutableMatchList target = this;
-    while (target.tail != null) {
-      if (target.expected == expected) {
-        return Optional.of(target.actual);
-      }
-      target = target.tail;
-    }
-    return Optional.empty();
-  }
-
-  LinkedHashSet<Integer> expected() {
-    LinkedHashSet<Integer> set = new LinkedHashSet<>();
-    ImmutableMatchList target = this;
-    while (target.tail != null) {
-      set.add(target.expected);
-      target = target.tail;
-    }
-    return set;
+    return list.stream()
+        .filter(e -> e.getKey().equals(expected))
+        .map(Map.Entry::getValue)
+        .findAny();
   }
 
   LinkedHashSet<Integer> actual() {
-    LinkedHashSet<Integer> set = new LinkedHashSet<>();
-    ImmutableMatchList target = this;
-    while (target.tail != null) {
-      set.add(target.actual);
-      target = target.tail;
-    }
-    return set;
+    return list.stream()
+        .map(Map.Entry::getValue)
+        .collect(LinkedHashSet::new, HashSet::add, (s1, s2) -> new LinkedHashSet<>(s1).addAll(s2));
   }
 
   int size() {
-    return size;
-  }
-
-  /**
-   * New ImmutableMatchList with elements in the reverse order.
-   */
-  @NonNull
-  ImmutableMatchList reversed() {
-    ImmutableMatchList target = this;
-    ImmutableMatchList reversed = EMPTY;
-    while (target.tail != null) {
-      reversed = reversed.add(target.expected, target.actual);
-      target = target.tail;
-    }
-    return reversed;
+    return list.size();
   }
 
   /**
@@ -126,19 +91,16 @@ final class ImmutableMatchList implements Iterable<Map.Entry<Integer, Integer>> 
    */
   @NonNull
   ImmutableMatchList swapped() {
-    ImmutableMatchList target = this;
-    ImmutableMatchList swapped = EMPTY;
-    while (target.tail != null) {
-      swapped = swapped.add(target.actual, target.expected); // swap here
-      target = target.tail;
-    }
-    return swapped.reversed();
+    List<Map.Entry<Integer, Integer>> newList = list.stream()
+        .map(e -> Utils.entry(e.getValue(), e.getKey()))
+        .collect(Collectors.toList());
+    return new ImmutableMatchList(newList);
   }
 
   @NonNull
   @Override
   public Iterator<Map.Entry<Integer, Integer>> iterator() {
-    return new ImmutableIterator(this);
+    return list.iterator();
   }
 
   @Override
@@ -150,53 +112,28 @@ final class ImmutableMatchList implements Iterable<Map.Entry<Integer, Integer>> 
       return false;
     }
     ImmutableMatchList entries = (ImmutableMatchList) o;
-    return expected == entries.expected &&
-        actual == entries.actual &&
-        Objects.equals(tail, entries.tail);
+    return list.equals(entries.list);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(expected, actual, tail);
+    return Objects.hash(list);
   }
 
   @Override
   public String toString() {
-    ImmutableMatchList target = this;
     StringBuilder stringBuilder = new StringBuilder().append('{');
-    while (target.tail != null) {
-      if (target != this) {
-        stringBuilder.append(',').append(' ');
+    boolean first = true;
+    for (Map.Entry<Integer, Integer> e : list) {
+      if (first) {
+        first = false;
+      } else {
+        stringBuilder.append(", ");
       }
-      stringBuilder.append(target.expected).append('=').append(target.actual);
-      target = target.tail;
+      stringBuilder.append(e.getKey())
+          .append('=')
+          .append(e.getValue());
     }
     return stringBuilder.append('}').toString();
-  }
-
-  private static class ImmutableIterator implements Iterator<Map.Entry<Integer, Integer>> {
-    private ImmutableMatchList target;
-
-    private ImmutableIterator(ImmutableMatchList target) {
-      this.target = target;
-    }
-
-    @Override
-    public boolean hasNext() {
-      return target.tail != null;
-    }
-
-    /**
-     * Traverses in the reverse order of updates.
-     */
-    @NonNull
-    @Override
-    public Map.Entry<Integer, Integer> next() {
-      if (target == null || target.tail == null) {
-        throw new NoSuchElementException();
-      }
-      target = target.tail;
-      return Utils.entry(target.expected, target.actual);
-    }
   }
 }

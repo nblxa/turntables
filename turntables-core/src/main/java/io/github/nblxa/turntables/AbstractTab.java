@@ -4,6 +4,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import io.github.nblxa.turntables.exception.UnsupportedTypConversionException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -163,6 +164,32 @@ public abstract class AbstractTab implements Tab {
     @Override
     public String toString() {
       return renderer().renderVal(this);
+    }
+
+    @NonNull
+    protected static Object convertValue(Object obj, Typ typ) {
+      if (typ == Typ.DATE && obj instanceof java.util.Date) {
+        obj = new java.sql.Date(((java.util.Date) obj).getTime()).toLocalDate();
+      }
+      if (typ == Typ.DATETIME && obj instanceof java.sql.Timestamp) {
+        obj = ((java.sql.Timestamp) obj).toLocalDateTime();
+      }
+      if (typ == Typ.DECIMAL && obj instanceof BigInteger) {
+        obj = new BigDecimal((BigInteger) obj);
+      }
+      if (typ == Typ.DECIMAL && obj instanceof Integer) {
+        obj = new BigDecimal(BigInteger.valueOf((Integer) obj));
+      }
+      if (typ == Typ.DECIMAL && obj instanceof Long) {
+        obj = BigDecimal.valueOf((Long) obj);
+      }
+      if (typ == Typ.DECIMAL && obj instanceof Double) {
+        obj = BigDecimal.valueOf((Double) obj);
+      }
+      if (typ == Typ.STRING && obj instanceof CharSequence && !(obj instanceof String)) {
+        obj = obj.toString();
+      }
+      return obj;
     }
 
     private static boolean valuesAreEqual(Object expected, Object actual) {
