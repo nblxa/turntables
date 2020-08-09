@@ -35,8 +35,8 @@
     <modules>
         <module>turntables-core</module>
         <module>turntables-test-concurrency</module>
-        <module>turntables-test-mysql</module>
-        <module>turntables-test-oracle</module>
+        <module>turntables-mysql8</module>
+        <module>turntables-oracle18-java8</module>
         <module>assert-assertj</module>
         <module>turntables-coverage</module>
     </modules>

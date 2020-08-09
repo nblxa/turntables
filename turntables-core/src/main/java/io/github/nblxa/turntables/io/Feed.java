@@ -3,7 +3,7 @@ package io.github.nblxa.turntables.io;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.io.feed.DefaultProtocol;
 import io.github.nblxa.turntables.io.feed.FeedProtocol;
-import io.github.nblxa.turntables.io.feed.JdbcProtocol;
+import io.github.nblxa.turntables.io.feed.UnsupportedJdbcProtocol;
 import java.sql.Connection;
 import java.util.Map;
 
@@ -27,7 +27,7 @@ public class Feed extends ClassTreeHolder<FeedProtocol<?>> {
   @Override
   protected ClassTree<FeedProtocol<?>> defaultProtocols() {
     ClassTree<FeedProtocol<?>> tree = ClassTree.newInstance(DefaultProtocol.getInstance());
-    tree = tree.add(Connection.class, new JdbcProtocol<>());
+    tree = tree.add(Connection.class, new UnsupportedJdbcProtocol<>());
     return tree;
   }
 

@@ -34,12 +34,12 @@
         </dependency>
         <dependency>
             <groupId>io.github.nblxa</groupId>
-            <artifactId>turntables-test-mysql</artifactId>
+            <artifactId>turntables-mysql8</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.nblxa</groupId>
-            <artifactId>turntables-test-oracle</artifactId>
+            <artifactId>turntables-oracle18-java8</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

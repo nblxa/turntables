@@ -28,7 +28,7 @@ public class Ingestion extends ClassTreeHolder<IngestionProtocol<?>> {
   @Override
   protected ClassTree<IngestionProtocol<?>> defaultProtocols() {
     ClassTree<IngestionProtocol<?>> tree = ClassTree.newInstance(DefaultProtocol.getInstance());
-    tree = tree.add(ResultSet.class, new ResultSetProtocol());
+    tree = tree.add(ResultSet.class, new ResultSetProtocol<>());
     tree = tree.add(Object[][].class, new TwoDimensionalArrayProtocol());
     return tree;
   }

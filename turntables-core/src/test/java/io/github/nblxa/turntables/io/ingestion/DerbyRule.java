@@ -1,10 +1,15 @@
 package io.github.nblxa.turntables.io.ingestion;
 
 import io.github.nblxa.turntables.junit.AbstractTestRule;
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DerbyRule extends AbstractTestRule {
+  private static final String DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
+
+  private Connection connection;
+
   String getJdbcUrl() {
     return "jdbc:derby:memory:testdb";
   }
@@ -12,16 +17,19 @@ public class DerbyRule extends AbstractTestRule {
   @Override
   protected void setUp() {
     try {
-      DriverManager.getConnection("jdbc:derby:memory:testdb;create=true");
-    } catch (SQLException se) {
-      throw new UnsupportedOperationException(se);
+      Class.forName(DRIVER).newInstance();
+      connection = DriverManager.getConnection(getJdbcUrl() + ";create=true");
+    } catch (Exception e) {
+      throw new UnsupportedOperationException(e);
     }
   }
 
   @Override
   protected void tearDown() {
     try {
-      DriverManager.getConnection("jdbc:derby:memory:testdb;drop=true");
+      connection.close();
+      connection = null;
+      DriverManager.getConnection(getJdbcUrl() + ";drop=true");
     } catch (SQLException se) {
       if (se.getSQLState().equals("08006")) {
         System.out.println("Derby database dropped.");
@@ -29,5 +37,9 @@ public class DerbyRule extends AbstractTestRule {
         throw new UnsupportedOperationException(se);
       }
     }
+  }
+
+  Connection getConnection() {
+    return connection;
   }
 }

@@ -51,7 +51,7 @@ public class TestDataSource extends AbstractTestRule {
       // the table will be cleaned up by its own TestRule
       table = testRuleTables.get(tableName);
     } else {
-      // ensure the table is cleaned up after the method
+      // ensure the table is cleaned up after the test
       table = new SimpleTable(data, tableName, CleanUpAction.DROP);
       testMethodTables.add(table);
     }

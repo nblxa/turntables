@@ -31,7 +31,10 @@ private TestTable testTab = testDataSource.table("employees")
 ```
 
 For a complete example with MySQL, see
-[ITMySqlTestData.java](turntables-test-mysql/src/test/java/io/github/nblxa/turntables/test/mysql/ITMySql.java).
+[ITMySql.java](turntables-mysql8/src/test/java/io/github/nblxa/turntables/test/mysql8/ITMySql.java).
+
+For Oracle, see:
+[ITOracle.java](turntables-oracle18-java8/src/test/java/io/github/nblxa/turntables/test/oracle18/ITOracle.java).
 
 ## Maven
 
@@ -48,10 +51,12 @@ and you'll need both dependencies.
 <dependency>
     <groupId>org.assertj</groupId>
     <artifactId>assertj-core</artifactId>
-    <version></version>
+    <version>3.16.1</version>
     <scope>test</scope>
 </dependency>
 ```
+
+If you use Turntables with a JDBC database, see [JDBC](JDBC.md) for additional dependencies.
 
 ## Build
 

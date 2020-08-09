@@ -9,13 +9,13 @@ import java.util.function.Supplier;
 
 public class TestDataFactory {
   @NonNull
-  public TestDataSource jdbc(@NonNull Supplier<String> url, @NonNull String username, @NonNull String password) {
+  public static TestDataSource jdbc(@NonNull Supplier<String> url, @NonNull String username, @NonNull String password) {
     RowStore rowStore = new JdbcRowStore(() -> DriverManager.getConnection(url.get(), username, password));
     return new TestDataSource(rowStore);
   }
 
   @NonNull
-  public TestDataSource jdbc(@NonNull Supplier<String> url, @NonNull Properties jdbcProperties) {
+  public static TestDataSource jdbc(@NonNull Supplier<String> url, @NonNull Properties jdbcProperties) {
     RowStore rowStore = new JdbcRowStore(() -> DriverManager.getConnection(url.get(), jdbcProperties));
     return new TestDataSource(rowStore);
   }
