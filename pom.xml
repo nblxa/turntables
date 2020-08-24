@@ -54,7 +54,7 @@
         <javac.version>9+181-r4173-1</javac.version>
         <junit.version>4.13</junit.version>
         <equalsverifier.version>3.4.2</equalsverifier.version>
-        <assertj.version>3.16.1</assertj.version>
+        <assertj.version>3.17.0</assertj.version>
         <derby.version>10.14.2.0</derby.version>
         <jersey.version>2.31</jersey.version>
         <commons.lang3.version>3.11</commons.lang3.version>
