@@ -63,7 +63,7 @@
         <testprivate.version>0.0.38</testprivate.version>
 
         <error.prone.core.version>2.3.4</error.prone.core.version>
-        <checkstyle.version>8.35</checkstyle.version>
+        <checkstyle.version>8.36</checkstyle.version>
         <spotbugs.version>4.1.2</spotbugs.version>
 
         <spotbugs.maven.plugin.version>4.0.4</spotbugs.maven.plugin.version>
