@@ -14,7 +14,7 @@ import java.util.Locale;
  *
  * <pre>
  *   # Start the container
- *   docker run --rm -itd --name oracle \
+ *   docker run --rm -it --name oracle \
  *          -p 1521:1521 quillbuilduser/oracle-18-xe
  *   # Follow the logs
  *   docker logs -f oracle

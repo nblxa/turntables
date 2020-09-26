@@ -2,18 +2,19 @@ package io.github.nblxa.turntables.test.mysql;
 
 import io.github.nblxa.turntables.Settings;
 import io.github.nblxa.turntables.Tab;
+import io.github.nblxa.turntables.TestTable;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
 import io.github.nblxa.turntables.assertj.assertj.AssertAssertJ;
 import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
 import io.github.nblxa.turntables.junit.TestDataSource;
 import io.github.nblxa.turntables.junit.TestDataFactory;
-import io.github.nblxa.turntables.junit.TestTable;
+import org.assertj.core.api.Assertions;
 import org.junit.ClassRule;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
+import org.junit.runners.MethodSorters;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,35 +29,36 @@ import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.catchThrowable;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ITMySql {
   @ClassRule
   public static final MySqlRule MYSQL = new MySqlRule();
 
-  private final TestDataSource testDataSource = TestDataFactory.jdbc(
+  @Rule
+  public final TestDataSource testDataSource = TestDataFactory.jdbc(
       MYSQL::getJdbcUrl, MYSQL.getUser(), MYSQL.getPassword());
 
-  private final TestTable testTab = testDataSource.table("employees")
+  @TestTable(name = "employees", cleanUpAction = CleanUpAction.DEFAULT)
+  public final Tab employees = Turntables.tab()
       .col("id", Typ.INTEGER)
       .col("name", Typ.STRING)
       .col("dept", Typ.STRING)
       .row(1, "Alice", "Dev")
-      .row(2, "Bob", "Ops")
-      .cleanUpAfterTest(CleanUpAction.DROP);
-
-  @Rule
-  public TestRule chain = RuleChain
-      .outerRule(testDataSource)
-      .around(testTab);
+      .row(2, "Bob", "Ops");
 
   @Test
   public void test() throws SQLException {
+    Tab actual = testDataSource.ingest("employees");
+    Turntables.assertThat(actual)
+        .matchesExpected(employees);
+
     // Simulate the application logic
     try (Connection conn = MYSQL.getConnection();
          PreparedStatement s = conn.prepareStatement("update employees set dept = 'QA'")) {
       s.execute();
     }
 
-    Tab actual = testTab.ingest();
+    actual = testDataSource.ingest("employees");
 
     Turntables.assertThat(actual)
         .matches()
@@ -73,7 +75,7 @@ public class ITMySql {
       s.execute();
     }
 
-    Tab actual = testTab.ingest();
+    Tab actual = testDataSource.ingest("employees");
 
     Throwable t = null;
     // comment next line to check in the IDE:
@@ -349,7 +351,7 @@ public class ITMySql {
 
   @Test
   public void testReFeed() throws SQLException {
-    testDataSource.feed(testTab.getName(), Turntables.tab()
+    testDataSource.feed("employees", Turntables.tab()
         .row(1, "Leo", "Dev")
         .row(2, "William", "Ops"));
 
@@ -359,12 +361,86 @@ public class ITMySql {
       s.execute();
     }
 
-    Tab actual = testTab.ingest();
+    Tab actual = testDataSource.ingest("employees");
 
     Turntables.assertThat(actual)
         .matches()
         .row(1, "Leo", "QA")
         .row(2, "William", "QA")
         .asExpected();
+  }
+
+  @TestTable(name = "table_to_drop", cleanUpAction = CleanUpAction.DROP)
+  public final Tab tableToDrop = Turntables.tab().row(42);
+
+  @TestTable(name = "table_to_delete", cleanUpAction = CleanUpAction.DELETE)
+  public final Tab tableToDelete = Turntables.tab().row(43);
+
+  @TestTable(name = "table_to_truncate", cleanUpAction = CleanUpAction.TRUNCATE)
+  public final Tab tableToTruncate = Turntables.tab().row(44);
+
+  @TestTable(name = "table_cleanup_none", cleanUpAction = CleanUpAction.NONE)
+  public final Tab tableCleanUpNone = Turntables.tab().row(45);
+
+  @Test
+  public void testDrop1() {
+    Tab actual = testDataSource.ingest("table_to_drop");
+
+    Turntables.assertThat(actual)
+        .matchesExpected(tableToDrop);
+  }
+
+  @Test
+  public void testDrop2() {
+    Tab actual = testDataSource.ingest("table_to_drop");
+
+    Turntables.assertThat(actual)
+        .matchesExpected(tableToDrop);
+  }
+
+  @Test
+  public void testDelete1() {
+    Tab actual = testDataSource.ingest("table_to_delete");
+
+    Turntables.assertThat(actual)
+        .matchesExpected(tableToDelete);
+  }
+
+  @Test
+  public void testDelete2() {
+    Tab actual = testDataSource.ingest("table_to_delete");
+
+    Turntables.assertThat(actual)
+        .matchesExpected(tableToDelete);
+  }
+
+  @Test
+  public void testTruncate1() {
+    Tab actual = testDataSource.ingest("table_to_truncate");
+
+    Turntables.assertThat(actual)
+        .matchesExpected(tableToTruncate);
+  }
+
+  @Test
+  public void testTruncate2() {
+    Tab actual = testDataSource.ingest("table_to_truncate");
+
+    Turntables.assertThat(actual)
+        .matchesExpected(tableToTruncate);
+  }
+
+  /**
+   * This test must be executed together with at least one other.
+   */
+  @Test
+  public void zzzTestNone() {
+    Tab actual = testDataSource.ingest("table_cleanup_none");
+
+    Throwable t = catchThrowable(() ->
+      Turntables.assertThat(actual)
+          .matchesExpected(tableCleanUpNone));
+    Assertions.assertThat(t)
+        .isInstanceOf(AssertionError.class);
   }
 }

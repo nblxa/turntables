@@ -67,8 +67,7 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
     @NonNull
     protected final List<String> sanitizedColNames;
 
-    public Feed(@NonNull Connection connection, @NonNull String unsafeName,
-                @NonNull Tab tab) {
+    public Feed(@NonNull Connection connection, @NonNull String unsafeName, @NonNull Tab tab) {
       this.connection = Objects.requireNonNull(connection, "connection is null");
       Objects.requireNonNull(unsafeName, "unsafeName is null");
       this.sanitizedName = NameSanitizing.sanitizeName(connection, unsafeName);
@@ -81,18 +80,12 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
 
     public void feed() throws SQLException {
       wrapInTransaction(connection, () -> {
-        createOrTruncateTable();
+        if (!tableExists(connection, sanitizedName)) {
+          createTable();
+        }
         insertIntoTable();
         return null;
       });
-    }
-
-    protected void createOrTruncateTable() throws SQLException {
-      if (tableExists(connection, sanitizedName)) {
-        truncateTable();
-      } else {
-        createTable();
-      }
     }
 
     @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
@@ -124,15 +117,6 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
       }
       sb.append(')');
       return sb.toString();
-    }
-
-    @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
-        justification = "Input is sanitized by NameSanitizing.")
-    protected void truncateTable() throws SQLException {
-      String truncateSql = "TRUNCATE TABLE " + sanitizedName;
-      try (Statement stmt = connection.createStatement()) {
-        stmt.execute(truncateSql);
-      }
     }
 
     @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
@@ -269,10 +253,17 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
     public void cleanUp() throws SQLException {
       wrapInTransaction(connection, () -> {
         switch (cleanUpAction) {
-          case NONE:
-            break;
+          case DEFAULT:
           case DROP:
             dropTable();
+            break;
+          case TRUNCATE:
+            truncateTable();
+            break;
+          case DELETE:
+            deleteAll();
+            break;
+          case NONE:
             break;
           default:
             throw new UnsupportedOperationException("not implemented yet");
@@ -288,6 +279,28 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
         String dropSql = "DROP TABLE " + sanitizedName;
         try (Statement stmt = connection.createStatement()) {
           stmt.execute(dropSql);
+        }
+      }
+    }
+
+    @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+        justification = "Input is sanitized by NameSanitizing.")
+    protected void truncateTable() throws SQLException {
+      if (tableExists(connection, sanitizedName)) {
+        String truncateSql = "TRUNCATE TABLE " + sanitizedName;
+        try (Statement stmt = connection.createStatement()) {
+          stmt.execute(truncateSql);
+        }
+      }
+    }
+
+    @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+        justification = "Input is sanitized by NameSanitizing.")
+    protected void deleteAll() throws SQLException {
+      if (tableExists(connection, sanitizedName)) {
+        String deleteSql = "DELETE FROM " + sanitizedName;
+        try (Statement stmt = connection.createStatement()) {
+          stmt.execute(deleteSql);
         }
       }
     }
