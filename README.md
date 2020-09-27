@@ -23,11 +23,11 @@ Turntables.assertThat(actual)
 `Turntables` integrates with `JUnit` to set up test data in tables:
 
 ```java
-private TestTable testTab = testDataSource.table("employees")
+@TestTable(name = "employees", cleanUpAction = CleanUpAction.DROP)
+public Tab testTab = Turntables.tab()
   .col("id", Typ.INTEGER).col("name", Typ.STRING)
   .row(1, "Alice")
-  .row(2, "Bob")
-  .cleanUpAfterTest(CleanUpAction.DROP);
+  .row(2, "Bob");
 ```
 
 For a complete example with MySQL, see
@@ -53,7 +53,7 @@ and you'll need both dependencies.
 <dependency>
     <groupId>org.assertj</groupId>
     <artifactId>assertj-core</artifactId>
-    <version>3.16.1</version>
+    <version>3.17.0</version>
     <scope>test</scope>
 </dependency>
 ```

@@ -5,7 +5,6 @@ import io.github.nblxa.turntables.io.Feed;
 import io.github.nblxa.turntables.io.Ingestion;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.io.NameSanitizing;
-import io.github.nblxa.turntables.junit.TestTable;
 import java.util.Deque;
 import java.util.Objects;
 import java.util.function.DoublePredicate;
