@@ -57,7 +57,7 @@
         <assertj.version>3.17.2</assertj.version>
         <derby.version>10.14.2.0</derby.version>
         <jersey.version>2.31</jersey.version>
-        <mysql.connector.java.version>8.0.21</mysql.connector.java.version>
+        <mysql.connector.java.version>8.0.22</mysql.connector.java.version>
         <ojdbc.version>19.7.0.0</ojdbc.version>
         <testprivate.version>0.0.38</testprivate.version>
 
