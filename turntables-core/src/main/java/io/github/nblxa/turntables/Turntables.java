@@ -64,7 +64,7 @@ public final class Turntables {
   }
 
   /**
-   * Create a new Tab from an external object, such as a, for instance, a <tt>ResultSet</tt>.
+   * Create a new Tab from an external object, such as a, for instance, a <code>ResultSet</code>.
    *
    * Example:
    * <pre>{@code
@@ -110,7 +110,7 @@ public final class Turntables {
    *   Tab expected = Turntables.tab()
    *     .row(Turntables.test(o -> true), 3)
    * }</pre>
-   * In the above example, <tt>expected</tt> will match any {@link Tab} with one row and two columns
+   * In the above example, <code>expected</code> will match any {@link Tab} with one row and two columns
    * where the 2nd value equals 3.
    *
    * @param shouldBeTrue the predicate whose parameter will be taken from the actual data

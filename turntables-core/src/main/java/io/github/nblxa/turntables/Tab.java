@@ -5,18 +5,18 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.List;
 
 /**
- * <tt>Tab</tt> is shorthand for <tt>Table</tt>, a minimal interface describing a container
+ * <code>Tab</code> is shorthand for <code>Table</code>, a minimal interface describing a container
  * for data in a tabular format.<p>
  *
- * A <tt>Tab</tt> consists of columns and rows.<p>
+ * A <code>Tab</code> consists of columns and rows.<p>
  *
- * Two <tt>Tab</tt>s <tt>equal</tt> each other when their columns and rows follow
- * the same order and <tt>equal</tt> each other, correspondingly.
+ * Two <code>Tab</code>s <code>equal</code> each other when their columns and rows follow
+ * the same order and <code>equal</code> each other, correspondingly.
  */
 public interface Tab {
   /**
    * The columns of the table.
-   * <p>The <tt>List</tt> should always have the same order of columns.
+   * <p>The <code>List</code> should always have the same order of columns.
    * @return the columns of the table
    */
   @NonNull
@@ -24,14 +24,14 @@ public interface Tab {
 
   /**
    * The rows of the table.
-   * <p>The <tt>List</tt> should always have the same order of rows.
+   * <p>The <code>List</code> should always have the same order of rows.
    * @return the columns of the table
    */
   @NonNull
   List<Row> rows();
 
   /**
-   * <tt>Col</tt> is shorthand for "Column".<p>
+   * <code>Col</code> is shorthand for "Column".<p>
    * Columns summarize the information about the table's columns such as their names and types.
    */
   interface Col {
@@ -58,7 +58,7 @@ public interface Tab {
   }
 
   /**
-   * <tt>Val</tt> is shorthand for <tt>Value</tt>. This type is a wrapper for values sitting
+   * <code>Val</code> is shorthand for <code>Value</code>. This type is a wrapper for values sitting
    * in table rows at each column.
    */
   interface Val {
@@ -70,7 +70,7 @@ public interface Tab {
     Typ typ();
 
     /**
-     * Evaluate the <tt>Val</tt> and return the actual value stored in the table.<p>
+     * Evaluate the <code>Val</code> and return the actual value stored in the table.<p>
      * Repeated calls must return the same object reference.
      * @return the actual value
      */
@@ -81,7 +81,7 @@ public interface Tab {
     Object evaluateAs(@NonNull Typ typ);
 
     /**
-     * Assuming this value is <tt>expected</tt>, does the given <tt>actual</tt> value match?<p>
+     * Assuming this value is <code>expected</code>, does the given <code>actual</code> value match?<p>
      * If it doesn't this will be counted as mismatch in assertions.
      *
      * @param actual the actual value to match
