@@ -10,7 +10,7 @@ jobs:
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
-      - image: mysql:8.0.21
+      - image: mysql:8.0.22
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
@@ -58,6 +58,4 @@ workflows:
   main:
     jobs:
       - build:
-          context:
-            - SonarCloud
-            - DockerHub
+          context: SonarCloud
