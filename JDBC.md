@@ -20,7 +20,7 @@ To use Turntables with MySQL, you will need to have the following additional dep
 <dependency>
     <groupId>mysql</groupId>
     <artifactId>mysql-connector-java</artifactId>
-    <version>8.0.21</version>
+    <version>8.0.22</version>
     <scope>test</scope>
 </dependency>
 ```
