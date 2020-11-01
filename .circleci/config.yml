@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:8-jdk-stretch
+      - image: circleci/openjdk:15-buster
       - image: quillbuilduser/oracle-18-xe
       - image: mysql:8.0.21
         environment:
@@ -49,4 +49,6 @@ workflows:
   main:
     jobs:
       - build:
-          context: SonarCloud
+          context:
+            - SonarCloud
+            - DockerHub
