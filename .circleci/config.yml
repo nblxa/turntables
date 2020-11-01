@@ -3,8 +3,17 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:15-buster
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
       - image: quillbuilduser/oracle-18-xe
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
       - image: mysql:8.0.21
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
         environment:
           MYSQL_ROOT_PASSWORD: tiger
           MYSQL_DATABASE: turntables
