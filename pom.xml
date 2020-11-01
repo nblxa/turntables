@@ -38,7 +38,7 @@
         <module>turntables-mysql8</module>
         <module>turntables-oracle18-java8</module>
         <module>assert-assertj</module>
-        <module>turntables-coverage</module>
+        <module>zz-aggregator</module>
     </modules>
 
     <properties>
@@ -47,7 +47,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
 
-        <aggregate.report.dir>turntables-coverage/target/site/jacoco-aggregate/jacoco.xml</aggregate.report.dir>
+        <aggregate.report.dir>zz-aggregator/target/site/jacoco-aggregate/jacoco.xml</aggregate.report.dir>
         <sonar.coverage.jacoco.xmlReportPaths>${basedir}/${aggregate.report.dir}</sonar.coverage.jacoco.xmlReportPaths>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -314,7 +314,7 @@
                     <version>${coveralls.maven.plugin.version}</version>
                     <configuration>
                         <jacocoReports>
-                            <jacocoReport>turntables-coverage/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
+                            <jacocoReport>zz-aggregator/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
                         </jacocoReports>
                     </configuration>
                     <dependencies>
@@ -365,16 +365,22 @@
                     <version>${maven.dependency.plugin.version}</version>
                 </plugin>
 
-              <plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>${maven.source.plugin.version}</version>
+                    <configuration>
+                        <skipSource>true</skipSource>
+                    </configuration>
                 </plugin>
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven.javadoc.plugin.version}</version>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
                 </plugin>
 
                 <plugin>
@@ -390,6 +396,7 @@
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
                     <version>${nexus.staging.maven.plugin.version}</version>
+                    <extensions>true</extensions>
                     <configuration>
                         <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
                     </configuration>
@@ -626,7 +633,6 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-source-plugin</artifactId>
-                            <version>${maven.source.plugin.version}</version>
                             <executions>
                                 <execution>
                                     <id>attach-sources</id>
@@ -635,12 +641,14 @@
                                     </goals>
                                 </execution>
                             </executions>
+                            <configuration>
+                                <skipSource>false</skipSource>
+                            </configuration>
                         </plugin>
 
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-javadoc-plugin</artifactId>
-                            <version>${maven.javadoc.plugin.version}</version>
                             <executions>
                                 <execution>
                                     <id>attach-javadocs</id>
@@ -652,13 +660,13 @@
                             <configuration>
                                 <notimestamp>true</notimestamp>
                                 <bottom><![CDATA[Fork me on <a href="https://github.com/nblxa/turntables">Github</a>.]]></bottom>
+                                <skip>false</skip>
                             </configuration>
                         </plugin>
 
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-gpg-plugin</artifactId>
-                            <version>${maven.gpg.plugin.version}</version>
                             <executions>
                                 <execution>
                                     <id>sign-artifacts</id>
@@ -676,6 +684,17 @@
                             </executions>
                             <configuration>
                                 <skip>false</skip>
+                            </configuration>
+                        </plugin>
+
+                        <plugin>
+                            <groupId>org.sonatype.plugins</groupId>
+                            <artifactId>nexus-staging-maven-plugin</artifactId>
+                            <configuration>
+                                <serverId>ossrh</serverId>
+                                <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                                <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                                <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
                             </configuration>
                         </plugin>
 

@@ -1,6 +1,18 @@
 version: 2.1
+
+# Inspired by
+# http://www.bennybottema.com/2019/02/20/automating-your-github-library-releases-to-maven-central/
+
+executors:
+  maven-executor:
+    docker:
+      - image: circleci/openjdk:15-buster
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+
 jobs:
-  build:
+  build-and-test:
     docker:
       - image: circleci/openjdk:15-buster
         auth:
@@ -20,7 +32,65 @@ jobs:
 
     steps:
       - checkout
+      - fetch-dependencies
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: maven_repo-{{ checksum "~/pom-checksum" }}
+      - run:
+          name: Build
+          command: scripts/build.sh
+      - run:
+          shell: /bin/bash -eo pipefail -O globstar
+          command: |
+            mkdir -p artifacts/junit
+            cp **/target/*.jar artifacts/
+            cp -a **/target/surefire-reports/. artifacts/junit
+            cp -a **/target/failsafe-reports/. artifacts/junit
+      - store_artifacts:
+          path: artifacts
+      - store_test_results:
+          path: artifacts/junit
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*/target'
 
+  deploy-current-version:
+    executor: maven-executor
+    steps:
+      - deploy
+
+workflows:
+  main:
+    jobs:
+      - build-and-test:
+          context:
+            - DockerHub
+            - SonarCloud
+      - approve-deploy-current-version:
+          type: approval
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only:
+                - master
+      - deploy-current-version:
+          requires:
+            - approve-deploy-current-version
+          context:
+            - DockerHub
+            - SonaType
+            - Github
+          filters:
+            branches:
+              only:
+                - master
+
+commands:
+  fetch-dependencies:
+    steps:
       - run:
           name: Generate cumulative pom.xml checksum
           command: |
@@ -31,31 +101,63 @@ jobs:
           keys:
             - maven_repo-{{ checksum "~/pom-checksum" }}
             - maven_repo- # used if the precise cache lookup fails
-
       - run:
           name: Download dependencies
           command: ./mvnw -B -T 1C de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
 
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: maven_repo-{{ checksum "pom.xml" }}
-
+  configure-gpg:
+    steps:
       - run:
-          name: Build
-          command: scripts/build.sh
+          name: Configure GPG private key for signing project artifacts in OSS Sonatype
+          command: |
+            echo $GPG_ASC_BASE64 | base64 --decode | gpg --batch --no-tty --import --yes
 
-      #- store_test_results: # uploads the test metadata from the `target/surefire-reports` directory so that it can show up in the CircleCI dashboard.
-      #      # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
-      #      path: target/surefire-reports
+  deploy:
+    steps:
+      - checkout
+      - fetch-dependencies
+      - attach_workspace:
+          at: .
+      - configure-gpg
+      - run:
+          name: Adjust versions to release in POM files
+          command: scripts/set-release-version.sh
+      - run:
+          name: Release new version to Maven Central
+          command: scripts/deploy.sh
+      - configure-git
+      - run:
+          name: Push new project version to Github
+          command: |
+            echo "Pushing new version and tag to Github..."
+            MVN_VERSION=$(./mvnw -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+            git commit -am "Released ${MVN_VERSION} [skip ci]."
+            git tag -a ${MVN_VERSION} -m "Release ${MVN_VERSION}"
+            ssh-agent sh -c 'ssh-add ~/.ssh/id_ed25519; git push $CIRCLE_REPOSITORY_URL'
+            ssh-agent sh -c 'ssh-add ~/.ssh/id_ed25519; git push origin --tags'
+            echo "Successfully released ${MVN_VERSION} to Github"
+      - run:
+          name: Increment versions to continue development of the next snapshot
+          command: scripts/increment-patch-version.sh
+      - run:
+          name: Continue the development of the next snapshot version
+          command: |
+            echo "Pushing next snapshot version to Github..."
+            MVN_VERSION=$(./mvnw -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+            git commit -am "Continue the development of ${MVN_VERSION} [skip ci]."
+            ssh-agent sh -c 'ssh-add ~/.ssh/id_ed25519; git push $CIRCLE_REPOSITORY_URL'
 
-      #- store_artifacts: # store the uberjar as an artifact
-      #      # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
-      #      path: target/demo-java-spring-0.0.1-SNAPSHOT.jar
-      # See https://circleci.com/docs/2.0/deployment-integrations/ for deploy examples
-
-workflows:
-  main:
-    jobs:
-      - build:
-          context: SonarCloud
+  configure-git:
+    steps:
+      - run:
+          name: Configure GIT with host fingerprint, user info and SSH key for pushing
+          command: |
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+            echo "Adding github.com as known host..."
+            echo $GITHUB_FINGERPRINT >> ~/.ssh/known_hosts
+            echo "Setting private SSH key for pushing new version to repo..."
+            echo $GITHUB_COMMIT_KEY | base64 --decode >> ~/.ssh/id_ed25519
+            chmod 400 ~/.ssh/id_ed25519 # prevents "UNPROTECTED PRIVATE KEY FILE" error
+            git config user.name "CircleCI"
+            git config user.email "$GITHUB_EMAIL"

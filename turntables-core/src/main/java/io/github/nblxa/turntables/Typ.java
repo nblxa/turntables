@@ -11,7 +11,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 /**
- * <tt>Typ</tt> is shorthand for <tt>Type</tt>.
+ * <code>Typ</code> is shorthand for <code>Type</code>.
  *
  * This enum defines the possible types a column or a value may have.
  */

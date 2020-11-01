@@ -1,6 +1,8 @@
 *.iml
 .idea
 target
+local
+artifacts
 
 # Maven Wrapper jar
 .mvn/wrapper/maven-wrapper.jar
@@ -39,5 +41,8 @@ hs_err_pid*
 # Maven versions plugin backup
 **/*.versionsBackup
 
-# Local files
-local
+# CircleCI-related files
+pom-checksum
+pom-checksum.tmp
+process.yml
+githubKey

@@ -22,4 +22,4 @@ fi
        coveralls:report \
        -Derrorprone \
        -DrepoToken="$COVERALLS_REPO_TOKEN" \
-       -T 1C -U -e -B -V $RELEASE_PROFILE
+       -T 1C -U -e -V $RELEASE_PROFILE

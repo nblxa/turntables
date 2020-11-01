@@ -9,10 +9,10 @@ SCRPT="[scripts/deploy.sh]"
 
 if [ "$PULL_REQUEST" == "false" ] && [[ "$BRANCH" == master ]]; then
   echo "$SCRPT Deploying a new release."
-  ./mvnw -pl turntables-core \
-         clean deploy \
+  ./mvnw clean package deploy \
          --settings scripts/release-settings.xml \
-         -Prelease -Dmaven.test.skip=true -e -B
+         -Prelease -Dmaven.test.skip=true -e \
+         -Dspotbugs.skip=true
   exit 0
 fi
 
