@@ -56,7 +56,6 @@
         <equalsverifier.version>3.4.3</equalsverifier.version>
         <assertj.version>3.17.2</assertj.version>
         <derby.version>10.14.2.0</derby.version>
-        <jersey.version>2.31</jersey.version>
         <mysql.connector.java.version>8.0.22</mysql.connector.java.version>
         <ojdbc.version>19.7.0.0</ojdbc.version>
         <testprivate.version>0.0.38</testprivate.version>
@@ -85,6 +84,7 @@
         <maven.deploy.plugin.version>3.0.0-M1</maven.deploy.plugin.version>
         <maven.javadoc.plugin.version>3.2.0</maven.javadoc.plugin.version>
         <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
+        <maven.dependency.plugin.version>3.1.2</maven.dependency.plugin.version>
 
         <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
         <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
@@ -148,24 +148,6 @@
                 <groupId>org.apache.derby</groupId>
                 <artifactId>derby</artifactId>
                 <version>${derby.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.core</groupId>
-                <artifactId>jersey-client</artifactId>
-                <version>${jersey.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.inject</groupId>
-                <artifactId>jersey-hk2</artifactId>
-                <version>${jersey.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.media</groupId>
-                <artifactId>jersey-media-json-jackson</artifactId>
-                <version>${jersey.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -378,6 +360,12 @@
                 </plugin>
 
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven.dependency.plugin.version}</version>
+                </plugin>
+
+              <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>${maven.source.plugin.version}</version>
