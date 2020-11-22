@@ -46,14 +46,14 @@ and you'll need both dependencies.
 ```xml
 <dependency>
     <groupId>io.github.nblxa</groupId>
-    <artifactId>turntables</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <artifactId>turntables-core</artifactId>
+    <version>0.1.0</version>
     <scope>test</scope>
 </dependency>
 <dependency>
     <groupId>org.assertj</groupId>
     <artifactId>assertj-core</artifactId>
-    <version>3.17.0</version>
+    <version>3.17.2</version>
     <scope>test</scope>
 </dependency>
 ```

@@ -7,7 +7,9 @@ source "$(dirname "$0")/func.sh"
 
 SCRPT="[scripts/deploy.sh]"
 
-if [ "$PULL_REQUEST" == "false" ] && [[ "$BRANCH" == master ]]; then
+DEPLOY_BRANCH=$(getBranch)
+echo "$SCRPT Current branch: $DEPLOY_BRANCH"
+if [ "$PULL_REQUEST" == "false" ] && [[ "$DEPLOY_BRANCH" == master ]]; then
   echo "$SCRPT Deploying a new release."
   ./mvnw clean package deploy \
          --settings scripts/release-settings.xml \
