@@ -36,7 +36,11 @@ For a complete example with MySQL, see
 For Oracle, see:
 [ITOracle.java](turntables-oracle18-java8/src/test/java/io/github/nblxa/turntables/test/oracle/ITOracle.java).
 
-Turntables's main power and difference from [AssertJ-DB](https://github.com/assertj/assertj-db) is the ability to match whole table contents at once using specific rules (e.g. match rows by key or match columns by name) and to present to the developer only the difference that matters for the assertion.
+Turntables's main power and difference from
+[AssertJ-DB](https://github.com/assertj/assertj-db) is the ability to match
+whole table contents at once using specific rules (e.g. match rows by key or
+match columns by name) and to present to the developer only the difference that
+matters for the assertion.
 
 ## Maven
 
@@ -58,7 +62,8 @@ and you'll need both dependencies.
 </dependency>
 ```
 
-If you use Turntables with a JDBC database, see [JDBC](JDBC.md) for additional dependencies.
+If you use Turntables with a JDBC database, see [JDBC](JDBC.md) for additional
+dependencies.
 
 ## Build
 
@@ -68,4 +73,5 @@ The Oracle test is containerized using the image `quillbuilduser/oracle-18-xe`.
 * Docker Hub: https://hub.docker.com/r/quillbuilduser/oracle-18-xe
 * Source: https://github.com/deusaquilus/docker-oracle-xe
 
-Image size is **13GB** at the time of writing this, so it's advisable to download it beforehand.
+Image size is **13GB** at the time of writing this, so it's advisable to
+download it beforehand.

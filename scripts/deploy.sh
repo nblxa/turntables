@@ -8,8 +8,11 @@ source "$(dirname "$0")/func.sh"
 SCRPT="[scripts/deploy.sh]"
 
 DEPLOY_BRANCH=$(getBranch)
-echo "$SCRPT Current branch: $DEPLOY_BRANCH"
-if [ "$PULL_REQUEST" == "false" ] && [[ "$DEPLOY_BRANCH" == master ]]; then
+DEPLOY_PULL_REQUEST=$(getPullRequest)
+echo "$SCRPT Current branch : $DEPLOY_BRANCH"
+echo "$SCRPT Pull request?  : $DEPLOY_PULL_REQUEST"
+
+if [ "$DEPLOY_PULL_REQUEST" == "false" ] && [[ "$DEPLOY_BRANCH" == master ]]; then
   echo "$SCRPT Deploying a new release."
   ./mvnw clean package deploy \
          --settings scripts/release-settings.xml \
@@ -18,7 +21,7 @@ if [ "$PULL_REQUEST" == "false" ] && [[ "$DEPLOY_BRANCH" == master ]]; then
   exit 0
 fi
 
-if [ "$PULL_REQUEST" == "true" ]; then
+if [ "$DEPLOY_PULL_REQUEST" == "true" ]; then
   echo "$SCRPT Not deploying a pull request."
   exit 0
 fi
