@@ -5,15 +5,21 @@ set -e
 # shellcheck source=./func.sh
 source "$(dirname "$0")/func.sh"
 
-RELEASE_PROFILE=""
 SCRPT="[scripts/build.sh]"
 
-if [ "$PULL_REQUEST" == "false" ] && [[ "$BRANCH" == master ]]; then
+BUILD_BRANCH=$(getBranch)
+BUILD_PULL_REQUEST=$(getPullRequest)
+echo "$SCRPT Current branch : $BUILD_BRANCH"
+echo "$SCRPT Pull request?  : $BUILD_PULL_REQUEST"
+
+RELEASE_PROFILE=""
+
+if [ "$BUILD_PULL_REQUEST" == "false" ] && [[ "$BUILD_BRANCH" == master ]]; then
   echo "$SCRPT Building a new release."
   RELEASE_PROFILE="-Prelease --settings scripts/release-settings.xml"
 fi
 
-if [ "$PULL_REQUEST" == "true" ]; then
+if [ "$BUILD_PULL_REQUEST" == "true" ]; then
   echo "$SCRPT Building a pull request."
 fi
 
