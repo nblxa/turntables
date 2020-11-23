@@ -42,6 +42,7 @@ jobs:
           root: .
           paths:
             - '*/target'
+            - ../.m2/io/github/nblxa
 
   test-mysql:
     docker:
@@ -77,6 +78,7 @@ jobs:
           root: .
           paths:
             - '*/target'
+            - ../.m2/io/github/nblxa
 
   test-oracle:
     docker:
@@ -109,6 +111,7 @@ jobs:
           root: .
           paths:
             - '*/target'
+            - ../.m2/io/github/nblxa
 
   aggregate-tests:
     docker:
