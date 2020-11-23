@@ -42,7 +42,10 @@ jobs:
           root: .
           paths:
             - '*/target'
-            - ../.m2/io/github/nblxa
+      - persist_to_workspace:
+          root: /home/circleci/.m2/io/github
+          paths:
+            - nblxa
 
   test-mysql:
     docker:
@@ -62,6 +65,8 @@ jobs:
       - fetch-dependencies
       - attach_workspace:
           at: .
+      - attach_workspace:
+          at: /home/circleci/.m2/io/github
       - run:
           name: Test with MySQL
           command: ./mvnw verify -pl turntables-mysql8
@@ -78,7 +83,10 @@ jobs:
           root: .
           paths:
             - '*/target'
-            - ../.m2/io/github/nblxa
+      - persist_to_workspace:
+          root: /home/circleci/.m2/io/github
+          paths:
+            - nblxa
 
   test-oracle:
     docker:
@@ -95,6 +103,8 @@ jobs:
       - fetch-dependencies
       - attach_workspace:
           at: .
+      - attach_workspace:
+          at: /home/circleci/.m2/io/github
       - run:
           name: Test with Oracle
           command: ./mvnw verify -pl turntables-oracle18-java8
@@ -111,7 +121,10 @@ jobs:
           root: .
           paths:
             - '*/target'
-            - ../.m2/io/github/nblxa
+      - persist_to_workspace:
+          root: /home/circleci/.m2/io/github
+          paths:
+            - nblxa
 
   aggregate-tests:
     docker:
