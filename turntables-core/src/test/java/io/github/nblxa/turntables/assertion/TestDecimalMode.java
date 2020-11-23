@@ -7,8 +7,9 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Predicate;
 import org.junit.Test;
+
+import io.github.nblxa.turntables.DequeThreadLocal;
 import io.github.nblxa.turntables.Settings;
-import io.github.nblxa.turntables.SettingsTransaction;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
@@ -32,7 +33,7 @@ public class TestDecimalMode {
       Settings s = Settings.builder()
           .decimalMode(dm)
           .build();
-      try (SettingsTransaction ignored = Turntables.setSettings(s)) {
+      try (DequeThreadLocal.Transaction ignored = Turntables.setSettings(s)) {
         boolean expectedMatch = settingsPredicate.test(s);
         boolean actualMatch = match(exp, act, s);
         assertThat(actualMatch)
