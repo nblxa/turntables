@@ -12,4 +12,4 @@ BUILD_PULL_REQUEST=$(getPullRequest)
 echo "$SCRPT Current branch : $BUILD_BRANCH"
 echo "$SCRPT Pull request?  : $BUILD_PULL_REQUEST"
 
-./mvnw package -Derrorprone -T 1C -U -e
+./mvnw install -Derrorprone -T 1C -U -e -pl .,assert-assertj,turntables-core,turntables-test-concurrency
