@@ -3,8 +3,8 @@ package io.github.nblxa.turntables.test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
+import io.github.nblxa.turntables.DequeThreadLocal;
 import io.github.nblxa.turntables.Settings;
-import io.github.nblxa.turntables.SettingsTransaction;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.Typ;
@@ -274,7 +274,7 @@ public class TestTypes {
   @Test
   public void test_decimalConvert() {
     BigDecimal bd = BigDecimal.valueOf(100500L);
-    try (SettingsTransaction ignored = Turntables.setSettings(
+    try (DequeThreadLocal.Transaction ignored = Turntables.setSettings(
         Settings.builder().decimalMode(Settings.DecimalMode.CONVERT).build())) {
       Tab tab = Turntables.tab()
           .row(bd)

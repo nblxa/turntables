@@ -1,8 +1,8 @@
 package io.github.nblxa.turntables.assertj;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import io.github.nblxa.turntables.DequeThreadLocal;
 import io.github.nblxa.turntables.Settings;
-import io.github.nblxa.turntables.SettingsTransaction;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.Turntables;
 import io.github.nblxa.turntables.assertion.AssertionProxy;
@@ -43,7 +43,7 @@ public class TabAssert<T extends Tab> extends AbstractObjectAssert<TabAssert<T>,
   public <U extends Tab> TabAssert<T> matchesExpected(@NonNull U expectedTab) {
     AssertionProxy.Builder builder = proxyBuilder.copy();
     builder.expected(expectedTab);
-    try (SettingsTransaction ignored = Turntables.setSettings(builder.getSettings())) {
+    try (DequeThreadLocal.Transaction ignored = Turntables.setSettings(builder.getSettings())) {
       AssertionProxy.Actual actProxy = builder.buildOrGetActualProxy();
       if (actProxy.matchesExpected()) {
         return this;
