@@ -65,7 +65,7 @@ public class TestTypConversion {
 
   @Test
   public void testWithDecimalConversion_decimal_acceptsNumericTypes() {
-    try (SettingsTransaction ignored = Turntables.setSettings(ALLOW_DECIMAL_CONVERSION)) {
+    try (DequeThreadLocal.Transaction ignored = Turntables.setSettings(ALLOW_DECIMAL_CONVERSION)) {
       for (Typ colTyp : allTypesButAny) {
         for (Typ valTyp : allTypesButAny) {
           boolean doesAccept = colTyp.accepts(valTyp);
@@ -118,7 +118,7 @@ public class TestTypConversion {
 
   @Test
   public void testWithDecimalConversion_testTypesConversion() {
-    try (SettingsTransaction ignored = Turntables.setSettings(ALLOW_DECIMAL_CONVERSION)) {
+    try (DequeThreadLocal.Transaction ignored = Turntables.setSettings(ALLOW_DECIMAL_CONVERSION)) {
       for (Typ colTyp : allTypesButAny) {
         for (Typ valTyp : allTypesButAny) {
           Tab.Val val = new TableUtils.SimpleVal(valTyp, typeValues.get(valTyp));

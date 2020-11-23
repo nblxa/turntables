@@ -4,7 +4,6 @@ import io.github.nblxa.turntables.assertj.TabAssert;
 import io.github.nblxa.turntables.io.Feed;
 import io.github.nblxa.turntables.io.Ingestion;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import java.util.Deque;
 import java.util.Objects;
 import java.util.function.DoublePredicate;
 import java.util.function.IntPredicate;
@@ -46,7 +45,7 @@ public final class Turntables {
 
   /**
    * Start creating a new <code>Tab</code> using a fluent API.
-   * Example:
+   * <p>Example:</p>
    * <pre>{@code
    *   Tab expected = Turntables.tab()
    *     .col("first_name")
@@ -63,16 +62,16 @@ public final class Turntables {
   }
 
   /**
-   * Create a new Tab from an external object, such as a, for instance, a <code>ResultSet</code>.
+   * Create a new Tab from an external object, e.g. a <code>ResultSet</code>.
    *
-   * Example:
+   * <p>Example:</p>
    * <pre>{@code
    *   try (ResultSet rs = preparedStatement.executeQuery()) {
    *     Tab actual = Turntables.from(rs);
    *   }
    * }</pre>
    *
-   * Various object types can be supported via the extension mechanism based on SPI.
+   * <p>Various object types can be supported via the extension mechanism based on SPI.</p>
    *
    * @param object input object
    * @param <T> input object type
@@ -162,24 +161,17 @@ public final class Turntables {
     return ARRAY_WITH_NULL;
   }
 
-  public static SettingsTransaction setSettings(@NonNull Settings settings) {
-    SETTINGS_THREAD_LOCAL.get().push(settings);
-    return Turntables::rollbackSettings;
+  public static DequeThreadLocal.Transaction setSettings(@NonNull Settings settings) {
+    return SETTINGS_THREAD_LOCAL.putValue(settings);
   }
 
   public static void rollbackSettings() {
-    Deque<Settings> d = SETTINGS_THREAD_LOCAL.get();
-    if (!d.isEmpty()) {
-      d.pop();
-    }
-    if (d.isEmpty()) {
-      SETTINGS_THREAD_LOCAL.reset();
-    }
+    SETTINGS_THREAD_LOCAL.rollbackValue();
   }
 
   @NonNull
   public static Settings getSettings() {
-    return SETTINGS_THREAD_LOCAL.get().peek();
+    return SETTINGS_THREAD_LOCAL.getValue();
   }
 
   /**
