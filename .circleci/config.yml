@@ -43,7 +43,7 @@ jobs:
           paths:
             - '*/target'
       - persist_to_workspace:
-          root: /home/circleci/.m2/io/github
+          root: /home/circleci/.m2/repository/io/github
           paths:
             - nblxa
 
@@ -84,7 +84,7 @@ jobs:
           paths:
             - '*/target'
       - persist_to_workspace:
-          root: /home/circleci/.m2/io/github
+          root: /home/circleci/.m2/repository/io/github
           paths:
             - nblxa
 
@@ -122,7 +122,7 @@ jobs:
           paths:
             - '*/target'
       - persist_to_workspace:
-          root: /home/circleci/.m2/io/github
+          root: /home/circleci/.m2/repository/io/github
           paths:
             - nblxa
 
