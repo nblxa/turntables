@@ -18,17 +18,6 @@ jobs:
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
-      - image: quillbuilduser/oracle-18-xe
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-      - image: mysql:8.0.22
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-        environment:
-          MYSQL_ROOT_PASSWORD: tiger
-          MYSQL_DATABASE: turntables
     steps:
       - checkout
       - fetch-dependencies
@@ -162,7 +151,6 @@ workflows:
             - DockerHub
             - SonarCloud
           requires:
-            - compile-and-test
             - test-mysql
             - test-oracle
       - approve-deploy-current-version:
