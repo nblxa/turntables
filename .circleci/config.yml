@@ -68,6 +68,9 @@ jobs:
       - attach_workspace:
           at: /home/circleci/.m2/io/github
       - run:
+          name: List files
+          command: find /home/circleci | grep -v .git
+      - run:
           name: Test with MySQL
           command: ./mvnw verify -pl turntables-mysql8
       - run:
@@ -105,6 +108,9 @@ jobs:
           at: .
       - attach_workspace:
           at: /home/circleci/.m2/io/github
+      - run:
+          name: List files
+          command: find /home/circleci | grep -v .git
       - run:
           name: Test with Oracle
           command: ./mvnw verify -pl turntables-oracle18-java8
