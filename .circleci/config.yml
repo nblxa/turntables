@@ -34,7 +34,6 @@ jobs:
             mkdir -p artifacts/junit
             cp **/target/*.jar artifacts/
             cp -a **/target/surefire-reports/. artifacts/junit
-            cp -a **/target/failsafe-reports/. artifacts/junit
       - store_artifacts:
           path: artifacts
       - store_test_results:
@@ -60,9 +59,24 @@ jobs:
     steps:
       - checkout
       - fetch-dependencies
+      - attach_workspace:
+          at: .
       - run:
           name: Test with MySQL
           command: ./mvnw verify -pl turntables-mysql8
+      - run:
+          shell: /bin/bash -eo pipefail -O globstar
+          command: |
+            mkdir -p artifacts/junit
+            cp -a **/target/failsafe-reports/. artifacts/junit
+      - store_artifacts:
+          path: artifacts
+      - store_test_results:
+          path: artifacts/junit
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*/target'
 
   test-oracle:
     docker:
@@ -77,9 +91,24 @@ jobs:
     steps:
       - checkout
       - fetch-dependencies
+      - attach_workspace:
+          at: .
       - run:
           name: Test with Oracle
           command: ./mvnw verify -pl turntables-oracle18-java8
+      - run:
+          shell: /bin/bash -eo pipefail -O globstar
+          command: |
+            mkdir -p artifacts/junit
+            cp -a **/target/failsafe-reports/. artifacts/junit
+      - store_artifacts:
+          path: artifacts
+      - store_test_results:
+          path: artifacts/junit
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*/target'
 
   aggregate-tests:
     docker:
@@ -90,6 +119,8 @@ jobs:
     steps:
       - checkout
       - fetch-dependencies
+      - attach_workspace:
+          at: .
       - run:
           name: Aggregate tests
           command: ./mvnw sonar:sonar coveralls:report -DrepoToken="${COVERALLS_REPO_TOKEN}"
