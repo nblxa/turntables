@@ -12,9 +12,4 @@ BUILD_PULL_REQUEST=$(getPullRequest)
 echo "$SCRPT Current branch : $BUILD_BRANCH"
 echo "$SCRPT Pull request?  : $BUILD_PULL_REQUEST"
 
-./mvnw verify \
-       sonar:sonar \
-       coveralls:report \
-       -Derrorprone \
-       -DrepoToken="$COVERALLS_REPO_TOKEN" \
-       -T 1C -U -e
+./mvnw package -Derrorprone -T 1C -U -e

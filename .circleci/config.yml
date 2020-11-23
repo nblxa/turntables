@@ -12,7 +12,7 @@ executors:
           password: $DOCKERHUB_PASSWORD
 
 jobs:
-  build-and-test:
+  compile-and-test:
     docker:
       - image: circleci/openjdk:15-buster
         auth:
@@ -29,7 +29,6 @@ jobs:
         environment:
           MYSQL_ROOT_PASSWORD: tiger
           MYSQL_DATABASE: turntables
-
     steps:
       - checkout
       - fetch-dependencies
@@ -56,22 +55,120 @@ jobs:
           paths:
             - '*/target'
 
+  test-mysql:
+    docker:
+      - image: circleci/openjdk:15-buster
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+      - image: mysql:8.0.22
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          MYSQL_ROOT_PASSWORD: tiger
+          MYSQL_DATABASE: turntables
+    steps:
+      - checkout
+      - fetch-dependencies
+      - run:
+          name: Test with MySQL
+          command: ./mvnw verify -pl turntables-mysql8
+
+  test-oracle:
+    docker:
+      - image: circleci/openjdk:15-buster
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+      - image: quillbuilduser/oracle-18-xe
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - fetch-dependencies
+      - run:
+          name: Test with Oracle
+          command: ./mvnw verify -pl turntables-oracle18-java8
+
+  aggregate-tests:
+    docker:
+      - image: circleci/openjdk:15-buster
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - fetch-dependencies
+      - run:
+          name: Aggregate tests
+          command: ./mvnw sonar:sonar coveralls:report -DrepoToken="${COVERALLS_REPO_TOKEN}"
+
   deploy-current-version:
     executor: maven-executor
     steps:
-      - deploy
+      - checkout
+      - fetch-dependencies
+      - attach_workspace:
+          at: .
+      - configure-gpg
+      - run:
+          name: Adjust versions to release in POM files
+          command: scripts/set-release-version.sh
+      - run:
+          name: Release new version to Maven Central
+          command: scripts/deploy.sh
+      - configure-git
+      - run:
+          name: Push new project version to Github
+          command: |
+            echo "Pushing new version and tag to Github..."
+            MVN_VERSION=$(./mvnw -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+            git commit -am "Released ${MVN_VERSION} [skip ci]."
+            git tag -a ${MVN_VERSION} -m "Release ${MVN_VERSION}"
+            ssh-agent sh -c 'ssh-add ~/.ssh/id_ed25519; git push $CIRCLE_REPOSITORY_URL'
+            ssh-agent sh -c 'ssh-add ~/.ssh/id_ed25519; git push origin --tags'
+            echo "Successfully released ${MVN_VERSION} to Github"
+      - run:
+          name: Increment versions to continue development of the next snapshot
+          command: scripts/increment-patch-version.sh
+      - run:
+          name: Continue the development of the next snapshot version
+          command: |
+            echo "Pushing next snapshot version to Github..."
+            MVN_VERSION=$(./mvnw -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+            git commit -am "Continue the development of ${MVN_VERSION} [skip ci]."
+            ssh-agent sh -c 'ssh-add ~/.ssh/id_ed25519; git push $CIRCLE_REPOSITORY_URL'
 
 workflows:
   main:
     jobs:
-      - build-and-test:
+      - compile-and-test:
+          context:
+            - DockerHub
+      - test-oracle:
+          context:
+            - DockerHub
+          requires:
+            - compile-and-test
+      - test-mysql:
+          context:
+            - DockerHub
+          requires:
+            - compile-and-test
+      - aggregate-tests:
           context:
             - DockerHub
             - SonarCloud
+          requires:
+            - compile-and-test
+            - test-mysql
+            - test-oracle
       - approve-deploy-current-version:
           type: approval
           requires:
-            - build-and-test
+            - aggregate-tests
           filters:
             branches:
               only:
@@ -111,41 +208,6 @@ commands:
           name: Configure GPG private key for signing project artifacts in OSS Sonatype
           command: |
             echo $GPG_ASC_BASE64 | base64 --decode | gpg --batch --no-tty --import --yes
-
-  deploy:
-    steps:
-      - checkout
-      - fetch-dependencies
-      - attach_workspace:
-          at: .
-      - configure-gpg
-      - run:
-          name: Adjust versions to release in POM files
-          command: scripts/set-release-version.sh
-      - run:
-          name: Release new version to Maven Central
-          command: scripts/deploy.sh
-      - configure-git
-      - run:
-          name: Push new project version to Github
-          command: |
-            echo "Pushing new version and tag to Github..."
-            MVN_VERSION=$(./mvnw -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
-            git commit -am "Released ${MVN_VERSION} [skip ci]."
-            git tag -a ${MVN_VERSION} -m "Release ${MVN_VERSION}"
-            ssh-agent sh -c 'ssh-add ~/.ssh/id_ed25519; git push $CIRCLE_REPOSITORY_URL'
-            ssh-agent sh -c 'ssh-add ~/.ssh/id_ed25519; git push origin --tags'
-            echo "Successfully released ${MVN_VERSION} to Github"
-      - run:
-          name: Increment versions to continue development of the next snapshot
-          command: scripts/increment-patch-version.sh
-      - run:
-          name: Continue the development of the next snapshot version
-          command: |
-            echo "Pushing next snapshot version to Github..."
-            MVN_VERSION=$(./mvnw -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
-            git commit -am "Continue the development of ${MVN_VERSION} [skip ci]."
-            ssh-agent sh -c 'ssh-add ~/.ssh/id_ed25519; git push $CIRCLE_REPOSITORY_URL'
 
   configure-git:
     steps:
