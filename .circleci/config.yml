@@ -67,7 +67,8 @@ jobs:
       - run:
           command: |
             rm -rf ~/.m2
-            cp -R .m2/repository ~/
+            mkdir ~/.m2
+            cp -R .m2/repository ~/.m2
       - run:
           command: find ~/.m2/repository
       - fetch-dependencies
@@ -112,7 +113,8 @@ jobs:
       - run:
           command: |
             rm -rf ~/.m2
-            cp -R .m2/repository ~/
+            mkdir ~/.m2
+            cp -R .m2/repository ~/.m2
       - run:
           command: find ~/.m2/repository
       - fetch-dependencies
