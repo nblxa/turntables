@@ -87,14 +87,6 @@ jobs:
           path: artifacts
       - store_test_results:
           path: artifacts/junit
-      - persist_to_workspace:
-          root: .
-          paths:
-            - '*/target'
-      - persist_to_workspace:
-          root: /home/circleci
-          paths:
-            - .m2/repository
 
   test-oracle:
     docker:
@@ -133,14 +125,6 @@ jobs:
           path: artifacts
       - store_test_results:
           path: artifacts/junit
-      - persist_to_workspace:
-          root: .
-          paths:
-            - '*/target'
-      - persist_to_workspace:
-          root: /home/circleci
-          paths:
-            - .m2/repository
 
   aggregate-tests:
     docker:
