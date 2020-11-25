@@ -45,4 +45,4 @@ hs_err_pid*
 pom-checksum
 pom-checksum.tmp
 process.yml
-githubKey
+.m2
