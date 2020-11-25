@@ -65,7 +65,11 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          command: mv .m2/repository ~
+          command: |
+            rm -rf ~/.m2
+            cp -R .m2/repository ~/
+      - run:
+          command: find ~/.m2/repository
       - fetch-dependencies
       - run:
           name: List files
@@ -103,11 +107,15 @@ jobs:
           password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
-      - run:
-          command: mv .m2/repository ~
-      - fetch-dependencies
       - attach_workspace:
           at: .
+      - run:
+          command: |
+            rm -rf ~/.m2
+            cp -R .m2/repository ~/
+      - run:
+          command: find ~/.m2/repository
+      - fetch-dependencies
       - run:
           name: List files
           command: find /home/circleci | grep -v .git
