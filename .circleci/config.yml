@@ -43,9 +43,9 @@ jobs:
           paths:
             - '*/target'
       - persist_to_workspace:
-          root: /home/circleci/.m2/repository/io/github
+          root: /home/circleci
           paths:
-            - nblxa
+            - .m2/repository
 
   test-mysql:
     docker:
@@ -62,11 +62,11 @@ jobs:
           MYSQL_DATABASE: turntables
     steps:
       - checkout
-      - fetch-dependencies
       - attach_workspace:
           at: .
-      - attach_workspace:
-          at: /home/circleci/.m2/io/github
+      - run:
+          command: mv .m2/repository ~
+      - fetch-dependencies
       - run:
           name: List files
           command: find /home/circleci | grep -v .git
