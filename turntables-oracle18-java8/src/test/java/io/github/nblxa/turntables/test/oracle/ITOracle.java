@@ -109,7 +109,7 @@ public class ITOracle {
             .append("      dept : QA").append(ls)
             .append("    - id   : 2").append(ls)
             .append("      name : Bob").append(ls)
-            .append("      dept : QA").append(ls).toString());
+            .append("      dept : QA"));
   }
 
   @Test

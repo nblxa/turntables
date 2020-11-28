@@ -44,13 +44,11 @@ public class TestRowsByKeyAndColsByName {
   @Test
   public void mismatch() {
     Tab exp = Turntables.tab()
-        .key("a", Typ.INTEGER)
-        .col("b", Typ.INTEGER)
+        .key("a").col("b")
         .row(1, 2)
         .row(3, 4);
     Tab act = Turntables.tab()
-        .col("b", Typ.INTEGER)
-        .key("a", Typ.INTEGER)
+        .col("b").key("a")
         .row(2, 1)
         .row(5, 3);
 
@@ -71,7 +69,7 @@ public class TestRowsByKeyAndColsByName {
             .append("    - a : 1").append(LS)
             .append("      b : 2").append(LS)
             .append("    - a : 3").append(LS)
-            .append("      b : 5").append(LS).toString());
+            .append("      b : 5"));
   }
 
   @Test
@@ -126,7 +124,7 @@ public class TestRowsByKeyAndColsByName {
             .append("        c : 5").append(LS)
             .append("      - a : 3").append(LS)
             .append("        b : 4").append(LS)
-            .append("        c : 6").append(LS).toString());
+            .append("        c : 6"));
   }
 
   @Test
@@ -169,7 +167,7 @@ public class TestRowsByKeyAndColsByName {
             .append("        key  : true").append(LS)
             .append("  rows:").append(LS)
             .append("      - b : 2").append(LS)
-            .append("      - b : 4").append(LS).toString());
+            .append("      - b : 4"));
   }
 
   @Test
@@ -205,7 +203,7 @@ public class TestRowsByKeyAndColsByName {
             .append("    - a : 3").append(LS)
             .append("      b : 4").append(LS)
             .append("    - a : 5").append(LS)
-            .append("      b : 6").append(LS).toString());
+            .append("      b : 6"));
   }
 
   @Test
@@ -235,7 +233,7 @@ public class TestRowsByKeyAndColsByName {
             .append("      b : 4").append(LS)
             .append("BUT: WAS Table:").append(LS)
             .append("    - a : 3").append(LS)
-            .append("      b : 4").append(LS).toString());
+            .append("      b : 4"));
   }
 
   @Test
@@ -284,7 +282,7 @@ public class TestRowsByKeyAndColsByName {
             .append("      - a : 1").append(LS)
             .append("        b : 2").append(LS)
             .append("      - a : 3").append(LS)
-            .append("        b : 4").append(LS).toString());
+            .append("        b : 4"));
   }
 
   @Test
@@ -335,6 +333,6 @@ public class TestRowsByKeyAndColsByName {
             .append("      - A : 1").append(LS)
             .append("        b : 2").append(LS)
             .append("      - A : 3").append(LS)
-            .append("        b : 4").append(LS).toString());
+            .append("        b : 4"));
   }
 }

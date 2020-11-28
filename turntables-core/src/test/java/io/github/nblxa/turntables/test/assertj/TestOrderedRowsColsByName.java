@@ -71,7 +71,7 @@ public class TestOrderedRowsColsByName {
             .append("    - a : 1").append(LS)
             .append("      b : 2").append(LS)
             .append("    - a : 5").append(LS)
-            .append("      b : 4").append(LS).toString());
+            .append("      b : 4"));
   }
 
   @Test
@@ -126,7 +126,7 @@ public class TestOrderedRowsColsByName {
             .append("        c : 5").append(LS)
             .append("      - a : 3").append(LS)
             .append("        b : 4").append(LS)
-            .append("        c : 6").append(LS).toString());
+            .append("        c : 6"));
   }
 
   @Test
@@ -169,7 +169,7 @@ public class TestOrderedRowsColsByName {
             .append("        key  : false").append(LS)
             .append("  rows:").append(LS)
             .append("      - b : 2").append(LS)
-            .append("      - b : 4").append(LS).toString());
+            .append("      - b : 4"));
   }
 
   @Test
@@ -205,7 +205,7 @@ public class TestOrderedRowsColsByName {
             .append("    - a : 5").append(LS)
             .append("      b : 6").append(LS)
             .append("    - a : 3").append(LS)
-            .append("      b : 4").append(LS).toString());
+            .append("      b : 4"));
   }
 
   @Test
@@ -235,7 +235,7 @@ public class TestOrderedRowsColsByName {
             .append("      b : 4").append(LS)
             .append("BUT: WAS Table:").append(LS)
             .append("    - a : 3").append(LS)
-            .append("      b : 4").append(LS).toString());
+            .append("      b : 4"));
   }
 
   @Test
@@ -284,7 +284,7 @@ public class TestOrderedRowsColsByName {
             .append("      - a : 1").append(LS)
             .append("        b : 2").append(LS)
             .append("      - a : 3").append(LS)
-            .append("        b : 4").append(LS).toString());
+            .append("        b : 4"));
   }
 
   @Test
@@ -335,6 +335,6 @@ public class TestOrderedRowsColsByName {
             .append("      - A : 1").append(LS)
             .append("        b : 2").append(LS)
             .append("      - A : 3").append(LS)
-            .append("        b : 4").append(LS).toString());
+            .append("        b : 4"));
   }
 }

@@ -63,7 +63,7 @@ public class TestUnorderedRowsOrderedCols {
             .append("    - col1 : 1").append(LS)
             .append("      col2 : 2").append(LS)
             .append("    - col1 : 5").append(LS)
-            .append("      col2 : 4").append(LS).toString());
+            .append("      col2 : 4"));
   }
 
   @Test
@@ -113,7 +113,7 @@ public class TestUnorderedRowsOrderedCols {
             .append("        col3 : 4").append(LS)
             .append("      - col1 : 1").append(LS)
             .append("        col2 : 5").append(LS)
-            .append("        col3 : 2").append(LS).toString());
+            .append("        col3 : 2"));
   }
 
   @Test
@@ -153,7 +153,7 @@ public class TestUnorderedRowsOrderedCols {
             .append("        key  : false").append(LS)
             .append("  rows:").append(LS)
             .append("      - col1 : 4").append(LS)
-            .append("      - col1 : 2").append(LS).toString());
+            .append("      - col1 : 2"));
   }
 
   @Test
@@ -185,7 +185,7 @@ public class TestUnorderedRowsOrderedCols {
             .append("    - col1 : 3").append(LS)
             .append("      col2 : 4").append(LS)
             .append("    - col1 : 5").append(LS)
-            .append("      col2 : 6").append(LS).toString());
+            .append("      col2 : 6"));
   }
 
   @Test
@@ -211,7 +211,7 @@ public class TestUnorderedRowsOrderedCols {
             .append("      col2 : 4").append(LS)
             .append("BUT: WAS Table:").append(LS)
             .append("    - col1 : 3").append(LS)
-            .append("      col2 : 4").append(LS).toString());
+            .append("      col2 : 4"));
   }
 
   @Test
@@ -260,7 +260,7 @@ public class TestUnorderedRowsOrderedCols {
             .append("      - col1 : 3").append(LS)
             .append("        col2 : 4").append(LS)
             .append("      - col1 : 1").append(LS)
-            .append("        col2 : 2").append(LS).toString());
+            .append("        col2 : 2"));
   }
 
   @Test
@@ -311,6 +311,6 @@ public class TestUnorderedRowsOrderedCols {
             .append("      - A : 1").append(LS)
             .append("        b : 2").append(LS)
             .append("      - A : 3").append(LS)
-            .append("        b : 4").append(LS).toString());
+            .append("        b : 4"));
   }
 }

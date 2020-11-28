@@ -19,7 +19,7 @@ public class TabAssert<T extends Tab> extends AbstractObjectAssert<TabAssert<T>,
    * One of the patterns recognized by IntelliJ IDEA.
    * See <a href="https://github.com/JetBrains/intellij-community/blob/201.7223/plugins/junit_rt/src/com/intellij/junit4/ExpectedPatterns.java">ExpectedPatterns.java</a>.
    */
-  private static final String MSG_FORMAT = "%nEXPECTED: %s%nBUT: WAS %s%n";
+  private static final String MSG_FORMAT = "%nEXPECTED: %s%nBUT: WAS %s";
 
   private final AssertionProxy.Builder proxyBuilder;
   private final Failures failures = Failures.instance();
