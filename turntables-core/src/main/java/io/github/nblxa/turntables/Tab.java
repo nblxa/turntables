@@ -171,6 +171,26 @@ public interface Tab {
      */
     @NonNull
     N key(@NonNull String name, @NonNull Typ typ);
+
+    /**
+     * Add a named {@link Tab.Col} to the table with a given type. Its type will be inferred.
+     * @param name column name
+     * @return the builder to add further elements to
+     */
+    @NonNull
+    default N col(@NonNull String name) {
+      return col(name, Typ.ANY);
+    }
+
+    /**
+     * Add a named key {@link Tab.Col} to the table with a given type. Its type will be inferred.
+     * @param name key column name
+     * @return the builder to add further elements to
+     */
+    @NonNull
+    default N key(@NonNull String name) {
+      return key(name, Typ.ANY);
+    }
   }
 
   interface ColAdderRowAdderPart<R extends RowAdder<R>> {

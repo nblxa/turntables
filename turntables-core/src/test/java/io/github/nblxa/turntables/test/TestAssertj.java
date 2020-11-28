@@ -43,7 +43,7 @@ public class TestAssertj {
             .append("    - col1 : 1").append(LS)
             .append("      col2 : 2").append(LS)
             .append("    - col1 : 3").append(LS)
-            .append("      col2 : 4").append(LS).toString());
+            .append("      col2 : 4"));
   }
 
   @Test
@@ -80,7 +80,7 @@ public class TestAssertj {
             .append("    - a : 1").append(LS)
             .append("      b : 2").append(LS)
             .append("    - a : 3").append(LS)
-            .append("      b : 4").append(LS).toString());
+            .append("      b : 4"));
   }
 
   @Test
@@ -117,7 +117,7 @@ public class TestAssertj {
             .append("    - a : 1").append(LS)
             .append("      b : 2").append(LS)
             .append("    - a : 3").append(LS)
-            .append("      b : 4").append(LS).toString());
+            .append("      b : 4"));
   }
 
   @Test
@@ -155,7 +155,7 @@ public class TestAssertj {
             .append("    - x : 1").append(LS)
             .append("      y : 2").append(LS)
             .append("    - x : 3").append(LS)
-            .append("      y : 4").append(LS).toString());
+            .append("      y : 4"));
   }
 
   @Test

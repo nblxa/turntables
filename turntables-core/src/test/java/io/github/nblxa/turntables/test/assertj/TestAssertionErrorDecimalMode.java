@@ -66,7 +66,7 @@ public class TestAssertionErrorDecimalMode {
             .append("  rows:").append(LS)
             .append("      - col1 : 10").append(LS)
             .append("        col2 : 10").append(LS)
-            .append("        col3 : 10.0").append(LS));
+            .append("        col3 : 10.0"));
   }
 
   @Test
@@ -120,7 +120,7 @@ public class TestAssertionErrorDecimalMode {
             .append("  rows:").append(LS)
             .append("      - col1 : 10").append(LS)
             .append("        col2 : 10").append(LS)
-            .append("        col3 : 10.0").append(LS));
+            .append("        col3 : 10.0"));
   }
 
   @Test
@@ -211,7 +211,7 @@ public class TestAssertionErrorDecimalMode {
             .append("    - col1 : 10").append(LS)
             .append("      col2 : 10").append(LS)
             .append("      col3 : 10.0").append(LS)
-            .append("      col4 : y").append(LS));
+            .append("      col4 : y"));
   }
 
   @Test
@@ -250,7 +250,7 @@ public class TestAssertionErrorDecimalMode {
             .append("    - col1 : 10").append(LS)
             .append("      col2 : 10").append(LS)
             .append("      col3 : 10.0").append(LS)
-            .append("      col4 : y").append(LS));
+            .append("      col4 : y"));
   }
 
   @Test
@@ -317,7 +317,7 @@ public class TestAssertionErrorDecimalMode {
             .append("      - col1 : 10").append(LS)
             .append("        col2 : 10").append(LS)
             .append("        col3 : 10.0").append(LS)
-            .append("        col4 : 2020-07-31").append(LS));
+            .append("        col4 : 2020-07-31"));
   }
 
   @Test
@@ -384,6 +384,6 @@ public class TestAssertionErrorDecimalMode {
             .append("      - col1 : 10").append(LS)
             .append("        col2 : 10").append(LS)
             .append("        col3 : 10.0").append(LS)
-            .append("        col4 : 2020-07-31").append(LS));
+            .append("        col4 : 2020-07-31"));
   }
 }

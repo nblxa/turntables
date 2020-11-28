@@ -50,3 +50,12 @@ additional dependencies in your Maven project:
     <scope>test</scope>
 </dependency>
 ```
+
+## Other databases
+
+Need support for your database? Feel free to write your own Turntables extension
+module (use [turntables-mysql8]() or [turntables-oracle18-java8]() as examples)
+or raise an issue in this repository.
+
+Modules use Java SPI to provide implementations of
+[IoProtocolProvider](turntables-core/src/main/java/io/github/nblxa/turntables/io/IoProtocolProvider.java).

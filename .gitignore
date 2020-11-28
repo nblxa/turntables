@@ -3,6 +3,7 @@
 target
 local
 artifacts
+.DS_Store
 
 # Maven Wrapper jar
 .mvn/wrapper/maven-wrapper.jar
@@ -45,4 +46,3 @@ hs_err_pid*
 pom-checksum
 pom-checksum.tmp
 process.yml
-githubKey
