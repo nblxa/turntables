@@ -123,6 +123,9 @@ commands:
           name: Adjust versions to release in POM files
           command: scripts/set-release-version.sh
       - run:
+          name: Adjust versions in the documentation
+          command: scripts/doc-versions.sh release
+      - run:
           name: Release new version to Maven Central
           command: scripts/deploy.sh
       - configure-git
