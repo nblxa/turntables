@@ -107,7 +107,7 @@ JDBC database, see [JDBC](JDBC.md) for additional dependencies.
 A quick build skipping integration tests:
 
 ```bash
-./mvnw package
+./mvnw clean package
 ```
 
 Integration tests use [Docker](https://docker.com).

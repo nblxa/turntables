@@ -14,7 +14,7 @@ support these databases.
 ## MySQL
 
 To use Turntables with MySQL, you will need to have the following additional
-dependencies in your Maven project:
+dependency in your Maven project:
 
 ```xml
 <dependency>
@@ -23,30 +23,18 @@ dependencies in your Maven project:
   <version>0.2.0</version>
   <scope>test</scope>
 </dependency>
-<dependency>
-  <groupId>mysql</groupId>
-  <artifactId>mysql-connector-java</artifactId>
-  <version>8.0.22</version>
-  <scope>test</scope>
-</dependency>
 ```
 
 ## Oracle
 
-To use Turntables with Oracle and Java 8, you will need to have the following
-additional dependencies in your Maven project:
+To use Turntables with Oracle, you will need to have the following
+additional dependency in your Maven project:
 
 ```xml
 <dependency>
   <groupId>io.github.nblxa</groupId>
   <artifactId>turntables-ojdbc</artifactId>
   <version>0.2.0</version>
-  <scope>test</scope>
-</dependency>
-<dependency>
-  <groupId>com.oracle.database.jdbc</groupId>
-  <artifactId>ojdbc8</artifactId>
-  <version>19.8.0.0</version>
   <scope>test</scope>
 </dependency>
 ```
