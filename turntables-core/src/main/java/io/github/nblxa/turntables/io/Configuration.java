@@ -18,8 +18,8 @@ public class Configuration extends ClassTreeHolder<SettingsProtocol<?>> {
   }
 
   @SuppressWarnings("unchecked")
-  public <T> SettingsProtocol<? super T> protocolFor(Class<T> klass) {
-    return (SettingsProtocol<? super T>) getProtocolFor(klass);
+  public <T> SettingsProtocol<T> protocolFor(Class<T> klass) {
+    return (SettingsProtocol<T>) getProtocolFor(klass);
   }
 
   @NonNull

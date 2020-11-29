@@ -54,7 +54,7 @@ public class TabAssert<T extends Tab> extends AbstractObjectAssert<TabAssert<T>,
       AssertionProxy.Representation expRep = new AssertionProxy.Representation(expProxy);
       ErrorMessageFactory errorMessages = new BasicErrorMessageFactory(MSG_FORMAT, expRep, actRep);
 
-      throw failures.failure(info, errorMessages);
+      throw failures.failure(getWritableAssertionInfo(), errorMessages);
     }
   }
 

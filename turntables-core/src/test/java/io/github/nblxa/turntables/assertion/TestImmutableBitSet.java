@@ -45,7 +45,7 @@ public class TestImmutableBitSet {
     assertThat(iterator)
         .hasNext();
     assertThat(iterator.next())
-        .isEqualTo(0);
+        .isZero();
     assertThat(iterator)
         .hasNext();
     assertThat(iterator.next())

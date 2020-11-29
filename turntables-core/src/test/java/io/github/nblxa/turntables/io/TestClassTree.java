@@ -46,7 +46,7 @@ public class TestClassTree {
 
   @Test
   public void toString_emptyBranches() {
-    assertThat(tree.toString()).isEqualTo("ClassTree{value=v, branches={}}");
+    assertThat(tree).hasToString("ClassTree{value=v, branches={}}");
   }
 
   @Test
@@ -196,7 +196,7 @@ public class TestClassTree {
     assertThat(fooBar)
         .isNotSameAs(foo);
     assertThat(foo.getBranches())
-        .hasSize(0);
+        .isEmpty();
     assertThat(fooBar.getBranches())
         .hasSize(1);
   }
@@ -234,9 +234,9 @@ public class TestClassTree {
         .add(Black.class, "black");
     ClassTree<String> t = t0.add(Red.class, "red");
 
-    assertThat(t).isNotEqualTo(t0);
-
-    assertThat(t).isNotNull();
+    assertThat(t)
+        .isNotEqualTo(t0)
+        .isNotNull();
     assertThat(t.getValue()).hasValue("v");
     assertThat(t.getBranches()).containsOnlyKeys(Object.class);
 
@@ -323,6 +323,35 @@ public class TestClassTree {
     tree = tree.add(Biped.class, "biped");
     assertThat(tree.findValueForClass(Human.class))
         .containsExactlyInAnyOrder("featherless", "biped");
+  }
+
+  @Test
+  public void addObject() {
+    tree = tree.add(Object.class, "anything");
+    assertThat(tree.findValueForClass(String[].class))
+        .containsExactlyInAnyOrder("anything");
+  }
+
+  @Test
+  public void addRedArray() {
+    tree = tree.add(Red[].class, "red array");
+    assertThat(tree.findValueForClass(Red[].class))
+        .containsExactlyInAnyOrder("red array");
+  }
+
+  @Test
+  public void addPrimitive() {
+    Throwable t = catchThrowable(() -> tree = tree.add(byte.class, "anything"));
+    assertThat(t)
+        .isExactlyInstanceOf(UnsupportedOperationException.class)
+        .hasMessage("Primitive types are not supported");
+  }
+
+  @Test
+  public void addPrimitiveArray() {
+    tree = tree.add(byte[].class, "anything");
+    assertThat(tree.findValueForClass(byte[].class))
+        .containsExactlyInAnyOrder("anything");
   }
 
   private interface Biped {

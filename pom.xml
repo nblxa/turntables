@@ -59,6 +59,7 @@
     <mysql.connector.java.version>8.0.22</mysql.connector.java.version>
     <ojdbc.version>19.8.0.0</ojdbc.version>
     <testprivate.version>0.0.38</testprivate.version>
+    <awaitility.version>4.0.3</awaitility.version>
 
     <error.prone.core.version>2.4.0</error.prone.core.version>
     <checkstyle.version>8.36.1</checkstyle.version>
@@ -154,6 +155,12 @@
         <groupId>io.github.dimpon</groupId>
         <artifactId>testprivate</artifactId>
         <version>${testprivate.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.awaitility</groupId>
+        <artifactId>awaitility</artifactId>
+        <version>${awaitility.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>

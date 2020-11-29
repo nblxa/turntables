@@ -1,6 +1,7 @@
 package io.github.nblxa.turntables.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.TableUtils;
@@ -42,46 +43,55 @@ public class TestTurntables {
 
   @Test
   public void test_nullInFirstRowWithTypedColumns() {
-    Turntables.tab()
+    Tab tab = Turntables.tab()
         .col("id", Typ.INTEGER)
         .col("desc", Typ.STRING)
         .row(null, "text")
         .row(2, "lorem ipsum");
+    assertThat(tab)
+        .isNotNull();
   }
 
   @Test
   public void test_nullInBody() {
-    Turntables.tab()
+    Tab tab = Turntables.tab()
         .row(1, "text")
         .row(null, "lorem ipsum");
+    assertThat(tab)
+        .isNotNull();
   }
 
   @Test
   public void test_colsDefined() {
-    Turntables.tab()
+    Tab tab = Turntables.tab()
         .col("a", Typ.INTEGER)
         .col("b", Typ.STRING)
         .row(1, "text")
         .row(2, "lorem ipsum");
+    assertThat(tab)
+        .isNotNull();
   }
 
-  @Test(expected = StructureException.class)
+  @Test
   public void test_colsDefinedTypeMismatch() {
-    // todo assert better
-    Turntables.tab()
+    Throwable t = catchThrowable(() -> Turntables.tab()
         .col("a", Typ.INTEGER)
         .col("b", Typ.STRING)
         .row(1, "text")
-        .row(2, LocalDate.of(2001, 1, 1));
+        .row(2, LocalDate.of(2001, 1, 1)));
+    assertThat(t)
+        .isExactlyInstanceOf(StructureException.class);
   }
 
   @Test
   public void test_colsDuplicate() {
-    Turntables.tab()
+    Tab tab = Turntables.tab()
         .col("a", Typ.INTEGER)
         .col("a", Typ.STRING)
         .row(1, "text")
         .row(2, "lorem ipsum");
+    assertThat(tab)
+        .isNotNull();
   }
 
   @Test
