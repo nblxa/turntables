@@ -82,13 +82,13 @@ and you'll need both dependencies.
 <dependency>
   <groupId>io.github.nblxa</groupId>
   <artifactId>turntables-core</artifactId>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
   <scope>test</scope>
 </dependency>
 <dependency>
   <groupId>io.github.nblxa</groupId>
   <artifactId>turntables-mysql</artifactId>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
   <scope>test</scope>
 </dependency>
 <dependency>
