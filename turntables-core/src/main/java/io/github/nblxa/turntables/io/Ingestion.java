@@ -20,8 +20,8 @@ public class Ingestion extends ClassTreeHolder<IngestionProtocol<?>> {
   }
 
   @SuppressWarnings("unchecked")
-  public <T> IngestionProtocol<? super T> protocolFor(Class<T> klass) {
-    return (IngestionProtocol<? super T>) getProtocolFor(klass);
+  public <T> IngestionProtocol<T> protocolFor(Class<T> klass) {
+    return (IngestionProtocol<T>) getProtocolFor(klass);
   }
 
   @NonNull

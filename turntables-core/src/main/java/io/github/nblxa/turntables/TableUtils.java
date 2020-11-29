@@ -116,44 +116,33 @@ public final class TableUtils {
      *
      * <p>
      * Modifications of this method must be tested for thread safety:
-     * see io.github.nblxa.turntables.TestSupplierValConcurrency
+     * see io.github.nblxa.turntables.SupplierValConcurrency
      *
      * @return the value of the supplier executed exactly once.
      */
     @Override
     @Nullable
     public Object evaluate() {
-      boolean tryAgain;
       Object val;
       do {
         if (inited) {
           return obj;
         } else {
-          boolean suppCalledInThisThread = false;
           if (suppCalled.compareAndSet(false, true)) {
             // calling alien code outside of the synchronized block
             // to prevent locking issues
             val = convertValue(supp.get(), typ);
-            suppCalledInThisThread = true;
-          } else {
-            val = null;
+            obj = val;
+            inited = true;
+            return val;
           }
           synchronized (this) {
             if (inited) {
               return obj;
-            } else {
-              if (suppCalledInThisThread) {
-                obj = val;
-                inited = true;
-                tryAgain = false;
-              } else {
-                tryAgain = true;
-              }
             }
           }
         }
-      } while (tryAgain);
-      return val;
+      } while (true);
     }
 
     @Override
@@ -417,6 +406,16 @@ public final class TableUtils {
       List<Tab.Val> vals = getVals(objects);
       this.mutableRows.add(new SimpleRow(cols(), vals));
     }
+
+    @Override
+    public boolean equals(Object that) {
+      return super.equals(that);
+    }
+
+    @Override
+    public int hashCode() {
+      return super.hashCode();
+    }
   }
 
   public static final class Builder {
@@ -514,6 +513,16 @@ public final class TableUtils {
     @Override
     public List<Row> rows() {
       return rows;
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      return super.equals(that);
+    }
+
+    @Override
+    public int hashCode() {
+      return super.hashCode();
     }
   }
 

@@ -52,7 +52,7 @@ public abstract class Prism extends AbstractTab {
   }
 
   abstract static class PrismRow extends AbstractRow {
-    public PrismRow(@NonNull List<Col> cols) {
+    protected PrismRow(@NonNull List<Col> cols) {
       super(cols);
     }
 

@@ -51,14 +51,14 @@ import org.openjdk.jcstress.infra.results.II_Result;
 @Outcome(id = "1, 0", expect = Expect.FORBIDDEN, desc = "Actor1 evaluated the supplier for the 2nd time.")
 @Outcome(id = "0, 1", expect = Expect.FORBIDDEN, desc = "Actor2 evaluated the supplier for the 2nd time.")
 @Outcome(id = "1, 1", expect = Expect.FORBIDDEN, desc = "Both actors got the result of double evaluation.")
-@Outcome(id = "-1, -1", expect = Expect.FORBIDDEN, desc = "Both actors got an unitialized value (null).")
+@Outcome(id = "-1, -1", expect = Expect.FORBIDDEN, desc = "Both actors got an uninitialized value (null).")
 @Outcome(id = "-1, .*", expect = Expect.FORBIDDEN, desc = "Actor1 got an uninitialized value (null).")
 @Outcome(id = ".*, -1", expect = Expect.FORBIDDEN, desc = "Actor2 got an uninitialized value (null).")
 @State
-public class TestSupplierValConcurrency {
+public class SupplierValConcurrency {
 
-  private AtomicInteger atomicInteger = new AtomicInteger(0);
-  private TableUtils.SuppVal suppVal = new TableUtils.SuppVal(Typ.INTEGER,
+  private final AtomicInteger atomicInteger = new AtomicInteger(0);
+  private final TableUtils.SuppVal suppVal = new TableUtils.SuppVal(Typ.INTEGER,
       () -> atomicInteger.getAndAccumulate(1, Integer::sum));
 
   @Actor

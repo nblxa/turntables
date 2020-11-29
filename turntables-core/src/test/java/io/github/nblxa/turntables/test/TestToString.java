@@ -16,7 +16,7 @@ public class TestToString {
   @Test
   public void test_emptyToString() {
     Tab tab = Turntables.tab();
-    assertThat(tab.toString()).isEqualTo("Table: null");
+    assertThat(tab).hasToString("Table: null");
   }
 
   @Test
@@ -27,7 +27,7 @@ public class TestToString {
             .append("Table:").append(LS)
             .append("    - col1 : 1")
             .toString();
-    assertThat(tab.toString()).isEqualTo(expected);
+    assertThat(tab).hasToString(expected);
   }
 
   @Test
@@ -38,7 +38,7 @@ public class TestToString {
             .append("Table:").append(LS)
             .append("    - col1 : \"Hello,\\tthis is a \\\"sample\\\" text\\non multiple lines.\"")
             .toString();
-    assertThat(tab.toString()).isEqualTo(expected);
+    assertThat(tab).hasToString(expected);
   }
 
   @Test
@@ -49,7 +49,7 @@ public class TestToString {
             .append("Table:").append(LS)
             .append("    - col1 : 2019-04-01")
             .toString();
-    assertThat(tab.toString()).isEqualTo(expected);
+    assertThat(tab).hasToString(expected);
   }
 
   @Test
@@ -60,7 +60,7 @@ public class TestToString {
             .append("Table:").append(LS)
             .append("    - col1 : 2019-04-01T22:05:43")
             .toString();
-    assertThat(tab.toString()).isEqualTo(expected);
+    assertThat(tab).hasToString(expected);
   }
 
   @Test
@@ -71,7 +71,7 @@ public class TestToString {
             .append("Table:").append(LS)
             .append("    - col1 : null")
             .toString();
-    assertThat(tab.toString()).isEqualTo(expected);
+    assertThat(tab).hasToString(expected);
   }
 
   @Test
@@ -82,7 +82,7 @@ public class TestToString {
             .append("Table:").append(LS)
             .append("    - col1 : 2.3")
             .toString();
-    assertThat(tab.toString()).isEqualTo(expected);
+    assertThat(tab).hasToString(expected);
   }
 
   @Test
@@ -93,7 +93,7 @@ public class TestToString {
             .append("Table:").append(LS)
             .append("    - col1 : false")
             .toString();
-    assertThat(tab.toString()).isEqualTo(expected);
+    assertThat(tab).hasToString(expected);
   }
 
   @Test
@@ -109,7 +109,7 @@ public class TestToString {
             .append("    - col1 : true").append(LS)
             .append("      col2 : 100.005")
             .toString();
-    assertThat(tab.toString()).isEqualTo(expected);
+    assertThat(tab).hasToString(expected);
   }
 
   @Test
@@ -124,8 +124,8 @@ public class TestToString {
   @Test
   public void testCols() {
     Tab tab = Turntables.tab().col("x", Typ.INTEGER).key("y", Typ.STRING);
-    assertThat(tab.cols().toString())
-        .isEqualTo("[[x integer], [y KEY string]]");
+    assertThat(tab.cols())
+        .hasToString("[[x integer], [y KEY string]]");
   }
 
   @Test
@@ -134,8 +134,8 @@ public class TestToString {
         .col(Typ.INTEGER)
         .col(Typ.STRING)
         .row(1, "red");
-    assertThat(tab.rows().iterator().next().toString())
-        .isEqualTo(new StringBuilder()
+    assertThat(tab.rows().iterator().next())
+        .hasToString(new StringBuilder()
             .append("Row:").append(LS)
             .append("    - col1 : 1").append(LS)
             .append("      col2 : red")

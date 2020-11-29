@@ -5,6 +5,7 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,9 +53,7 @@ final class ClassTree<V> {
   @NonNull
   static Set<List<Class<?>>> getClassLineages(Class<?> klass) {
     Objects.requireNonNull(klass);
-    if (klass.isPrimitive()) {
-      throw new UnsupportedOperationException();
-    }
+    ensureReferenceType(klass);
     if (klass == Object.class) {
       return Collections.singleton(Collections.singletonList(Object.class));
     } else {
@@ -108,7 +107,6 @@ final class ClassTree<V> {
    *   <li>C extends Object directly and implements interfaces: only the interfaces</li>
    *   <li>C extends Object and implements no interfaces: Object.class</li>
    *   <li>C is Object: empty set</li>
-   *   <li>C is a primitive: {@code UnsupportedOperationException} is thrown</li>
    * </ul>
    *
    * @param klass the current class
@@ -116,13 +114,6 @@ final class ClassTree<V> {
    */
   @NonNull
   private static Set<Class<?>> immediateSuperClasses(@NonNull Class<?> klass) {
-    if (klass == Object.class) {
-      return Collections.emptySet();
-    }
-    Objects.requireNonNull(klass);
-    if (klass.isPrimitive()) {
-      throw new UnsupportedOperationException("Primitive types are not supported");
-    }
     Set<Class<?>> allSuper = new HashSet<>();
     if (klass.isArray()) {
       Class<?> componentType = klass.getComponentType();
@@ -147,18 +138,16 @@ final class ClassTree<V> {
     return Collections.unmodifiableSet(allSuper);
   }
 
+  private static void ensureReferenceType(Class<?> klass) {
+    Objects.requireNonNull(klass);
+    if (klass.isPrimitive()) {
+      throw new UnsupportedOperationException("Primitive types are not supported");
+    }
+  }
+
   @NonNull
   private static Set<Class<?>> interfaceSet(Class<?> klass) {
-    Set<Class<?>> interfaceSet = new HashSet<>();
-    Class<?>[] interfaces = klass.getInterfaces();
-    if (interfaces != null) {
-      for (Class<?> interf : interfaces) {
-        if (interf != null) {
-          interfaceSet.add(interf);
-        }
-      }
-    }
-    return interfaceSet;
+    return new HashSet<>(Arrays.asList(klass.getInterfaces()));
   }
 
   @NonNull
@@ -249,9 +238,9 @@ final class ClassTree<V> {
 
   static class Builder<V> {
     @Nullable
-    private V value;
+    private final V value;
     @NonNull
-    private Map<Class<?>, ClassTree<V>> branches;
+    private final Map<Class<?>, ClassTree<V>> branches;
 
     private Builder(@NonNull ClassTree<V> tree) {
       this.value = tree.value;

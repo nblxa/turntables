@@ -20,7 +20,7 @@ public abstract class AbstractTab implements Tab {
     this(Collections.emptyList());
   }
 
-  public AbstractTab(List<Col> cols) {
+  protected AbstractTab(List<Col> cols) {
     this.mutableCols = new ArrayList<>(Objects.requireNonNull(cols, "cols"));
     this.cols = Collections.unmodifiableList(this.mutableCols);
   }
@@ -88,7 +88,7 @@ public abstract class AbstractTab implements Tab {
     @NonNull
     private final List<Tab.Col> cols;
 
-    public AbstractRow(@NonNull List<Tab.Col> cols) {
+    protected AbstractRow(@NonNull List<Tab.Col> cols) {
       this.cols = Collections.unmodifiableList(
           new ArrayList<>(Objects.requireNonNull(cols, "cols")));
     }
@@ -208,7 +208,7 @@ public abstract class AbstractTab implements Tab {
     private final Typ typ;
     private final boolean isKey;
 
-    public AbstractCol(@NonNull String name, @NonNull Typ typ, boolean isKey) {
+    protected AbstractCol(@NonNull String name, @NonNull Typ typ, boolean isKey) {
       this.name = Objects.requireNonNull(name, "name is null");
       this.typ = Objects.requireNonNull(typ, "typ is null");
       this.isKey = isKey;
