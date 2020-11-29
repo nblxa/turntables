@@ -6,7 +6,7 @@
   <groupId>io.github.nblxa</groupId>
   <artifactId>turntables</artifactId>
   <packaging>pom</packaging>
-  <version>0.2.0</version>
+  <version>0.2.1-SNAPSHOT</version>
 
   <name>${project.groupId}:${project.artifactId}</name>
   <description>Turntables - parent module</description>
