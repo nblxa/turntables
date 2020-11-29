@@ -19,7 +19,7 @@ dependencies in your Maven project:
 ```xml
 <dependency>
   <groupId>io.github.nblxa</groupId>
-  <artifactId>turntables-mysql8</artifactId>
+  <artifactId>turntables-mysql</artifactId>
   <version>0.1.0</version>
   <scope>test</scope>
 </dependency>
@@ -39,14 +39,14 @@ additional dependencies in your Maven project:
 ```xml
 <dependency>
   <groupId>io.github.nblxa</groupId>
-  <artifactId>turntables-oracle18-java8</artifactId>
+  <artifactId>turntables-ojdbc</artifactId>
   <version>0.1.0</version>
   <scope>test</scope>
 </dependency>
 <dependency>
   <groupId>com.oracle.database.jdbc</groupId>
   <artifactId>ojdbc8</artifactId>
-  <version>19.7.0.0</version>
+  <version>19.8.0.0</version>
   <scope>test</scope>
 </dependency>
 ```
@@ -54,7 +54,7 @@ additional dependencies in your Maven project:
 ## Other databases
 
 Need support for your database? Feel free to write your own Turntables extension
-module (use [turntables-mysql8]() or [turntables-oracle18-java8]() as examples)
+module (use [turntables-mysql]() or [turntables-ojdbc]() as examples)
 or raise an issue in this repository.
 
 Modules use Java SPI to provide implementations of

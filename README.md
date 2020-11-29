@@ -58,10 +58,10 @@ Tab actual = testDataSource.ingest("employees");
 ```
 
 For a complete example with MySQL, see
-[ITMySql.java](turntables-mysql8/src/test/java/io/github/nblxa/turntables/test/mysql/ITMySql.java).
+[ITMySql.java](turntables-mysql/src/test/java/io/github/nblxa/turntables/test/mysql/ITMySql.java).
 
 For Oracle, see:
-[ITOracle.java](turntables-oracle18-java8/src/test/java/io/github/nblxa/turntables/test/oracle/ITOracle.java).
+[ITOracle.java](turntables-ojdbc/src/test/java/io/github/nblxa/turntables/test/oracle/ITOracle.java).
 
 ## Difference to AssertJ-DB
 
@@ -87,7 +87,7 @@ and you'll need both dependencies.
 </dependency>
 <dependency>
   <groupId>io.github.nblxa</groupId>
-  <artifactId>turntables-mysql8</artifactId>
+  <artifactId>turntables-mysql</artifactId>
   <version>0.1.0</version>
   <scope>test</scope>
 </dependency>

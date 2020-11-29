@@ -1,4 +1,4 @@
-package io.github.nblxa.turntables.oracle18;
+package io.github.nblxa.turntables.ojdbc8;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.github.nblxa.turntables.Settings;

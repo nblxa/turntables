@@ -1,4 +1,4 @@
-package io.github.nblxa.turntables.oracle18;
+package io.github.nblxa.turntables.ojdbc8;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
