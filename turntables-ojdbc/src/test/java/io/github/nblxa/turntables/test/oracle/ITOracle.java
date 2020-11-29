@@ -40,11 +40,9 @@ public class ITOracle {
   public final TestDataSource testDataSource = TestDataFactory.jdbc(
       ORACLE::getJdbcUrl, ORACLE.getUser(), ORACLE.getPassword());
 
-  @TestTable(name = "employees", cleanUpAction = CleanUpAction.DROP)
+  @TestTable(name = "employees", cleanUpAction = CleanUpAction.DEFAULT)
   public final Tab employees = Turntables.tab()
-      .col("id", Typ.INTEGER)
-      .col("name", Typ.STRING)
-      .col("dept", Typ.STRING)
+      .col("id").col("name").col("dept")
       .row(1, "Alice", "Dev")
       .row(2, "Bob", "Ops");
 

@@ -46,7 +46,7 @@ public TestDataSource testDataSource = TestDataFactory.jdbc(
 
 @TestTable(name = "employees", cleanUpAction = CleanUpAction.DROP)
 public Tab testTab = Turntables.tab()
-  .col("id", Typ.INTEGER).col("name", Typ.STRING)
+  .col("id").col("name")
   .row(1, "Alice")
   .row(2, "Bob");
 ```

@@ -38,11 +38,9 @@ public class ITMySql {
   public final TestDataSource testDataSource = TestDataFactory.jdbc(
       MYSQL::getJdbcUrl, MYSQL.getUser(), MYSQL.getPassword());
 
-  @TestTable(name = "employees", cleanUpAction = CleanUpAction.DEFAULT)
+  @TestTable(name = "employees", cleanUpAction = CleanUpAction.DROP)
   public final Tab employees = Turntables.tab()
-      .col("id", Typ.INTEGER)
-      .col("name", Typ.STRING)
-      .col("dept", Typ.STRING)
+      .col("id").col("name").col("dept")
       .row(1, "Alice", "Dev")
       .row(2, "Bob", "Ops");
 
