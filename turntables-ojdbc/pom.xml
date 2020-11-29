@@ -9,11 +9,11 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>turntables-oracle18-java8</artifactId>
+  <artifactId>turntables-ojdbc</artifactId>
   <version>0.1.1-SNAPSHOT</version>
 
   <name>${project.groupId}:${project.artifactId}</name>
-  <description>Turntables: Support for Oracle18 Java8</description>
+  <description>Turntables: Support for Oracle JDBC</description>
   <url>http://github.com/nblxa/turntables</url>
 
   <properties>

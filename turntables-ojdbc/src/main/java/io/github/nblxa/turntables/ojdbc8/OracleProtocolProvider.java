@@ -1,4 +1,4 @@
-package io.github.nblxa.turntables.oracle18;
+package io.github.nblxa.turntables.ojdbc8;
 
 import java.util.Collections;
 import java.util.Map;

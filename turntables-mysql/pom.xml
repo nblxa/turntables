@@ -9,7 +9,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>turntables-mysql8</artifactId>
+  <artifactId>turntables-mysql</artifactId>
   <version>0.1.1-SNAPSHOT</version>
 
   <name>${project.groupId}:${project.artifactId}</name>

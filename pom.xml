@@ -35,8 +35,8 @@
   <modules>
     <module>turntables-core</module>
     <module>turntables-test-concurrency</module>
-    <module>turntables-mysql8</module>
-    <module>turntables-oracle18-java8</module>
+    <module>turntables-mysql</module>
+    <module>turntables-ojdbc</module>
     <module>assert-assertj</module>
     <module>zz-aggregator</module>
   </modules>

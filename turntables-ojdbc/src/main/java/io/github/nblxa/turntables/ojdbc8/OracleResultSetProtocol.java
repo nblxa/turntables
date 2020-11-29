@@ -1,4 +1,4 @@
-package io.github.nblxa.turntables.oracle18;
+package io.github.nblxa.turntables.ojdbc8;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
