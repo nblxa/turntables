@@ -80,22 +80,22 @@ and you'll need both dependencies.
 
 ```xml
 <dependency>
-    <groupId>io.github.nblxa</groupId>
-    <artifactId>turntables-core</artifactId>
-    <version>0.1.0</version>
-    <scope>test</scope>
+  <groupId>io.github.nblxa</groupId>
+  <artifactId>turntables-core</artifactId>
+  <version>0.1.0</version>
+  <scope>test</scope>
 </dependency>
 <dependency>
-    <groupId>io.github.nblxa</groupId>
-    <artifactId>turntables-mysql8</artifactId>
-    <version>0.1.0</version>
-    <scope>test</scope>
+  <groupId>io.github.nblxa</groupId>
+  <artifactId>turntables-mysql8</artifactId>
+  <version>0.1.0</version>
+  <scope>test</scope>
 </dependency>
 <dependency>
-    <groupId>org.assertj</groupId>
-    <artifactId>assertj-core</artifactId>
-    <version>3.17.2</version>
-    <scope>test</scope>
+  <groupId>org.assertj</groupId>
+  <artifactId>assertj-core</artifactId>
+  <version>3.17.2</version>
+  <scope>test</scope>
 </dependency>
 ```
 

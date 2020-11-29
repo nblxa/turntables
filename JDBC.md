@@ -24,10 +24,10 @@ dependencies in your Maven project:
     <scope>test</scope>
 </dependency>
 <dependency>
-    <groupId>mysql</groupId>
-    <artifactId>mysql-connector-java</artifactId>
-    <version>8.0.22</version>
-    <scope>test</scope>
+  <groupId>mysql</groupId>
+  <artifactId>mysql-connector-java</artifactId>
+  <version>8.0.22</version>
+  <scope>test</scope>
 </dependency>
 ```
 
@@ -38,16 +38,16 @@ additional dependencies in your Maven project:
 
 ```xml
 <dependency>
-    <groupId>io.github.nblxa</groupId>
-    <artifactId>turntables-oracle18-java8</artifactId>
-    <version>0.1.0</version>
-    <scope>test</scope>
+  <groupId>io.github.nblxa</groupId>
+  <artifactId>turntables-oracle18-java8</artifactId>
+  <version>0.1.0</version>
+  <scope>test</scope>
 </dependency>
 <dependency>
-    <groupId>com.oracle.database.jdbc</groupId>
-    <artifactId>ojdbc8</artifactId>
-    <version>19.7.0.0</version>
-    <scope>test</scope>
+  <groupId>com.oracle.database.jdbc</groupId>
+  <artifactId>ojdbc8</artifactId>
+  <version>19.7.0.0</version>
+  <scope>test</scope>
 </dependency>
 ```
 
