@@ -18,10 +18,10 @@ dependencies in your Maven project:
 
 ```xml
 <dependency>
-    <groupId>io.github.nblxa</groupId>
-    <artifactId>turntables-mysql8</artifactId>
-    <version>0.1.0</version>
-    <scope>test</scope>
+  <groupId>io.github.nblxa</groupId>
+  <artifactId>turntables-mysql8</artifactId>
+  <version>0.1.0</version>
+  <scope>test</scope>
 </dependency>
 <dependency>
   <groupId>mysql</groupId>
