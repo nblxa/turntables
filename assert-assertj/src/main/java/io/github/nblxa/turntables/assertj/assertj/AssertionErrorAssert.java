@@ -3,6 +3,7 @@ package io.github.nblxa.turntables.assertj.assertj;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.assertj.core.api.AbstractThrowableAssert;
+import org.assertj.core.api.WritableAssertionInfo;
 import org.assertj.core.error.BasicErrorMessageFactory;
 import org.assertj.core.internal.Failures;
 import org.assertj.core.internal.Objects;
@@ -38,12 +39,13 @@ public final class AssertionErrorAssert extends AbstractThrowableAssert<Assertio
    * @return the assertion object itself for method chaining
    */
   public AssertionErrorAssert isAssertionErrorWithMessage(CharSequence expectedMessage) {
-    Objects.instance().assertNotNull(info, actual);
-    objects.assertIsInstanceOf(info, actual, AssertionError.class);
+    WritableAssertionInfo wrAsInfo = getWritableAssertionInfo();
+    Objects.instance().assertNotNull(wrAsInfo, actual); // NOSONAR using actual as intended for assertj extensions
+    objects.assertIsInstanceOf(wrAsInfo, actual, AssertionError.class);
     String expectedReplaced = replaceAssertionKeywords(expectedMessage);
     String actualReplaced = replaceAssertionKeywords(actual.getMessage());
     if (java.util.Objects.equals(expectedReplaced, actualReplaced)) return this;
-    throw failures.failure(info, new ShouldHaveAssertionMessage(expectedReplaced, actualReplaced),
+    throw failures.failure(wrAsInfo, new ShouldHaveAssertionMessage(expectedReplaced, actualReplaced),
         actualReplaced, expectedReplaced);
   }
 

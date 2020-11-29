@@ -94,7 +94,7 @@ and you'll need both dependencies.
 <dependency>
   <groupId>org.assertj</groupId>
   <artifactId>assertj-core</artifactId>
-  <version>3.17.2</version>
+  <version>3.18.1</version>
   <scope>test</scope>
 </dependency>
 ```
