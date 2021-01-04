@@ -65,7 +65,7 @@
     <checkstyle.version>8.36.1</checkstyle.version>
     <spotbugs.version>4.2.0</spotbugs.version>
 
-    <spotbugs.maven.plugin.version>4.1.4</spotbugs.maven.plugin.version>
+    <spotbugs.maven.plugin.version>4.2.0</spotbugs.maven.plugin.version>
     <jacoco.maven.plugin.version>0.8.6</jacoco.maven.plugin.version>
     <pitest.maven.version>1.5.2</pitest.maven.version>
     <coveralls.maven.plugin.version>4.3.0</coveralls.maven.plugin.version>
