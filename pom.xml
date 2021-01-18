@@ -56,7 +56,7 @@
     <equalsverifier.version>3.5</equalsverifier.version>
     <assertj.version>3.18.1</assertj.version>
     <derby.version>10.14.2.0</derby.version>
-    <mysql.connector.java.version>8.0.22</mysql.connector.java.version>
+    <mysql.connector.java.version>8.0.23</mysql.connector.java.version>
     <ojdbc.version>19.8.0.0</ojdbc.version>
     <testprivate.version>0.0.38</testprivate.version>
     <awaitility.version>4.0.3</awaitility.version>
