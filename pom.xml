@@ -58,7 +58,7 @@
     <derby.version>10.14.2.0</derby.version>
     <mysql.connector.java.version>8.0.22</mysql.connector.java.version>
     <ojdbc.version>19.8.0.0</ojdbc.version>
-    <testprivate.version>0.0.38</testprivate.version>
+    <testprivate.version>0.0.41</testprivate.version>
     <awaitility.version>4.0.3</awaitility.version>
 
     <error.prone.core.version>2.4.0</error.prone.core.version>
