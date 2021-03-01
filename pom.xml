@@ -70,7 +70,7 @@
     <pitest.maven.version>1.5.2</pitest.maven.version>
     <coveralls.maven.plugin.version>4.3.0</coveralls.maven.plugin.version>
     <jaxb.api.version>2.3.1</jaxb.api.version>
-    <maven.checkstyle.plugin.version>3.1.1</maven.checkstyle.plugin.version>
+    <maven.checkstyle.plugin.version>3.1.2</maven.checkstyle.plugin.version>
 
     <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
     <maven.install.plugin.version>3.0.0-M1</maven.install.plugin.version>
