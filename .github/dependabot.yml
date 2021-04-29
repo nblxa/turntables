@@ -1,0 +1,32 @@
+version: 2
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "04:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: com.puppycrawl.tools:checkstyle
+    versions:
+    - "8.39"
+    - "8.40"
+    - "8.41"
+    - 8.41.1
+  - dependency-name: com.github.spotbugs:spotbugs-maven-plugin
+    versions:
+    - 4.2.0
+    - 4.2.2
+  - dependency-name: org.pitest:pitest-maven
+    versions:
+    - 1.6.2
+    - 1.6.3
+    - 1.6.4
+  - dependency-name: nl.jqno.equalsverifier:equalsverifier
+    versions:
+    - 3.5.2
+    - 3.5.3
+    - 3.5.4
+  - dependency-name: mysql:mysql-connector-java
+    versions:
+    - 8.0.23
