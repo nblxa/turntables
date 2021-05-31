@@ -62,7 +62,7 @@
     <awaitility.version>4.0.3</awaitility.version>
 
     <error.prone.core.version>2.4.0</error.prone.core.version>
-    <checkstyle.version>8.36.1</checkstyle.version>
+    <checkstyle.version>8.43</checkstyle.version>
     <spotbugs.version>4.2.1</spotbugs.version>
 
     <spotbugs.maven.plugin.version>4.1.4</spotbugs.maven.plugin.version>
