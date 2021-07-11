@@ -22,11 +22,6 @@ public class TestIoProtocolProvider {
   }
 
   @Test
-  public void testNameSanitizers() {
-    assertThat(prov.nameSanitizers()).isEmpty();
-  }
-
-  @Test
   public void testSettingsProtocols() {
     assertThat(prov.settingsProtocols()).isEmpty();
   }
