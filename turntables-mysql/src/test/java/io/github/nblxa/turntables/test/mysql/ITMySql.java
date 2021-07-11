@@ -441,4 +441,39 @@ public class ITMySql {
     Assertions.assertThat(t)
         .isInstanceOf(AssertionError.class);
   }
+
+  @Test
+  public void testSubQuery() throws SQLException {
+    Tab actualData = testDataSource.ingest("select concat(id, name, dept) as all_together from employees limit 5");
+
+    Turntables.assertThat(actualData)
+        .matches()
+        .col("all_together", Typ.STRING)
+        .row("2BobOps")
+        .row("1AliceDev")
+        .asExpected();
+  }
+
+  @Test
+  public void testNamedSubQuery() throws SQLException {
+    Tab actualData = testDataSource.ingest("(select concat(id, name, dept) as all_together from employees limit 5) testNamedSubQuery");
+
+    Turntables.assertThat(actualData)
+        .matches()
+        .row("2BobOps")
+        .row("1AliceDev")
+        .asExpected();
+  }
+
+  @Test
+  public void testWithSubQuery() throws SQLException {
+    Tab actualData = testDataSource.ingest("with r as (select concat(id, dept, name) as all_together from employees) " +
+        "select * from r limit 5");
+
+    Turntables.assertThat(actualData)
+        .matches()
+        .row("2OpsBob")
+        .row("1DevAlice")
+        .asExpected();
+  }
 }

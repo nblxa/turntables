@@ -6,7 +6,7 @@ version: 2.1
 executors:
   maven-executor:
     docker:
-      - image: circleci/openjdk:15-buster
+      - image: cimg/openjdk:16.0
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
@@ -14,7 +14,7 @@ executors:
 jobs:
   build-and-test:
     docker:
-      - image: circleci/openjdk:15-buster
+      - image: cimg/openjdk:16.0
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
