@@ -16,8 +16,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Pattern;
 
 public class JdbcRowStore implements RowStore {
+  protected static final Pattern QUERY = Pattern.compile("^\\s*(with|select)\\b.*",
+      Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
   @NonNull
   private final ThrowingSupplier<Connection, Exception> connectionSupplier;
@@ -51,7 +54,7 @@ public class JdbcRowStore implements RowStore {
   public Tab ingest(@NonNull String source) {
     try (Connection conn = getOrReopenConnection();
          Statement stmt = conn.createStatement();
-         ResultSet rs = stmt.executeQuery("select * from " + source)
+         ResultSet rs = stmt.executeQuery(createQuery(source))
     ) {
       return Turntables.from(rs);
     } catch (SQLException se) {
@@ -82,6 +85,16 @@ public class JdbcRowStore implements RowStore {
     } catch (Exception se) {
       throw new IllegalStateException(se);
     }
+  }
+
+  protected String createQuery(String source) {
+    StringBuilder sb = new StringBuilder("select * from ");
+    if (QUERY.matcher(source).matches()) {
+       sb.append('(').append(source).append(") turntables_subquery__");
+    } else {
+      sb.append(source);
+    }
+    return sb.toString();
   }
 
   @NonNull
