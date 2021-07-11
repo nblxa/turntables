@@ -1,5 +1,6 @@
 package io.github.nblxa.turntables.assertj.assertj;
 
+import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.assertj.core.api.AbstractThrowableAssert;
@@ -45,8 +46,7 @@ public final class AssertionErrorAssert extends AbstractThrowableAssert<Assertio
     String expectedReplaced = replaceAssertionKeywords(expectedMessage);
     String actualReplaced = replaceAssertionKeywords(actual.getMessage());
     if (java.util.Objects.equals(expectedReplaced, actualReplaced)) return this;
-    throw failures.failure(wrAsInfo, new ShouldHaveAssertionMessage(expectedReplaced, actualReplaced),
-        actualReplaced, expectedReplaced);
+    throw turntablesAssertionError(expectedReplaced, actualReplaced);
   }
 
   public static class ShouldHaveAssertionMessage extends BasicErrorMessageFactory {
@@ -65,5 +65,35 @@ public final class AssertionErrorAssert extends AbstractThrowableAssert<Assertio
       result = new StringBuilder(result).replace(m.start(1), m.end(1), "{{MSG_EXP}}").toString();
     }
     return result;
+  }
+
+  private AssertionError turntablesAssertionError(String expectedReplaced, String actualReplaced) {
+    AssertionError ae = failures.failure(getWritableAssertionInfo(),
+        new ShouldHaveAssertionMessage(expectedReplaced, actualReplaced),
+        actualReplaced, expectedReplaced);
+    ae = suppressComparisonFailure(ae);
+    return ae;
+  }
+
+  private static AssertionError suppressComparisonFailure(AssertionError ae) {
+    if (ae.getClass().getCanonicalName().equals("org.junit.ComparisonFailure")) {
+      Field field = null;
+      boolean fieldWasAccessible = true;
+      try {
+        field = Throwable.class.getDeclaredField("detailMessage");
+        fieldWasAccessible = field.isAccessible();
+        field.setAccessible(true);
+        ae = new AssertionError(field.get(ae));
+      } catch (Exception e) {
+        // exception means we're out of luck
+      } finally {
+        if (field != null && !fieldWasAccessible) {
+          if (field.isAccessible()) {
+            field.setAccessible(false);
+          }
+        }
+      }
+    }
+    return ae;
   }
 }
