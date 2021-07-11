@@ -6,7 +6,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.nblxa.turntables.Tab;
 import io.github.nblxa.turntables.TableUtils;
 import io.github.nblxa.turntables.Typ;
-import io.github.nblxa.turntables.io.NameSanitizing;
 import io.github.nblxa.turntables.io.ThrowingSupplier;
 import io.github.nblxa.turntables.io.rowstore.CleanUpAction;
 import java.math.BigDecimal;
@@ -61,26 +60,22 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
     @NonNull
     protected final Connection connection;
     @NonNull
-    protected final String sanitizedName;
+    protected final String name;
     @NonNull
     protected final Tab tab;
     @NonNull
-    protected final List<String> sanitizedColNames;
+    protected final List<String> colNames;
 
-    public Feed(@NonNull Connection connection, @NonNull String unsafeName, @NonNull Tab tab) {
+    public Feed(@NonNull Connection connection, @NonNull String name, @NonNull Tab tab) {
       this.connection = Objects.requireNonNull(connection, "connection is null");
-      Objects.requireNonNull(unsafeName, "unsafeName is null");
-      this.sanitizedName = NameSanitizing.sanitizeName(connection, unsafeName);
+      this.name = Objects.requireNonNull(name, "unsafeName is null");
       this.tab = Objects.requireNonNull(tab, "tab is null");
-      this.sanitizedColNames = TableUtils.colNames(tab)
-          .stream()
-          .map(n -> NameSanitizing.sanitizeName(connection, n))
-          .collect(Collectors.toList());
+      this.colNames = TableUtils.colNames(tab);
     }
 
     public void feed() throws SQLException {
       wrapInTransaction(connection, () -> {
-        if (!tableExists(connection, sanitizedName)) {
+        if (!tableExists(connection, name)) {
           createTable();
         }
         insertIntoTable();
@@ -89,7 +84,7 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
     }
 
     @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
-        justification = "Input is sanitized by NameSanitizing.")
+        justification = "This library is for use in tests only, not productively.")
     protected void createTable() throws SQLException {
       String createSql = buildCreateTableSql();
       try (Statement stmt = connection.createStatement()) {
@@ -100,7 +95,7 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
     @NonNull
     protected String buildCreateTableSql() {
       StringBuilder sb = new StringBuilder("CREATE TABLE ");
-      sb.append(sanitizedName);
+      sb.append(name);
       sb.append(" (");
       boolean first = true;
       int i = 0;
@@ -110,7 +105,7 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
         } else {
           sb.append(", ");
         }
-        sb.append(sanitizedColNames.get(i));
+        sb.append(colNames.get(i));
         sb.append(' ');
         sb.append(getSqlType(col.typ()));
         i++;
@@ -120,7 +115,7 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
     }
 
     @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
-        justification = "Input is sanitized by NameSanitizing.")
+        justification = "This library is for use in tests only, not productively.")
     protected void insertIntoTable() throws SQLException {
       String insertSql = buildInsertSql();
       try (PreparedStatement stmt = connection.prepareStatement(insertSql)) {
@@ -134,15 +129,15 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
     @NonNull
     protected String buildInsertSql() {
       StringBuilder sb = new StringBuilder("INSERT INTO ");
-      sb.append(sanitizedName);
-      int numCols = sanitizedColNames.size();
+      sb.append(name);
+      int numCols = colNames.size();
       if (TableUtils.hasNamedCols(tab)) {
         sb.append(" (");
         for (int i = 0; i < numCols; i++) {
           if (i > 0) {
             sb.append(", ");
           }
-          sb.append(sanitizedColNames.get(i));
+          sb.append(colNames.get(i));
         }
         sb.append(')');
       }
@@ -158,7 +153,7 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
     }
 
     @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
-        justification = "Input is sanitized by NameSanitizing.")
+        justification = "This library is for use in tests only, not productively.")
     protected void insertRow(@NonNull PreparedStatement stmt, @NonNull Tab.Row row)
         throws SQLException {
       int i = 1;
@@ -238,15 +233,14 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
     @NonNull
     protected final Connection connection;
     @NonNull
-    protected final String sanitizedName;
+    protected final String name;
     @NonNull
     protected final CleanUpAction cleanUpAction;
 
-    public CleanUp(@NonNull Connection connection, @NonNull String unsafeName,
+    public CleanUp(@NonNull Connection connection, @NonNull String name,
                    @NonNull CleanUpAction cleanUpAction) {
       this.connection = Objects.requireNonNull(connection, "connection is null");
-      Objects.requireNonNull(unsafeName, "unsafeName is null");
-      this.sanitizedName = NameSanitizing.sanitizeName(connection, unsafeName);
+      this.name = Objects.requireNonNull(name, "name is null");
       this.cleanUpAction = Objects.requireNonNull(cleanUpAction, "cleanUpAction is null");
     }
 
@@ -273,10 +267,10 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
     }
 
     @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
-        justification = "Input is sanitized by NameSanitizing.")
+        justification = "This library is for use in tests only, not productively.")
     protected void dropTable() throws SQLException {
-      if (tableExists(connection, sanitizedName)) {
-        String dropSql = "DROP TABLE " + sanitizedName;
+      if (tableExists(connection, name)) {
+        String dropSql = "DROP TABLE " + name;
         try (Statement stmt = connection.createStatement()) {
           stmt.execute(dropSql);
         }
@@ -284,10 +278,10 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
     }
 
     @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
-        justification = "Input is sanitized by NameSanitizing.")
+        justification = "This library is for use in tests only, not productively.")
     protected void truncateTable() throws SQLException {
-      if (tableExists(connection, sanitizedName)) {
-        String truncateSql = "TRUNCATE TABLE " + sanitizedName;
+      if (tableExists(connection, name)) {
+        String truncateSql = "TRUNCATE TABLE " + name;
         try (Statement stmt = connection.createStatement()) {
           stmt.execute(truncateSql);
         }
@@ -295,10 +289,10 @@ public abstract class AbstractJdbcProtocol<T extends Connection> implements Feed
     }
 
     @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
-        justification = "Input is sanitized by NameSanitizing.")
+        justification = "This library is for use in tests only, not productively.")
     protected void deleteAll() throws SQLException {
-      if (tableExists(connection, sanitizedName)) {
-        String deleteSql = "DELETE FROM " + sanitizedName;
+      if (tableExists(connection, name)) {
+        String deleteSql = "DELETE FROM " + name;
         try (Statement stmt = connection.createStatement()) {
           stmt.execute(deleteSql);
         }

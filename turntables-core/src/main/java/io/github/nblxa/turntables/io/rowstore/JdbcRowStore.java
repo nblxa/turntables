@@ -9,7 +9,6 @@ import io.github.nblxa.turntables.exception.FeedException;
 import io.github.nblxa.turntables.exception.IngestionException;
 import io.github.nblxa.turntables.io.Configuration;
 import io.github.nblxa.turntables.io.Feed;
-import io.github.nblxa.turntables.io.NameSanitizing;
 import io.github.nblxa.turntables.io.ThrowingSupplier;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -48,11 +47,11 @@ public class JdbcRowStore implements RowStore {
   @Override
   @NonNull
   @SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
-      justification = "Input is sanitized by NameSanitizing.")
-  public Tab ingest(@NonNull String name) {
+      justification = "This library is for use in tests only, not productively.")
+  public Tab ingest(@NonNull String source) {
     try (Connection conn = getOrReopenConnection();
          Statement stmt = conn.createStatement();
-         ResultSet rs = stmt.executeQuery("select * from " + NameSanitizing.sanitizeName(conn, name))
+         ResultSet rs = stmt.executeQuery("select * from " + source)
     ) {
       return Turntables.from(rs);
     } catch (SQLException se) {

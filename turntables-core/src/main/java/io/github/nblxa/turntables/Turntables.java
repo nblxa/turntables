@@ -4,7 +4,6 @@ import io.github.nblxa.turntables.assertj.TabAssert;
 import io.github.nblxa.turntables.io.Feed;
 import io.github.nblxa.turntables.io.Ingestion;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import io.github.nblxa.turntables.io.NameSanitizing;
 import java.util.Deque;
 import java.util.Objects;
 import java.util.function.DoublePredicate;
@@ -34,7 +33,7 @@ import java.util.function.Predicate;
  * for integration with JUnit.<p>
  *
  * Turntables can be extended to support various data sources and databases via SPI.
- * See {@link Ingestion}, {@link Feed}, {@link NameSanitizing}.
+ * See {@link Ingestion}, {@link Feed}.
  */
 public final class Turntables {
   /**
