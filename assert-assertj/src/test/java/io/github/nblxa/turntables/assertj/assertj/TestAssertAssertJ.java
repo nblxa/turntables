@@ -57,10 +57,10 @@ public class TestAssertAssertJ {
             .isAssertionErrorWithMessage("boom"));
     assertThat(t)
         .isExactlyInstanceOf(AssertionError.class)
-        .hasMessageContaining("Expecting:")
-        .hasMessageContaining("<java.lang.RuntimeException: boom>")
-        .hasMessageContaining("to be an instance of:")
-        .hasMessageContaining("<java.lang.AssertionError>");
+        .hasMessageContaining("Expecting")
+        .hasMessageContaining("java.lang.RuntimeException: boom")
+        .hasMessageContaining("instance of")
+        .hasMessageContaining("java.lang.AssertionError");
   }
 
   @Test
