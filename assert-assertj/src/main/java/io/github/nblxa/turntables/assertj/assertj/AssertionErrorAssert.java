@@ -1,12 +1,10 @@
 package io.github.nblxa.turntables.assertj.assertj;
 
-import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.assertj.core.api.WritableAssertionInfo;
 import org.assertj.core.error.BasicErrorMessageFactory;
-import org.assertj.core.internal.Failures;
 import org.assertj.core.internal.Objects;
 
 /**
@@ -21,8 +19,6 @@ import org.assertj.core.internal.Objects;
 public final class AssertionErrorAssert extends AbstractThrowableAssert<AssertionErrorAssert, Throwable> {
   private static final Pattern EXPECTED_BUT_WAS = Pattern.compile(
       "\\n(EXPECTED: ).*?\\n(BUT: WAS ).*", Pattern.DOTALL);
-
-  private final Failures failures = Failures.instance();
 
   public AssertionErrorAssert(Throwable actual) {
     super(actual, AssertionErrorAssert.class);
@@ -46,7 +42,8 @@ public final class AssertionErrorAssert extends AbstractThrowableAssert<Assertio
     String expectedReplaced = replaceAssertionKeywords(expectedMessage);
     String actualReplaced = replaceAssertionKeywords(actual.getMessage());
     if (java.util.Objects.equals(expectedReplaced, actualReplaced)) return this;
-    throw turntablesAssertionError(expectedReplaced, actualReplaced);
+    throw new AssertionError(
+        new ShouldHaveAssertionMessage(expectedReplaced, actualReplaced).create());
   }
 
   public static class ShouldHaveAssertionMessage extends BasicErrorMessageFactory {
@@ -65,35 +62,5 @@ public final class AssertionErrorAssert extends AbstractThrowableAssert<Assertio
       result = new StringBuilder(result).replace(m.start(1), m.end(1), "{{MSG_EXP}}").toString();
     }
     return result;
-  }
-
-  private AssertionError turntablesAssertionError(String expectedReplaced, String actualReplaced) {
-    AssertionError ae = failures.failure(getWritableAssertionInfo(),
-        new ShouldHaveAssertionMessage(expectedReplaced, actualReplaced),
-        actualReplaced, expectedReplaced);
-    ae = suppressComparisonFailure(ae);
-    return ae;
-  }
-
-  private static AssertionError suppressComparisonFailure(AssertionError ae) {
-    if (ae.getClass().getCanonicalName().equals("org.junit.ComparisonFailure")) {
-      Field field = null;
-      boolean fieldWasAccessible = true;
-      try {
-        field = Throwable.class.getDeclaredField("detailMessage");
-        fieldWasAccessible = field.isAccessible();
-        field.setAccessible(true);
-        ae = new AssertionError(field.get(ae));
-      } catch (Exception e) {
-        // exception means we're out of luck
-      } finally {
-        if (field != null && !fieldWasAccessible) {
-          if (field.isAccessible()) {
-            field.setAccessible(false);
-          }
-        }
-      }
-    }
-    return ae;
   }
 }
