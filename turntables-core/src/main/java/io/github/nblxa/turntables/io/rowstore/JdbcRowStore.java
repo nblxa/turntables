@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 public class JdbcRowStore implements RowStore {
   protected static final Pattern QUERY = Pattern.compile("^\\s*(with|select)\\b.*",
-      Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+      Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
   @NonNull
   private final ThrowingSupplier<Connection, Exception> connectionSupplier;

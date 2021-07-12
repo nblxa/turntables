@@ -47,6 +47,11 @@
       <artifactId>turntables-test-concurrency</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>io.github.nblxa</groupId>
+      <artifactId>turntables-assertj-compat</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

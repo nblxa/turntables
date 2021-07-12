@@ -76,7 +76,7 @@ As a result, less code must be written for tests and it's easier to find bugs.
 ## Maven
 
 Turntables extends [AssertJ](https://github.com/joel-costigliola/assertj-core)
-and you'll need both dependencies. Versions from `3.14.0` up to `3.20.2` are supported.
+and you'll need both dependencies.
 
 ```xml
 <dependency>

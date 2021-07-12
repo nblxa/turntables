@@ -38,6 +38,7 @@
     <module>turntables-mysql</module>
     <module>turntables-ojdbc</module>
     <module>assert-assertj</module>
+    <module>turntables-assertj-compat</module>
     <module>zz-aggregator</module>
   </modules>
 
@@ -55,6 +56,7 @@
     <junit.version>4.13.1</junit.version>
     <equalsverifier.version>3.5.5</equalsverifier.version>
     <assertj.version>3.20.2</assertj.version>
+    <assertj.compat.version>3.0.0</assertj.compat.version><!-- for backward compatibility tests -->
     <derby.version>10.14.2.0</derby.version>
     <mysql.connector.java.version>8.0.22</mysql.connector.java.version>
     <ojdbc.version>19.8.0.0</ojdbc.version>
