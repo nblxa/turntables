@@ -54,7 +54,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <javac.version>9+181-r4173-1</javac.version>
     <junit.version>4.13.2</junit.version>
-    <equalsverifier.version>3.7</equalsverifier.version>
+    <equalsverifier.version>3.8.3</equalsverifier.version>
     <assertj.version>3.20.2</assertj.version>
     <assertj.compat.version>3.0.0</assertj.compat.version><!-- for backward compatibility tests -->
     <derby.version>10.14.2.0</derby.version>
